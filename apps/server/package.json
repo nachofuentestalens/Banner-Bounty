@@ -1,0 +1,23 @@
+{
+  "name": "@bb/server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "test": "tsx --test src/index.test.ts"
+  },
+  "dependencies": {
+    "@bb/contracts": "*",
+    "@bb/game": "*",
+    "fastify": "^5.2.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.2",
+    "@types/node": "^22.10.7"
+  }
+}
