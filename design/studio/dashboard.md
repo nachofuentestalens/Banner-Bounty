@@ -26,6 +26,10 @@ Setup and use (Delivery view / `/api/projects/:id/delivery`):
 
 After editing `milestone.json` dependencies or adding tasks, run `validate`/`sync` from the live checkout, commit both planning files into the baseline, and import the plan again.
 
+## GitHub remote
+
+`origin` is `https://github.com/nachofuentestalens/Banner-Bounty.git`, authenticated through Git Credential Manager on this machine. The remote lives in the shared repository config, so every task worktree sees it. Agents push only their own `agent/task-<id>` branch (`git push -u origin HEAD`). The dashboard's end-of-run WIP commits happen after the agent stops, so the coordinator republishes task branches with `git push origin "refs/heads/agent/*:refs/heads/agent/*"`. After the owner integrates work in the live checkout, they push `main` from there. Nothing is force-pushed.
+
 ## Legacy local helper
 
 `scripts/dashboard.mjs` predates native dependencies. It still validates the registry offline and syncs role/task records, but it only works from the live checkout (it checks the project's `repoPath`). Its `status`/`start`/`complete` review markers are separate from the dashboard's native review; prefer the native flow above.
