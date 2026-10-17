@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "projectId": "c6faaeda-b5c2-4d67-b351-1e1dd9f594a7",
+  "roles": {
+    "CTO": "a2a8b0f6-fcc5-4127-a9d4-34adf468c651",
+    "Game Director": "97b693a9-b576-4600-b4c0-01e5fc8bacae",
+    "Gameplay Programmer": "0278f8e5-d3dc-41ab-8274-83e060def7bb",
+    "Tools Engineer": "c69840a1-d78f-4324-98c2-9f6147811080",
+    "Systems Designer": "8d7a4752-50c0-4c58-815c-462eb2cbdfd8",
+    "Narrative Designer": "19a5eb94-ec59-4699-ae4d-9415132eb1f6",
+    "Economy Designer": "f95cabbb-e33e-4a7d-9d5e-d94ce4a0351e",
+    "QA Tester": "ee50cd19-1e20-4a29-8a4b-8a1b073461c2"
+  },
+  "tasks": {
+    "M1-01": "2435fae9-1fb0-4d8b-918e-4cce69555156",
+    "M1-02": "97912a8f-d421-462c-a449-60820c36ec46",
+    "M1-03": "57a881e3-488c-4211-861b-e714e206bf09",
+    "M1-04": "d1bf98bc-6c22-42a0-97f3-ca703d374882",
+    "M1-05": "a786bb07-0994-41e0-b185-5e87b55ee4c3",
+    "M1-06": "ab16ab28-0f07-4192-990a-3f8224ed117a",
+    "M1-07": "83487911-08ab-44dc-85c8-3267df2768da",
+    "M1-08": "de08242c-5507-4f0c-bb74-0d449df68d6b",
+    "M1-09": "5551eb95-466e-4218-b4f6-85d4f2775430",
+    "M1-10": "3e346450-4689-4cff-b285-4332775a5620",
+    "M1-11": "e6a6782d-1a59-4fef-805c-34896e700125",
+    "M1-12": "f9982f6f-5140-4b5e-b8d2-09a06a7726bd",
+    "M1-13": "c51d5cdd-1fe7-4575-a2d2-363f802da52a",
+    "M1-14": "5a83fdeb-8ba2-45a6-a588-d8395541e31b",
+    "M1-15": "e9abdfb6-28a9-4f7b-b14d-8e1aaffdd4c9",
+    "M1-16": "dafef25f-76fa-4e2a-85ec-8c7c80a63110"
+  },
+  "reviews": {
+    "M1-01": {
+      "runId": "e44d1f29-a602-45bf-8f67-6acaf29fdd88",
+      "taskUpdatedAt": "2026-10-16T18:16:09.938Z",
+      "reportHash": "f1bff8c9f33f20e7069fa00378d49a59b2a22014fb079f50201fd3562e14ff07",
+      "reviewedAt": "2026-10-16T18:16:09.943Z"
+    }
+  }
+}
