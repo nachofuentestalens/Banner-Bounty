@@ -1,8 +1,8 @@
 {
   "name": "@banner-and-bounty/content",
   "private": true,
-  "version": "0.1.0",
-  "description": "Stable content IDs, stats, slot restrictions and enemy data. Scaffold placeholder until M1-02 publishes the frozen tables.",
+  "version": "0.2.0",
+  "description": "Stable content IDs, stats, slot restrictions, enemy compositions and boss behavior per design/game/content.md.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

@@ -1,6 +1,11 @@
-// Placeholder surface for M1-05 scaffolding. Real simulation functions
-// (combat, idle settlement) land in M1-02/M1-04 and must stay pure per
-// architecture.md: explicit state, rulesVersion, rngSeed, elapsedDuration;
-// no Date.now(), network, database, UI, or unseeded randomness inside.
+// Deterministic simulation and progression rules (design/game/combat.md,
+// design/game/economy/baseline.md). Pure: no Date.now(), network, database,
+// UI, or unseeded randomness inside — see each module's own notes.
 
-export const gamePackageVersion = "0.1.0" as const;
+export * from "./rng.js";
+export * from "./xp.js";
+export * from "./stats.js";
+export * from "./combat.js";
+export * from "./rewards.js";
+
+export const gamePackageVersion = "0.2.0" as const;
