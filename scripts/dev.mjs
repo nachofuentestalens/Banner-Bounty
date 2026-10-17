@@ -38,27 +38,40 @@ await assertPortFree(apiPort, apiHost, "API");
 await assertPortFree(webPort, "127.0.0.1", "WEB");
 
 const isWindows = process.platform === "win32";
+// npm ships as npm.cmd on Windows; cmd/bat files require shell:true to spawn
+// directly (plain shell:false spawn of a .cmd fails with EINVAL on Node 22).
 const npmCmd = isWindows ? "npm.cmd" : "npm";
 
 const children = [
   spawn(npmCmd, ["run", "dev", "--workspace=apps/server"], {
     stdio: "inherit",
     env: process.env,
-    shell: false,
+    shell: isWindows,
   }),
   spawn(npmCmd, ["run", "dev", "--workspace=apps/web"], {
     stdio: "inherit",
     env: process.env,
-    shell: false,
+    shell: isWindows,
   }),
 ];
+
+function killTree(child) {
+  if (isWindows) {
+    // The direct child is cmd.exe; /t kills its whole tree (npm -> tsx/vite).
+    spawn("taskkill", ["/pid", String(child.pid), "/t", "/f"], {
+      stdio: "ignore",
+    });
+  } else {
+    child.kill("SIGTERM");
+  }
+}
 
 let shuttingDown = false;
 function shutdown(code) {
   if (shuttingDown) return;
   shuttingDown = true;
   for (const child of children) {
-    if (!child.killed) child.kill(isWindows ? undefined : "SIGTERM");
+    if (!child.killed) killTree(child);
   }
   process.exitCode = code;
 }

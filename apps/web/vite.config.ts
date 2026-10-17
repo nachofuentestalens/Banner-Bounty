@@ -9,6 +9,7 @@ const apiPort = Number(process.env.API_PORT ?? 3100);
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: "127.0.0.1", // explicit IPv4 bind: "localhost" alone can resolve to IPv6-only on Windows
     port: webPort,
     strictPort: true,
     proxy: {
