@@ -1,9 +1,10 @@
 import { buildServer } from "./app.js";
+import { loadServerConfig } from "./config.js";
 
-const port = Number(process.env.API_PORT ?? 3100);
-const host = process.env.API_HOST ?? "127.0.0.1";
+const config = loadServerConfig();
+const { port, host } = config;
 
-const app = buildServer();
+const app = buildServer({ dbPath: config.dbPath });
 
 app
   .listen({ port, host })

@@ -1,14 +1,138 @@
-import Fastify, { type FastifyInstance } from "fastify";
+import crypto from "node:crypto";
+import type { DatabaseSync } from "node:sqlite";
+import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
+import {
+  PartyOrderRequestSchema,
+  SelectSessionRequestSchema,
+  type Account,
+} from "@banner-and-bounty/contracts";
+import { MAX_BODY_BYTES } from "@banner-and-bounty/contracts";
+import { ZodError } from "zod";
+import { openDatabase } from "./db/connection.js";
+import { runMigrations, currentSchemaVersion } from "./db/migrations.js";
+import { seedAccounts } from "./db/seed.js";
+import { SystemClock, type Clock } from "./clock.js";
+import { AppError, ERROR_STATUS, toErrorDTO } from "./errors.js";
+import { AccountRepository } from "./repositories/accountRepository.js";
+import { SessionRepository } from "./repositories/sessionRepository.js";
+import { SessionService } from "./services/sessionService.js";
+import { buildAccountState } from "./services/accountStateService.js";
+import { applyPartyOrder } from "./services/partyOrderService.js";
+import { SESSION_COOKIE_NAME, parseCookies, serializeSessionCookie, serializeClearedSessionCookie } from "./http/cookies.js";
 
-// M1-05 scaffold: only the public /health route from design/studio/contracts.md.
-// Sessions, accounts and mutating endpoints are added by M1-07 onward.
-export function buildServer(): FastifyInstance {
-  const app = Fastify({ logger: false });
+export interface BuildServerOptions {
+  dbPath?: string;
+  db?: DatabaseSync;
+  clock?: Clock;
+}
+
+declare module "fastify" {
+  interface FastifyRequest {
+    accountId?: string | undefined;
+    sessionId?: string | undefined;
+  }
+}
+
+export function buildServer(options: BuildServerOptions = {}): FastifyInstance {
+  const db = options.db ?? openDatabase(options.dbPath ?? ":memory:");
+  const clock = options.clock ?? new SystemClock();
+  runMigrations(db);
+  seedAccounts(db, clock);
+
+  const app = Fastify({ logger: false, bodyLimit: MAX_BODY_BYTES });
+
+  const accounts = new AccountRepository(db);
+  const sessions = new SessionRepository(db);
+  const sessionService = new SessionService(accounts, sessions, clock);
+
+  // Correlation ID + session resolution. Logs never include session secrets
+  // (architecture.md: "Log a correlation ID, not session secrets").
+  app.addHook("onRequest", async (request: FastifyRequest) => {
+    const cookies = parseCookies(request.headers.cookie);
+    const sessionId = cookies[SESSION_COOKIE_NAME];
+    request.sessionId = sessionId;
+    const account: Account | null = sessionService.resolveAccount(sessionId);
+    request.accountId = account?.accountId;
+  });
+
+  function requireSession(request: FastifyRequest): string {
+    if (!request.accountId) {
+      throw new AppError("unauthenticated", "a session cookie is required for this endpoint");
+    }
+    return request.accountId;
+  }
+
+  app.setErrorHandler((error: unknown, request, reply: FastifyReply) => {
+    const correlationId = crypto.randomUUID();
+    if (error instanceof AppError) {
+      reply.status(ERROR_STATUS[error.code]).send({ ok: false, error: toErrorDTO(error, correlationId) });
+      return;
+    }
+    if (error instanceof ZodError) {
+      reply.status(ERROR_STATUS.validation).send({
+        ok: false,
+        error: { code: "validation", message: "invalid request payload", correlationId },
+      });
+      return;
+    }
+    const fastifyError = error as { statusCode?: number; code?: string };
+    if (fastifyError.statusCode === 413 || fastifyError.code === "FST_ERR_CTP_BODY_TOO_LARGE") {
+      reply.status(ERROR_STATUS.validation).send({
+        ok: false,
+        error: { code: "validation", message: "request body exceeds the size limit", correlationId },
+      });
+      return;
+    }
+    // eslint-disable-next-line no-console
+    console.error(`[server] internal error (correlationId=${correlationId})`, error);
+    reply.status(ERROR_STATUS.internal).send({
+      ok: false,
+      error: { code: "internal", message: "internal error", correlationId },
+    });
+  });
 
   app.get("/health", async () => ({
     ok: true,
-    data: { status: "ok", schemaVersion: 0 },
+    data: { status: "ok", schemaVersion: currentSchemaVersion(db) },
   }));
+
+  app.post("/dev/session/select", async (request, reply) => {
+    const body = SelectSessionRequestSchema.parse(request.body);
+    const { sessionId, account } = sessionService.selectAccount(body.accountSlot);
+    reply.header("set-cookie", serializeSessionCookie(sessionId));
+    return { ok: true, data: { accountId: account.accountId, displayName: account.displayName } };
+  });
+
+  app.get("/dev/session/current", async (request) => {
+    const accountId = requireSession(request);
+    const account = accounts.findById(accountId);
+    if (!account) throw new AppError("unauthenticated", "session account no longer exists");
+    return { ok: true, data: { accountId: account.accountId, displayName: account.displayName } };
+  });
+
+  app.post("/dev/session/logout", async (request, reply) => {
+    requireSession(request);
+    if (request.sessionId) sessionService.logout(request.sessionId);
+    reply.header("set-cookie", serializeClearedSessionCookie());
+    return { ok: true, data: {} };
+  });
+
+  app.get("/account/state", async (request) => {
+    const accountId = requireSession(request);
+    const { data } = buildAccountState(db, accountId);
+    return { ok: true, data, revision: data.revision };
+  });
+
+  app.patch("/party/order", async (request) => {
+    const accountId = requireSession(request);
+    const body = PartyOrderRequestSchema.parse(request.body);
+    const { result, revision } = applyPartyOrder(db, accountId, body);
+    return { ok: true, data: result, revision };
+  });
+
+  app.addHook("onClose", async () => {
+    db.close();
+  });
 
   return app;
 }

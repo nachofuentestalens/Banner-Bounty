@@ -12,10 +12,11 @@
     "dev": "tsx watch src/main.ts"
   },
   "dependencies": {
-    "@banner-and-bounty/contracts": "^0.1.0",
     "@banner-and-bounty/content": "^0.1.0",
+    "@banner-and-bounty/contracts": "^0.1.0",
     "@banner-and-bounty/game": "^0.1.0",
-    "fastify": "^5.2.0"
+    "fastify": "^5.2.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
