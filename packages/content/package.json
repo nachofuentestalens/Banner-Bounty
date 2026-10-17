@@ -1,0 +1,17 @@
+{
+  "name": "@banner-and-bounty/content",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Stable content IDs, stats, slot restrictions and enemy data. Scaffold placeholder until M1-02 publishes the frozen tables.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^5.0.5"
+  }
+}

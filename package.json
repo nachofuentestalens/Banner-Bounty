@@ -1,0 +1,29 @@
+{
+  "name": "banner-and-bounty",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Banner & Bounty workspace root: planning scripts plus the apps/packages game workspace.",
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "typecheck": "tsc --build tsconfig.json && npm run typecheck --workspace=apps/web",
+    "test": "vitest run",
+    "build": "npm run build --workspace=packages/contracts --workspace=packages/game --workspace=packages/content --workspace=apps/server --workspace=apps/web",
+    "validate": "npm run typecheck && npm run test && npm run build",
+    "test:e2e": "node scripts/not-implemented.mjs test:e2e \"owned by tests/e2e (QA), not yet implemented\"",
+    "simulate": "node scripts/not-implemented.mjs simulate \"added in M1-12, real production rules only\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^5.0.5"
+  }
+}
