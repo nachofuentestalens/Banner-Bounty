@@ -1,0 +1,290 @@
+// Deterministic battle simulation (design/game/combat.md sections 2-7).
+
+import type { ClassId, SpecializationId } from "@banner-and-bounty/content";
+import type { EffectiveStats } from "./stats.js";
+
+export type BattleKind = "pve" | "boss" | "arena";
+export type BattleResultKind = "win" | "loss" | "draw";
+
+export interface HeroCombatantInput {
+  readonly id: string;
+  readonly side: "hero";
+  readonly position: number; // 0-2, party order
+  readonly classId: ClassId;
+  readonly specializationId: SpecializationId | null; // already level-gated (stats.ts effectiveSpecialization)
+  readonly stats: EffectiveStats;
+}
+
+export interface EnemyCombatantInput {
+  readonly id: string;
+  readonly side: "enemy";
+  readonly slot: number;
+  readonly stats: { readonly maxHp: number; readonly atk: number; readonly def: number; readonly spd: number };
+  readonly isBoss?: boolean;
+}
+
+export interface BattleEvent {
+  readonly round: number;
+  readonly type: string;
+  readonly sourceId: string | null;
+  readonly targetId: string | null;
+  readonly amount: number; // negative for damage, positive for healing
+  readonly hpAfter: number | null;
+}
+
+export interface BattleResult {
+  readonly result: BattleResultKind;
+  readonly rounds: number;
+  readonly events: readonly BattleEvent[];
+  readonly finalHp: Readonly<Record<string, number>>;
+}
+
+interface ActorState {
+  readonly id: string;
+  readonly side: "hero" | "enemy";
+  readonly tieIndex: number; // hero: party position; enemy: encounter slot
+  readonly stats: { maxHp: number; atk: number; def: number; spd: number };
+  hp: number;
+  readonly specializationId: SpecializationId | null;
+  readonly isBoss: boolean;
+  burn: { stacks: number; duration: number; tickAtk: number } | null;
+  guardedBy: string | null;
+}
+
+function basicDamage(atk: number, targetDef: number): number {
+  return Math.max(1, atk - Math.floor(targetDef / 2));
+}
+
+function pickLowestHp(candidates: readonly ActorState[]): ActorState | null {
+  if (candidates.length === 0) return null;
+  return candidates.reduce((best, c) => (c.hp < best.hp || (c.hp === best.hp && c.tieIndex < best.tieIndex) ? c : best));
+}
+
+function hpPercent(actor: ActorState): number {
+  return Math.floor((actor.hp * 100) / actor.stats.maxHp);
+}
+
+function pickLowestHpPercent(candidates: readonly ActorState[]): ActorState | null {
+  if (candidates.length === 0) return null;
+  return candidates.reduce((best, c) =>
+    hpPercent(c) < hpPercent(best) || (hpPercent(c) === hpPercent(best) && c.tieIndex < best.tieIndex) ? c : best,
+  );
+}
+
+function pickLowestPosition(candidates: readonly ActorState[]): ActorState | null {
+  if (candidates.length === 0) return null;
+  return candidates.reduce((best, c) => (c.tieIndex < best.tieIndex ? c : best));
+}
+
+function applyHpChange(
+  actor: ActorState,
+  delta: number,
+  events: BattleEvent[],
+  round: number,
+  type: string,
+  sourceId: string | null,
+): void {
+  const clamped = Math.max(0, Math.min(actor.stats.maxHp, actor.hp + delta));
+  const actualDelta = clamped - actor.hp;
+  actor.hp = clamped;
+  events.push({ round, type, sourceId, targetId: actor.id, amount: actualDelta, hpAfter: actor.hp });
+}
+
+/** Routes enemy/boss damage to a guarded hero's Guardian per combat.md 3.4. */
+function dealDamageToHero(
+  actors: readonly ActorState[],
+  target: ActorState,
+  rawDamage: number,
+  events: BattleEvent[],
+  round: number,
+  type: string,
+  sourceId: string,
+): void {
+  if (target.guardedBy) {
+    const guardian = actors.find((a) => a.id === target.guardedBy);
+    if (guardian && guardian.hp > 0) {
+      const toGuardian = Math.floor(rawDamage / 2);
+      const toTarget = rawDamage - toGuardian;
+      applyHpChange(guardian, -toGuardian, events, round, `${type}_guard_redirect`, sourceId);
+      applyHpChange(target, -toTarget, events, round, type, sourceId);
+      return;
+    }
+  }
+  applyHpChange(target, -rawDamage, events, round, type, sourceId);
+}
+
+function resolveHeroAction(actor: ActorState, actors: readonly ActorState[], events: BattleEvent[], round: number): void {
+  const livingEnemies = actors.filter((a) => a.side === "enemy" && a.hp > 0);
+  const livingHeroes = actors.filter((a) => a.side === "hero" && a.hp > 0);
+
+  switch (actor.specializationId) {
+    case "spec_guardian": {
+      const guardTarget = pickLowestHpPercent(livingHeroes);
+      if (guardTarget) guardTarget.guardedBy = actor.id;
+      const target = pickLowestHp(livingEnemies);
+      if (target) applyHpChange(target, -basicDamage(actor.stats.atk, target.stats.def), events, round, "guard_strike", actor.id);
+      return;
+    }
+    case "spec_berserker": {
+      const target = pickLowestHp(livingEnemies);
+      if (!target) return;
+      let dmg = basicDamage(actor.stats.atk, target.stats.def);
+      if (actor.hp < Math.floor(actor.stats.maxHp / 2)) dmg = Math.floor((dmg * 5) / 4);
+      applyHpChange(target, -dmg, events, round, "reckless_strike", actor.id);
+      return;
+    }
+    case "spec_marksman": {
+      const executeCandidates = livingEnemies.filter((e) => hpPercent(e) <= 30);
+      const bonus = executeCandidates.length > 0;
+      const target = bonus ? pickLowestHp(executeCandidates) : pickLowestHp(livingEnemies);
+      if (!target) return;
+      let dmg = basicDamage(actor.stats.atk, target.stats.def);
+      if (bonus) dmg = Math.floor((dmg * 3) / 2);
+      applyHpChange(target, -dmg, events, round, "aimed_shot", actor.id);
+      return;
+    }
+    case "spec_pyromancer": {
+      const target = pickLowestHp(livingEnemies);
+      if (!target) return;
+      applyHpChange(target, -basicDamage(actor.stats.atk, target.stats.def), events, round, "firebolt", actor.id);
+      if (target.hp <= 0) return;
+      if (!target.burn) {
+        target.burn = { stacks: 1, duration: 3, tickAtk: actor.stats.atk };
+      } else if (target.burn.stacks === 1) {
+        target.burn = { stacks: 2, duration: 3, tickAtk: actor.stats.atk };
+      } // stacks === 2 (cap): direct damage already applied above, application ignored, duration not reset
+      return;
+    }
+    case "spec_warden": {
+      const target = pickLowestHpPercent(livingHeroes);
+      if (!target) return;
+      const heal = Math.floor((actor.stats.atk * 4) / 5);
+      applyHpChange(target, heal, events, round, "mend", actor.id);
+      return;
+    }
+    case "spec_pathfinder":
+    default: {
+      const target = pickLowestHp(livingEnemies);
+      if (target) applyHpChange(target, -basicDamage(actor.stats.atk, target.stats.def), events, round, "strike", actor.id);
+    }
+  }
+}
+
+function resolveEnemyAction(actor: ActorState, actors: readonly ActorState[], events: BattleEvent[], round: number): void {
+  const livingHeroes = actors.filter((a) => a.side === "hero" && a.hp > 0);
+  if (livingHeroes.length === 0) return;
+
+  if (actor.isBoss && round % 3 === 0) {
+    const target = pickLowestHpPercent(livingHeroes)!;
+    const dmg = Math.floor((basicDamage(actor.stats.atk, target.stats.def) * 3) / 2);
+    dealDamageToHero(actors, target, dmg, events, round, "toll_smash", actor.id);
+    return;
+  }
+
+  const target = pickLowestPosition(livingHeroes)!;
+  const dmg = basicDamage(actor.stats.atk, target.stats.def);
+  dealDamageToHero(actors, target, dmg, events, round, actor.isBoss ? "toll_strike" : "enemy_strike", actor.id);
+}
+
+function speedOrderCompare(a: ActorState, b: ActorState): number {
+  if (a.stats.spd !== b.stats.spd) return b.stats.spd - a.stats.spd;
+  if (a.side !== b.side) return a.side === "hero" ? -1 : 1;
+  return a.tieIndex - b.tieIndex;
+}
+
+/**
+ * Simulates a full battle per combat.md sections 2-7. Pure: takes only
+ * participant definitions and the battle kind; no clock, RNG, or storage
+ * access (rngSeed is accepted by none of this module's formulas, per
+ * combat.md section 7 — combat outcomes never consume randomness).
+ */
+export function simulateBattle(
+  heroes: readonly HeroCombatantInput[],
+  enemies: readonly EnemyCombatantInput[],
+  kind: BattleKind,
+): BattleResult {
+  const actors: ActorState[] = [
+    ...heroes.map((h) => ({
+      id: h.id,
+      side: "hero" as const,
+      tieIndex: h.position,
+      stats: { ...h.stats },
+      hp: h.stats.maxHp,
+      specializationId: h.specializationId,
+      isBoss: false,
+      burn: null,
+      guardedBy: null,
+    })),
+    ...enemies.map((e) => ({
+      id: e.id,
+      side: "enemy" as const,
+      tieIndex: e.slot,
+      stats: { ...e.stats },
+      hp: e.stats.maxHp,
+      specializationId: null,
+      isBoss: e.isBoss ?? false,
+      burn: null,
+      guardedBy: null,
+    })),
+  ];
+
+  const events: BattleEvent[] = [];
+  let round = 1;
+  let result: BattleResultKind | null = null;
+
+  while (round <= 100) {
+    const livingAtRoundStart = actors.filter((a) => a.hp > 0);
+    const order = [...livingAtRoundStart].sort(speedOrderCompare);
+    for (const a of actors) a.guardedBy = null;
+
+    // Step 2: actions, in speed order; a defeated actor cannot act later this round.
+    for (const actor of order) {
+      if (actor.hp <= 0) continue;
+      if (actor.side === "hero") resolveHeroAction(actor, actors, events, round);
+      else resolveEnemyAction(actor, actors, events, round);
+    }
+
+    // Step 3: end-of-round status ticks, same order, living-at-this-point only.
+    for (const actor of order) {
+      if (actor.hp <= 0) continue;
+      if (actor.burn && actor.burn.stacks > 0) {
+        const dmg = actor.burn.stacks * Math.floor(actor.burn.tickAtk / 4);
+        applyHpChange(actor, -dmg, events, round, "burn_tick", null);
+      }
+    }
+
+    // Step 4: status duration decrement.
+    for (const actor of actors) {
+      if (actor.burn) {
+        actor.burn.duration -= 1;
+        if (actor.burn.duration <= 0) actor.burn = null;
+      }
+    }
+
+    // Step 5: resolution check.
+    const heroesAlive = actors.some((a) => a.side === "hero" && a.hp > 0);
+    const enemiesAlive = actors.some((a) => a.side === "enemy" && a.hp > 0);
+    if (!heroesAlive && !enemiesAlive) {
+      result = kind === "arena" ? "draw" : "loss";
+      break;
+    }
+    if (!enemiesAlive) {
+      result = "win";
+      break;
+    }
+    if (!heroesAlive) {
+      result = "loss";
+      break;
+    }
+    if (round === 100) {
+      result = kind === "arena" ? "draw" : "loss";
+      break;
+    }
+    round += 1;
+  }
+
+  const finalHp: Record<string, number> = {};
+  for (const a of actors) finalHp[a.id] = a.hp;
+
+  return { result: result!, rounds: round, events, finalHp };
+}
