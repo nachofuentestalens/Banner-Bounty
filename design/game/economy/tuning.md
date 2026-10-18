@@ -29,12 +29,13 @@ band for boss readiness is corrected to match validated simulation evidence (12 
 20-40 min / level-4-5 band), per the freeze rule's "changing a number here requires a recorded
 decision" — this is a correction of a previously-labeled hypothesis, not a reward-table change.
 
-**Open item not resolved by this task:** if a 20-40 minute boss-ready target is still wanted, the
-lever is Tollkeeper stats (`content.md`) or the level-3 effective-action gate (`combat.md`), both
-owned outside `design/game/economy`. This task flags it to the owner as a question rather than
-filing a cross-department task, since it is a scope/vision call (is an early, high-stakes boss win
-at the specialization-unlock moment acceptable for first playable, or should the boss be harder?),
-not a routine implementation decision this role can make alone.
+**Owner decision (2026-10-18):** keep boss readiness at level 3 as measured. The owner judged a
+20-40 minute pre-boss grind excessive for a first session that "needs to be really addictive," and
+confirmed the current coincidence of specialization unlock and boss readiness (cycle 12) is the
+intended shape, not a gap to close. No `content.md`/`combat.md` hardening is wanted. This closes the
+open item from this task's original draft; `first-playable.md`'s 20-40 minute boss-readiness
+hypothesis is superseded by this decision and the corrected figure in `baseline.md` section 7 (no
+further action needed from this document).
 
 ## Effects of the no-change decision
 
