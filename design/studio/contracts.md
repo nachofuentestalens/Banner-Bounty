@@ -61,7 +61,7 @@ Every endpoint below lists its **complete** error set; omit none even when an er
 
 ### `GET /account/state`
 - Payload: none. Session-only; a read never grants rewards and never advances settlement (M1-01 invariant: reads are side-effect free).
-- Response: `{ ok: true, data: { heroes, inventory, partyOrder, expedition: { status, checkpointAt, frozenLoadout?, cyclesCompletedSinceStart }, gold, bossClaims, revision } }`.
+- Response: `{ ok: true, data: { heroes, inventory, partyOrder, expedition: { status, checkpointAt, frozenLoadout?, cyclesCompletedSinceStart }, gold, bossClaims, revision } }`. **M1-08 additive fields:** while `status="active"`, `expedition` also includes `startedAt`, `rulesVersion`, `wins`, and `losses`.
 - Errors: `unauthenticated`, `internal`.
 
 ### `PATCH /party/order`
@@ -75,41 +75,43 @@ Every endpoint below lists its **complete** error set; omit none even when an er
 - Ownership: hero and item must belong to account; item must not already be equipped by a different hero; item's definition slot must match `slot`.
 - Response: `{ ok: true, data: { hero }, revision }`.
 - Errors: `unauthenticated`, `validation` (wrong slot), `forbidden` (foreign hero/item), `not_found` (unknown heroId/itemInstanceId), `active_expedition` (expedition active — checked before `conflict`; see Revision & idempotency protocol), `conflict` (duplicate equip target / stale revision), `internal`.
+- **M1-08 decision — precondition order (equip/unequip):** ownership → `active_expedition` → `validation` (wrong slot/level/class) → `conflict` (item equipped by another hero). All run at protocol step 3, so none writes a receipt.
 
 ### `POST /equipment/unequip`
 - Payload: `{ requestId, expectedRevision, heroId, slot }`. Session-only.
 - Ownership/errors mirror equip: `unauthenticated`, `validation`, `forbidden`, `not_found`, `active_expedition`, `conflict`, `internal`.
+- **M1-08 decision:** unequipping at a full inventory (100 unequipped item instances already held) returns `validation` with `details.reason="inventory_full"`. The 100-item cap (see Arena, boss, and migration invariants) is an inventory invariant that applies here too — unequip can never create a 101st unequipped item.
 
 ### `POST /hero/specialization`
 - Payload: `{ requestId, expectedRevision, heroId, specializationId }`. Session-only.
 - Ownership: hero belongs to account, hero level ≥ 3, specializationId valid for hero's class.
 - Response: `{ ok: true, data: { hero }, revision }`.
-- Errors: `unauthenticated`, `validation` (level < 3, wrong class/specialization), `forbidden` (foreign hero), `active_expedition`, `conflict`, `internal`.
+- Errors: `unauthenticated`, `validation` (level < 3, wrong class/specialization), `forbidden` (unknown or foreign heroId), `active_expedition`, `conflict`, `internal`. **M1-08 decision:** this endpoint lists no `not_found` — an unknown `heroId` returns `forbidden`, matching `/party/order`'s treatment of unrecognized hero IDs, rather than distinguishing "doesn't exist" from "not yours."
 
 ### `POST /expedition/start`
 - Payload: `{ requestId, expectedRevision }`. Session-only.
 - Ownership: account has no active expedition; party order has exactly 3 distinct owned heroes.
 - Transaction: freezes current loadout (hero levels/specs/equipment at start), sets `status="active"`, `startedAt=checkpointAt=serverNow()`, `rulesVersion=currentRulesVersion`, `rngState=seed(accountId, startedAt)`, `subCycleRemainderMs=0`, `cyclesCompleted=0`.
-- Response: `{ ok: true, data: { expedition }, revision }`.
+- Response: `{ ok: true, data: { expedition: ExpeditionViewDTO }, revision }`. **M1-08 decision:** the `expedition` view in start/stop responses omits `rngState` and `seed` (a client must not be able to predict drops); this is `ExpeditionViewDTO` in `packages/contracts/src/index.ts`, not the raw `Expedition` entity.
 - Errors: `unauthenticated`, `validation` (party incomplete/duplicate), `active_expedition` (one already running), `conflict` (stale revision), `internal`.
 
 ### `POST /expedition/settle`
 - Payload: `{ requestId, expectedRevision }`. Session-only.
 - Ownership: an active expedition must belong to the account. Idempotent explicit settlement (see Offline settlement algorithm and Revision & idempotency protocol for the no-op case). Does not require stopping the expedition.
-- Response: `{ ok: true, data: { creditedCycles, elapsedMs, discardedMs, rewards: { xp, gold, items }, checkpointAt }, revision }`.
+- Response: `{ ok: true, data: SettlementResultDTO, revision }` where `SettlementResultDTO = { creditedCycles, elapsedMs, discardedMs, rewards: { xp, gold, items }, checkpointAt, outcomes: { wins, losses }, overflow: { convertedCount, convertedGold }, recentCycles: CycleLogEntryDTO[] }`. **M1-08 additive fields (not a breaking change to the original shape):** `outcomes` (cycle win/loss totals), `overflow` (count/gold of drops converted because inventory was at the 100 cap — needed by ui-spec.md's `inventory.overflow`), and `recentCycles` (the most recent cycles, **at most 10 entries**, each a `CycleLogEntryDTO = { cycle, result, rounds, gold, drop, converted }`). Types are in `packages/contracts/src/index.ts`.
 - Errors: `unauthenticated`, `validation` (no active expedition to settle — this is a precondition failure on this endpoint, not `active_expedition`, since `active_expedition` is reserved for endpoints that are blocked *by* an active expedition, not ones that require one), `conflict` (stale revision), `internal`.
 
 ### `POST /expedition/stop`
 - Payload: `{ requestId, expectedRevision }`. Session-only.
 - Transaction: settles all eligible complete cycles exactly like `settle`, discards the fractional remainder, sets `status="none"`, unfreezes loadout (equip/spec editable again).
-- Response: `{ ok: true, data: { finalSettlement: <same shape as settle's data>, expedition }, revision }`.
+- Response: `{ ok: true, data: { finalSettlement: SettlementResultDTO, expedition: ExpeditionViewDTO }, revision }` — `finalSettlement` carries the same M1-08 additive fields as `settle`'s response, and `expedition` omits `rngState`/`seed` like `start`'s response.
 - Errors: `unauthenticated`, `validation` (no active expedition), `conflict`, `internal`.
 
 ### `POST /boss/challenge`
 - Payload: `{ requestId, expectedRevision }`. Session-only.
 - Ownership: account; no entry cost; usable regardless of expedition status (manual challenge is outside expedition — architecture.md).
 - Transaction: server generates deterministic seed `seed(accountId, bossId, requestId)`, simulates boss battle via `packages/game`, writes `BattleReport`. If result is a win **and** `BossClaim.claimedAt is null`, atomically set `claimedAt=serverNow()` and grant the one-time reward in the same transaction as the report write; if already claimed, the win still returns a report but grants no reward (`rewardGranted: false`).
-- Response: `{ ok: true, data: { report, rewardGranted: boolean }, revision }`.
+- Response: `{ ok: true, data: BossChallengeResultDTO, revision }` where `BossChallengeResultDTO = { report, rewardGranted: boolean, reward: { xp, gold, items, overflowConvertedGold } | null }`. **M1-08 additive field:** `reward` describes what the one-time grant contained, and is `null` when nothing was granted (loss, or already claimed). Type is in `packages/contracts/src/index.ts`.
 - Errors: `unauthenticated`, `validation` (malformed request), `conflict` (stale revision), `internal`.
 
 ### `POST /arena/publish`
@@ -176,7 +178,7 @@ discardedMs = elapsedMs - cappedMs                    // time beyond cap is perm
 rawCycles = floor(cappedMs / 60_000)
 creditedCycles = min(rawCycles, 480)                  // 480-cycle batch cap
 simulate `creditedCycles` whole 60s cycles deterministically using rngState, advancing rngState each cycle
-checkpointAt_new = checkpointAt + creditedCycles * 60_000   // NOT serverNow(); unprocessed remainder inside the cap must stay available if rawCycles > 480
+checkpointAt_new = checkpointAt + discardedMs + creditedCycles * 60_000   // M1-08 decision: discardedMs must be re-added so capped/discarded time is never re-credited on a later settle (see worked examples 5/6); this is unchanged whenever discardedMs = 0 (e.g. the 61s remainder case), and is NOT serverNow()
 subCycleRemainderMs stays 0 in M1: a cycle is indivisible; partial seconds within an incomplete cycle are simply not yet checkpointed (checkpointAt only advances by whole cycles)
 persist checkpointAt_new, rngState, cyclesCompleted += creditedCycles, rewards(xp/gold/items)
 commit (same transaction as revision bump + idempotency receipt)
@@ -197,7 +199,7 @@ All examples start from a freshly started expedition with `checkpointAt = T0`.
 7. **Clock rollback.** Server/system clock briefly reports a time before `checkpointAt` (NTP correction, VM pause). `elapsedMs = serverNow() - checkpointAt < 0` → clamped to 0. `creditedCycles=0`, checkpoint unchanged. No negative reward, no crash. When the clock catches up, the next settle computes elapsed from the true current time vs. the unchanged checkpoint, so no time is double-lost — only genuinely-unprocessed real time is ever credited once the clock stabilizes.
 8. **Retry (same requestId).** Client calls `expedition/settle` with `requestId=R1`, it commits (checkpoint advances, revision n→n+1, receipt stored for R1). Network drops the response. Client retries with the same `R1`. Server finds the existing receipt, fingerprint matches (no payload beyond requestId for this endpoint, so always matches), returns the **stored** result (same credited cycles, same revision n+1) without re-settling. A second distinct call with a new `requestId=R2` at the same moment, before R1's effect is known, would see `expectedRevision` the client still holds as `n` (pre-R1) and get `conflict` with current revision `n+1` — forcing a refetch, preventing double-credit from two near-simultaneous distinct settle calls (A07).
 9. **Loadout freeze.** While `expedition.status="active"`, a **fresh** `equip`, `unequip`, or `specialization` request returns `active_expedition` at protocol step 3 (precondition check), before the revision check — regardless of whether `expectedRevision` is correct, since the precondition is checked first. A **retried** request with a `requestId` that already succeeded before the expedition started is unaffected by this lock: step 2's receipt lookup matches first and returns the original stored result without re-running step 3, per the canonical order above. `stop` first runs the full settlement transaction (example 2/3 logic) then, in the **same transaction**, flips `status="none"`, after which fresh equip/spec requests succeed normally. Reordering `partyOrder` is not blocked (M1-01 decision above) since it only affects future expedition starts, not the frozen `frozenLoadout` already in use mid-expedition.
-10. **Leveling mid-expedition.** Hero `level`/`xp` are not part of `frozenLoadout` and are not locked by an active expedition: settlement rewards (steps 5-6 of the protocol, applied by `expedition/settle`/`stop`) can raise a hero's `xp`/`level` fields, including crossing the level-3 specialization-unlock threshold, while the expedition is still running. What stays frozen is only `equipment` and `specializationId` — a hero that crosses level 3 mid-expedition becomes specialization-*eligible* but the `hero/specialization` call to actually pick one still returns `active_expedition` until the expedition is stopped, exactly like any other loadout-locked endpoint in example 9. `frozenLoadout` fixes *equipment and specialization choice* for the remainder of the current expedition regardless of any later level-up: a level gained mid-run can only unlock a spec choice usable once the expedition is stopped, never an immediate equip/spec change mid-run. Whether a level-up's other effects (e.g. base stat growth feeding into per-cycle combat) apply starting with the next simulated cycle of the *same* expedition, or only from the *next* expedition onward, is exactly the open question M1-02/M1-08 resolve numerically — this contract fixes only that `level`/`xp` are free to change mid-run while `equipment`/`specializationId` are not, and leaves the stat-timing choice to those tasks rather than asserting an answer here.
+10. **Leveling mid-expedition.** Hero `level`/`xp` are not part of `frozenLoadout` and are not locked by an active expedition: settlement rewards (steps 5-6 of the protocol, applied by `expedition/settle`/`stop`) can raise a hero's `xp`/`level` fields, including crossing the level-3 specialization-unlock threshold, while the expedition is still running. What stays frozen is only `equipment` and `specializationId` — a hero that crosses level 3 mid-expedition becomes specialization-*eligible* but the `hero/specialization` call to actually pick one still returns `active_expedition` until the expedition is stopped, exactly like any other loadout-locked endpoint in example 9. `frozenLoadout` fixes *equipment and specialization choice* for the remainder of the current expedition regardless of any later level-up: a level gained mid-run can only unlock a spec choice usable once the expedition is stopped, never an immediate equip/spec change mid-run. **M1-08 decision (resolves this open item): a level-up's other effects (base stat growth feeding into per-cycle combat) do NOT apply to the *same* expedition's remaining cycles.** Expedition combat uses the hero levels frozen at `/expedition/start` for the rest of that run, exactly like equipment/specialization; a level gained mid-run changes combat stats starting with the *next* expedition. Boss challenges and arena fights are outside an expedition and always use live (current) levels immediately, including mid-expedition. This also keeps partitioned settlement identical to continuous settlement (A06), since re-simulating a already-credited cycle at a new level would break that invariant.
 
 ### Atomic transaction boundaries
 
@@ -225,6 +227,6 @@ No circular package dependency exists in this graph: `content` and `contracts`' 
 ## Open items for downstream tasks (not blockers)
 
 - M1-02 supplies the exact combat formulas/stat tables that `packages/game`'s pure functions will implement against the state shapes frozen here; no DTO shape change is anticipated.
-- M1-02/M1-08 supply the exact XP curve and confirm whether a hero's effective combat stats scale immediately on a mid-expedition level-up or only take effect in the next expedition; this contract only fixes the shape (level/xp mutable mid-run, equipment/specialization frozen until stop — see Worked example 10) and defers the numeric/timing detail.
+- M1-02 supplies the exact XP curve. The mid-expedition level-up stat-timing question is resolved by the M1-08 decision recorded in Worked example 10: expedition combat uses levels frozen at start for the rest of that run; boss/arena use live levels immediately.
 - M1-05 must confirm `node:sqlite` supports the transaction pattern described (short transactions, prepared statements, revision recheck before commit) on the pinned Node version; if it cannot, report back here before M1-07 proceeds, since the idempotency/revision protocol assumes standard ACID transactions.
 - M1-07 implements session/auth and the ownership checks enumerated per endpoint above; the account-private vs public data split here is the authorization contract it must satisfy.
