@@ -146,24 +146,39 @@ settlement). This ordering is the same per-item-before-next-item resolution `con
 overflow paragraph requires ("the check and conversion happen inside the same reward-granting
 transaction... no separate pass that could run against a stale count").
 
-## 7. Expected pacing (hypotheses, pending simulation)
+## 7. Expected pacing (M1-13 revision: simulation-confirmed)
 
-These are hand-derived point estimates from the formulas above, assuming an unbroken string of won
-60-second cycles (no losses, consistent with section 2's note that losses are not expected in
-ordinary play). They are **not** a simulation result; M1-12/M1-13 must confirm them against the
-production engine (and across fixed seeds/builds, per `first-playable.md`) before they are treated
-as validated pacing.
+**Revised 2026-10-18 (M1-13), per `reports/engineering/M1-12.md` and the repeat run recorded in
+`design/game/reports/M1-13.md`.** The hand-derived estimates below (now struck through in spirit,
+kept for traceability) have been superseded by production-engine simulation: 48 seeds (M1-12) plus
+24 seeds on an independent build (M1-13), all swept across every specialization combination, with a
+reproducibility check passing on every run. No XP/gold/drop/overflow number in sections 1-6 changed
+as a result — see `design/game/economy/tuning.md` for the full decision record and why boss
+readiness is not an economy-table problem.
 
-| Milestone | Target (hypothesis, `first-playable.md`) | Hand-derived estimate |
-| --- | --- | --- |
-| First equipment drop | ~5 minutes | Expected cycles to first drop `= 1/0.25 = 4` cycles → **~4 minutes** |
-| Specialization unlock (level 3) | 10-15 minutes | Cumulative XP to level 3 is `45`; at `4` XP/cycle, `ceil(45/4) = 12` cycles → **~12 minutes** |
-| Boss readiness | 20-40 minutes | See below — **~23-38 minutes** (level 4-5 band) |
+| Milestone | Target (`first-playable.md`) | Simulated result (72 seeds, 2 builds) | Status |
+| --- | --- | --- | --- |
+| First equipment drop | ~5 minutes | min 1 / median 2.5-4 / max 9-25 cycles | within band |
+| Specialization unlock (level 3) | 10-15 minutes | exactly 12 cycles, every seed, both builds | within band |
+| Boss readiness | 20-40 minutes | exactly 12 cycles, every seed/spec/gear combo, both builds — coincident with specialization unlock, not a separate later milestone | **outside band (confirmed, not a hand-estimate artifact)** |
 
-**Boss readiness band.** Cumulative XP to level 4 is `90` (`ceil(90/4) = 23` cycles, ~23 minutes);
-to level 5 is `150` (`ceil(150/4) = 38` cycles, ~38 minutes). Both fall inside the 20-40 minute
-hypothesis window. A rough (hand-estimated, not simulated) feasibility check at level 5, unspecialized,
-unequipped, against the Tollkeeper (`content.md` section 4, HP220/ATK14/DEF8/SPD9):
+**Boss readiness is mechanically pinned to level 3, not a reward-table outcome.** The original
+hand-estimate below assumed level 4-5 was needed; simulation shows the Tollkeeper (`content.md`
+HP220/ATK14/DEF8/SPD9) is won the instant level 3 is reached, in every one of 72 swept
+seed/specialization/gear combinations across two independent builds, including the fully
+unequipped/unspecialized case (margin thin there: 2 of 3 heroes died while still winning). Moving
+this milestone later would require changing the Tollkeeper's stats (`content.md`) or the level-3
+gate (`combat.md`), not any number in this document — slowing XP/cycle to delay it would also delay
+specialization unlock, which is currently exactly on target, so that lever is rejected as a
+speculative fix for a different system. This is flagged to the owner as an open question, not acted
+on by this task.
+
+<details><summary>Superseded hand-derived estimate (pre-M1-12, kept for traceability only)</summary>
+
+Cumulative XP to level 4 is `90` (`ceil(90/4) = 23` cycles, ~23 minutes); to level 5 is `150`
+(`ceil(150/4) = 38` cycles, ~38 minutes). Both fall inside the 20-40 minute hypothesis window. A
+rough (hand-estimated, not simulated) feasibility check at level 5, unspecialized, unequipped,
+against the Tollkeeper:
 
 - Party default-action damage per round vs. boss `DEF8`: Vanguard `11-4=7`, Ranger `17-4=13`,
   Arcanist `18-4=14` → `34`/round if all three act. `ceil(220/34) = 7` rounds to clear, well under
@@ -172,12 +187,10 @@ unequipped, against the Tollkeeper (`content.md` section 4, HP220/ATK14/DEF8/SPD
   rounds (`14 - floor(DEF/2)` against whichever hero is targeted, `~9` each against a DEF10 front
   Vanguard) ≈ `71` total damage, well under the party's combined `60+48+44=152` HP.
 
-This suggests level 4-5 is a plausible readiness threshold, but it is a single hand-estimated trace
-(no equipment, no specialization, one fixed targeting assumption), not a swept simulation across
-seeds/builds/equipment states — exactly the gap M1-12/M1-13 are scoped to close. Equipment drops
-accumulated by level 4-5 (section 4: ~25-40% of cycles drop something, so roughly 6-15 items by
-cycle 23-38) would only make the boss easier than this unequipped estimate, not harder, so this
-band is treated as a conservative (not optimistic) estimate.
+This traced through level 5, not level 3, which is why it missed the actual (earlier) readiness
+floor: it did not test level 3 directly against the real combat engine.
+
+</details>
 
 ## 8. Alignment with `contracts.md` and `combat.md`
 
