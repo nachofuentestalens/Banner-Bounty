@@ -115,7 +115,7 @@ function HeroCard({
         {classCopyEntry.name} <span className="hero-level">Lv {hero.level}</span>
       </h2>
       <p className="hero-spec">
-        {specCopy ? `${specCopy.name} — ${specCopy.desc}` : isSpecUnlocked(hero) ? COPY.disabled_spec_locked_level : "Unspecialized until level 3"}
+        {specCopy ? `${specCopy.name} — ${specCopy.desc}` : isSpecUnlocked(hero) ? "Unspecialized — specialization available" : "Unspecialized until level 3"}
       </p>
       {/* Raw XP only: the next-level threshold is a server-owned formula
           (packages/game's xpToNext). Per architecture.md ("apps/web: ...

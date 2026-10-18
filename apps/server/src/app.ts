@@ -29,12 +29,15 @@ import { getOwnedReport } from "./services/battleReportService.js";
 import { chooseSpecialization, equip, unequip } from "./services/equipmentService.js";
 import { settleExpedition, startExpedition, stopExpedition } from "./services/expeditionService.js";
 import { challengeBoss } from "./services/bossService.js";
+import { registerStaticClient } from "./http/staticClient.js";
 import { SESSION_COOKIE_NAME, parseCookies, serializeSessionCookie, serializeClearedSessionCookie } from "./http/cookies.js";
 
 export interface BuildServerOptions {
   dbPath?: string;
   db?: DatabaseSync;
   clock?: Clock;
+  /** Built apps/web dist directory to serve; omitted in tests and `npm run dev` (Vite serves the UI). */
+  webDistDir?: string | undefined;
 }
 
 declare module "fastify" {
@@ -222,6 +225,8 @@ export function buildServer(options: BuildServerOptions = {}): FastifyInstance {
     const report = getOwnedReport(db, accountId, reportId);
     return { ok: true, data: { report } };
   });
+
+  registerStaticClient(app, options.webDistDir);
 
   app.addHook("onClose", async () => {
     db.close();

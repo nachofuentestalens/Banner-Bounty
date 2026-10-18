@@ -64,10 +64,15 @@ function parseArgs(argv) {
     json: null,
     quiet: false,
   };
-  for (const raw of argv) {
-    const m = /^--([^=]+)(?:=(.*))?$/.exec(raw);
+  // Accepts both `--seed=1` and the documented `--seed 1` form.
+  for (let i = 0; i < argv.length; i++) {
+    const m = /^--([^=]+)(?:=(.*))?$/.exec(argv[i]);
     if (!m) continue;
-    const [, key, value] = m;
+    const key = m[1];
+    let value = m[2];
+    if (value === undefined && key !== "quiet" && argv[i + 1] !== undefined && !argv[i + 1].startsWith("--")) {
+      value = argv[++i];
+    }
     switch (key) {
       case "seed":
         out.seed = Number(value);

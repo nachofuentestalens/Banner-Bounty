@@ -43,8 +43,14 @@ function SnapshotPreviewPanel({ snapshotId, controller, accountRevision, onRefre
   const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<ArenaChallengeResult | null>(null);
+  // useAccountState returns a new controller object on every state change
+  // (including the 5s poll); reading it through a ref keeps the load effect
+  // keyed on snapshotId only, so a refetch never wipes the shown result.
+  const controllerRef = useRef(controller);
+  controllerRef.current = controller;
 
   useEffect(() => {
+    const controller = controllerRef.current;
     panelRef.current?.focus();
     setLoading(true);
     setDetail(null);
@@ -56,13 +62,16 @@ function SnapshotPreviewPanel({ snapshotId, controller, accountRevision, onRefre
         else if (err instanceof NetworkError) controller.pushToast({ kind: "offline", title: "Reconnecting", desc: COPY.state_offline.desc });
       })
       .finally(() => setLoading(false));
-  }, [snapshotId, controller]);
+  }, [snapshotId]);
 
   async function challenge() {
     setPending(true);
     await runMutation(async () => {
       const { data } = await post<ArenaChallengeResult>("/arena/challenge", mutationPayload(accountRevision, { snapshotId }));
       setResult(data);
+      // A challenge bumps the account revision; refetch so the next mutation
+      // (on any screen) does not send a stale expectedRevision and hit 409.
+      await controller.refetch();
     }, controller);
     setPending(false);
   }

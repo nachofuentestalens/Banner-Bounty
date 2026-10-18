@@ -33,6 +33,7 @@ function ownerLabel(item: ItemInstance, heroes: Hero[]): string {
 function GearComparisonPanel({
   item,
   heroes,
+  inventory,
   expeditionActive,
   accountRevision,
   controller,
@@ -58,7 +59,9 @@ function GearComparisonPanel({
   const hero = heroes.find((h) => h.heroId === heroId);
   if (!hero) return null;
 
+  // hero.equipment holds item *instance* IDs; copy lookups need the definition.
   const currentItemId = hero.equipment[slot];
+  const currentItem = currentItemId ? inventory.find((i) => i.itemInstanceId === currentItemId) : undefined;
 
   async function confirm() {
     setPending(true);
@@ -90,11 +93,11 @@ function GearComparisonPanel({
         </thead>
         <tbody>
           <tr>
-            <td>{currentItemId ? composeItemName(currentItemId, null) : "Empty"}</td>
+            <td>{currentItem ? composeItemName(currentItem.definitionId, currentItem.affixId) : "Empty"}</td>
             <td>{composeItemName(item.definitionId, item.affixId)}</td>
           </tr>
           <tr>
-            <td>{currentItemId ? itemCopy(currentItemId).desc : "—"}</td>
+            <td>{currentItem ? itemCopy(currentItem.definitionId).desc : "—"}</td>
             <td>{itemCopy(item.definitionId).desc}</td>
           </tr>
         </tbody>

@@ -45,7 +45,8 @@ const npmCmd = isWindows ? "npm.cmd" : "npm";
 const children = [
   spawn(npmCmd, ["run", "dev", "--workspace=apps/server"], {
     stdio: "inherit",
-    env: process.env,
+    // Vite serves the UI in dev; keep the API from also serving a stale build.
+    env: { ...process.env, SERVE_WEB: "0" },
     shell: isWindows,
   }),
   spawn(npmCmd, ["run", "dev", "--workspace=apps/web"], {
