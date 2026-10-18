@@ -29,17 +29,16 @@ band for boss readiness is corrected to match validated simulation evidence (12 
 20-40 min / level-4-5 band), per the freeze rule's "changing a number here requires a recorded
 decision" — this is a correction of a previously-labeled hypothesis, not a reward-table change.
 
-**Owner guidance received in conversation (2026-10-18), not yet a logged decision.** In the
-dashboard conversation for this task the owner said: "yes, let's keep it at level 3, 20-40 minute
-grind might be a bit much, the first few hours need to be really addictive" — directionally
-confirming no `content.md`/`combat.md` hardening is wanted and that the current coincidence of
-specialization unlock and boss readiness (cycle 12) is acceptable, even desirable. **However,
-`design/decisions.md` — the authoritative, AgentDashboard-appended decision log per its own header
-and `design/studio/roles.md` — has no corresponding entry**, and this reply did not come through a
-logged `question` block/answer cycle. Treat this as provisional owner guidance, not a settled
-decision, until it is logged. The open item is re-raised as a formal question block in this task's
-latest reply specifically to obtain that log entry before any later task (M1-14+) treats "no
-boss/content hardening" as a settled premise.
+**Owner decision (2026-10-18), via logged question/answer cycle.** This task formally re-raised the
+open item as a `question` block ("should boss-readiness stay at level 3 as measured... or should
+the Tollkeeper/level-3 gate be hardened to restore the original 20-40 minute separation?"). The
+owner answered directly: "Yes, boss-readiness stay at level 3 as measured." Unlike the earlier
+conversational reply this task originally (incorrectly) treated as settled, this answer came
+through the formal question/answer channel that `design/decisions.md`'s own header says
+AgentDashboard uses to append decisions — the mechanism that produces a logged entry there. No
+`content.md`/`combat.md` hardening is wanted; the current coincidence of specialization unlock and
+boss readiness (cycle 12) is the intended first-session pacing, not a gap to close. This closes the
+open item.
 
 ## Effects of the no-change decision
 
