@@ -47,3 +47,13 @@ Yes, boss-readiness stay at level 3 as measured
 Proposed by Gameplay Programmer; accepted by the owner.
 
 M1-10 code review found apps/web computing hero effective stats client-side (computeHeroEffectiveStats) to satisfy ui-spec.md's Company/Inventory stat display, violating architecture.md's 'apps/web: ... No client-authoritative loot, XP, time, stats or victory' and creating an undeclared apps/web -> game/content/contracts package edge. The fix removes the client computation, but ui-spec.md's requirement then has no data source: GET /account/state's Hero shape never included computed stats. This proposal adds an additive, server-computed field so the UI can show real numbers again without recomputing them.
+
+## 2026-10-18 · Add server-computed effectiveStats to account/state and equip responses
+
+Gameplay Programmer asked:
+
+> Please accept and integrate the existing effectiveStats contract proposal into this task’s baseline so implementation can proceed.
+
+The owner answered:
+
+Accepted
