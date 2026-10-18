@@ -2,7 +2,14 @@ import crypto from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import type { EquipmentSlot, Hero, ItemInstance } from "@banner-and-bounty/contracts";
 import type { ClassId, SpecializationId } from "@banner-and-bounty/content";
-import { type ItemDropRoll, type LevelState, effectiveSpecialization } from "@banner-and-bounty/game";
+import {
+  type EffectiveStats,
+  type ItemDropRoll,
+  type LevelState,
+  computeHeroEffectiveStats,
+  effectiveSpecialization,
+  partyHasPathfinder,
+} from "@banner-and-bounty/game";
 import { AppError } from "../errors.js";
 import { AccountRepository } from "../repositories/accountRepository.js";
 import type { FrozenPartyMember } from "../repositories/expeditionRepository.js";
@@ -52,6 +59,41 @@ export function toFrozenMembers(db: DatabaseSync, heroes: readonly Hero[]): Froz
       equippedInstanceIds: { ...hero.equipment },
     };
   });
+}
+
+/**
+ * contracts.md M1-10 decision: each hero's `effectiveStats` for display
+ * endpoints (account/state, equip, unequip, specialization) includes the
+ * party Pathfinder SPD bonus only while the hero is one of the account's
+ * current 3 party members (combat.md 3.5 — the bonus is a battle-time
+ * effect on "the whole living party", so a benched hero never gets it).
+ */
+export function computeEffectiveStatsByHero(
+  db: DatabaseSync,
+  accountId: string,
+  heroes: readonly Hero[],
+): Map<string, EffectiveStats> {
+  const partyOrder = new PartyOrderRepository(db).find(accountId);
+  const partyIds = new Set<string>(partyOrder?.order ?? []);
+  const frozen = toFrozenMembers(db, heroes);
+  const hasPathfinder = partyHasPathfinder(frozen.filter((member) => partyIds.has(member.heroId)));
+
+  const result = new Map<string, EffectiveStats>();
+  for (const member of frozen) {
+    result.set(member.heroId, computeHeroEffectiveStats(member, hasPathfinder && partyIds.has(member.heroId)));
+  }
+  return result;
+}
+
+/** Augments one hero response with its server-computed `effectiveStats` (contracts.md M1-10 decision). */
+export function attachEffectiveStats<H extends Hero>(
+  db: DatabaseSync,
+  accountId: string,
+  hero: H,
+): H & { effectiveStats: EffectiveStats } {
+  const allHeroes = new HeroRepository(db).listByAccount(accountId);
+  const statsById = computeEffectiveStatsByHero(db, accountId, allHeroes);
+  return { ...hero, effectiveStats: statsById.get(hero.heroId)! };
 }
 
 export interface GrantedRewards {
