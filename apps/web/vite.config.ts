@@ -14,6 +14,15 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       "/health": `http://127.0.0.1:${apiPort}`,
+      "/dev": `http://127.0.0.1:${apiPort}`,
+      "/account": `http://127.0.0.1:${apiPort}`,
+      "/party": `http://127.0.0.1:${apiPort}`,
+      "/equipment": `http://127.0.0.1:${apiPort}`,
+      "/hero": `http://127.0.0.1:${apiPort}`,
+      "/expedition": `http://127.0.0.1:${apiPort}`,
+      "/boss": `http://127.0.0.1:${apiPort}`,
+      "/arena": `http://127.0.0.1:${apiPort}`,
+      "/battle-reports": `http://127.0.0.1:${apiPort}`,
     },
   },
   test: {
