@@ -21,3 +21,13 @@ Gameplay Programmer asked:
 The owner answered:
 
 I think the issue is the coordinator didn't account for dependencies, put this on hold and I'll get the agent dashboard to re-structure tasks so they can account for dependencies, and not only priorities
+
+## 2026-10-18 · [M1-13] Tune first-session pacing from simulation evidence
+
+Economy Designer asked:
+
+> M1-12/M1-13 confirm the Tollkeeper is winnable the instant level 3 is reached (12 cycles, ~12 minutes), coincident with specialization unlock — not in the 20-40 minute band first-playable.md hypothesized. Margin is thin if unequipped (2 of 3 heroes die while still winning). Is an early, high-stakes boss win right at the specialization-unlock moment acceptable for first playable, or should content.md's Tollkeeper stats (or combat.md's level-3 gate) be hardened to restore a real separation between the two milestones? This is a combat/content stat-balance change outside design/game/economy's scope, so I have not filed or implemented anything — flagging for your decision before any follow-up task is created.
+
+The owner answered:
+
+yes, let's keep it at level 3, 20-40 minute grind might be a bit much, the first few hours need to be really addictive
