@@ -4,10 +4,8 @@ import { runMutation } from "../runMutation.js";
 import type { AccountStateController } from "../useAccountState.js";
 import type { AccountState, Hero } from "../types.js";
 import { COPY, classCopy, composeItemName, specializationCopy } from "../copy.js";
-import { effectiveStatsFor } from "../stats.js";
 import { canChooseSpecialization, isExpeditionActive, isSpecUnlocked } from "../rules.js";
-import { xpToNext } from "@banner-and-bounty/game";
-import { getClassDefinition } from "@banner-and-bounty/content";
+import { CLASS_SPECIALIZATIONS } from "../frozenIds.js";
 
 function PrimaryActionBanner({ state, onGoExpedition }: { state: AccountState; onGoExpedition: () => void }) {
   let message: string;
@@ -38,7 +36,7 @@ function GearSlot({ hero, slot, inventory }: { hero: Hero; slot: "weapon" | "arm
 }
 
 function SpecializationPicker({ hero, expeditionActive, accountRevision, controller, refetch }: { hero: Hero; expeditionActive: boolean; accountRevision: number; controller: AccountStateController; refetch: () => void }) {
-  const classDef = getClassDefinition(hero.classId);
+  const specializations = CLASS_SPECIALIZATIONS[hero.classId];
   const [pending, setPending] = useState(false);
 
   if (!isSpecUnlocked(hero)) {
@@ -48,6 +46,7 @@ function SpecializationPicker({ hero, expeditionActive, accountRevision, control
   if (!canChooseSpecialization(hero, expeditionActive)) {
     return <p className="disabled-note">{COPY.disabled_spec_locked_expedition}</p>;
   }
+  if (!specializations) return null;
 
   async function choose(specializationId: string) {
     setPending(true);
@@ -60,7 +59,7 @@ function SpecializationPicker({ hero, expeditionActive, accountRevision, control
 
   return (
     <div className="spec-picker" role="group" aria-label="Choose specialization">
-      {classDef.specializations.map((specId) => {
+      {specializations.map((specId) => {
         const copy = specializationCopy(specId);
         return (
           <button type="button" key={specId} disabled={pending} onClick={() => choose(specId)}>
@@ -75,7 +74,6 @@ function SpecializationPicker({ hero, expeditionActive, accountRevision, control
 
 function HeroCard({
   hero,
-  heroes,
   inventory,
   slotIndex,
   partyOrder,
@@ -85,7 +83,6 @@ function HeroCard({
   refetch,
 }: {
   hero: Hero;
-  heroes: Hero[];
   inventory: AccountState["inventory"];
   slotIndex: number;
   partyOrder: [string, string, string];
@@ -96,8 +93,6 @@ function HeroCard({
 }) {
   const classCopyEntry = classCopy(hero.classId);
   const specCopy = hero.specializationId ? specializationCopy(hero.specializationId) : null;
-  const stats = effectiveStatsFor(hero, heroes, inventory);
-  const xpNeed = xpToNext(hero.level);
   const headingId = `hero-card-${hero.heroId}`;
   const [moving, setMoving] = useState(false);
 
@@ -122,24 +117,13 @@ function HeroCard({
       <p className="hero-spec">
         {specCopy ? `${specCopy.name} — ${specCopy.desc}` : isSpecUnlocked(hero) ? COPY.disabled_spec_locked_level : "Unspecialized until level 3"}
       </p>
-      <p className="hero-xp">
-        XP {hero.xp}
-        {xpNeed !== null ? ` / ${xpNeed}` : " (max level)"}
-      </p>
-      <dl className="hero-stats">
-        <div>
-          <dt>HP</dt>
-          <dd>{stats.maxHp}</dd>
-        </div>
-        <div>
-          <dt>ATK</dt>
-          <dd>{stats.atk}</dd>
-        </div>
-        <div>
-          <dt>DEF</dt>
-          <dd>{stats.def}</dd>
-        </div>
-      </dl>
+      {/* Raw XP only: the next-level threshold is a server-owned formula
+          (packages/game's xpToNext). Per architecture.md ("apps/web: ...
+          No client-authoritative loot, XP, time, stats or victory") this
+          screen shows only what the server reported, not a recomputed
+          target — see reports/engineering/M1-10.md for the contracts.md
+          proposal to add a server-supplied value here. */}
+      <p className="hero-xp">XP {hero.xp}</p>
       <ul className="hero-gear">
         <GearSlot hero={hero} slot="weapon" inventory={inventory} />
         <GearSlot hero={hero} slot="armor" inventory={inventory} />
@@ -198,7 +182,6 @@ export function CompanyScreen({ state, controller, onGoExpedition }: { state: Ac
             <HeroCard
               key={heroId}
               hero={hero}
-              heroes={state.heroes}
               inventory={state.inventory}
               slotIndex={index}
               partyOrder={order}
