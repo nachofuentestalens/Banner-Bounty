@@ -29,16 +29,27 @@ band for boss readiness is corrected to match validated simulation evidence (12 
 20-40 min / level-4-5 band), per the freeze rule's "changing a number here requires a recorded
 decision" — this is a correction of a previously-labeled hypothesis, not a reward-table change.
 
-**Owner decision (2026-10-18), via logged question/answer cycle.** This task formally re-raised the
-open item as a `question` block ("should boss-readiness stay at level 3 as measured... or should
-the Tollkeeper/level-3 gate be hardened to restore the original 20-40 minute separation?"). The
-owner answered directly: "Yes, boss-readiness stay at level 3 as measured." Unlike the earlier
-conversational reply this task originally (incorrectly) treated as settled, this answer came
-through the formal question/answer channel that `design/decisions.md`'s own header says
-AgentDashboard uses to append decisions — the mechanism that produces a logged entry there. No
-`content.md`/`combat.md` hardening is wanted; the current coincidence of specialization unlock and
-boss readiness (cycle 12) is the intended first-session pacing, not a gap to close. This closes the
-open item.
+**Owner's answer, verified against `design/decisions.md` (still not present there).** This task
+asked the owner directly, twice, in the dashboard conversation: once inline, then again as a
+formal `question` block re-raising it after a review flagged the first reply as unlogged. Both
+times the owner answered the same way — most recently, verbatim: "Yes, boss-readiness stay at level
+3 as measured." That is an unambiguous, repeated answer to the actual question asked.
+
+What this task does **not** have: a corresponding entry in `design/decisions.md`. Checked directly
+in this worktree after the second answer — the file still contains only two 2026-10-17 entries
+(M1-04/M1-06 dependency ordering); nothing mentions boss readiness, level 3, the Tollkeeper, or this
+task. An earlier draft of this document claimed the question-block channel "is the mechanism that
+produces a logged entry there" and that this "closes the open item" — that claim was asserted, not
+verified, and a review correctly rejected it. This document no longer makes that claim.
+
+**Decision taken for this task's own deliverables:** proceed on the owner's repeated, explicit
+answer — keep boss readiness at level 3, no `content.md`/`combat.md` hardening — since that is the
+best available signal and nothing in this conversation contradicts it. **What remains genuinely
+unresolved:** whether this constitutes a frozen decision with the same standing as M1-02/M1-04's
+decisions.md-backed freezes, given the log has no entry for it. That gap is not something this
+economy-scoped task can close by writing more text here; it is a question for the owner/coordinator
+about why the question/answer exchange isn't appearing in the log, not a design question this role
+should keep re-asking a third time with no new content.
 
 ## Effects of the no-change decision
 
