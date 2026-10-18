@@ -7,6 +7,9 @@ import {
   NoPayloadMutationRequestSchema,
   ArenaChallengeRequestSchema,
   ArenaSnapshotsQuerySchema,
+  EquipRequestSchema,
+  UnequipRequestSchema,
+  SpecializationRequestSchema,
   type Account,
 } from "@banner-and-bounty/contracts";
 import { MAX_BODY_BYTES } from "@banner-and-bounty/contracts";
@@ -23,6 +26,9 @@ import { buildAccountState } from "./services/accountStateService.js";
 import { applyPartyOrder } from "./services/partyOrderService.js";
 import { publishSnapshot, listSnapshotSummaries, getSnapshotDetail, challenge } from "./services/arenaService.js";
 import { getOwnedReport } from "./services/battleReportService.js";
+import { chooseSpecialization, equip, unequip } from "./services/equipmentService.js";
+import { settleExpedition, startExpedition, stopExpedition } from "./services/expeditionService.js";
+import { challengeBoss } from "./services/bossService.js";
 import { SESSION_COOKIE_NAME, parseCookies, serializeSessionCookie, serializeClearedSessionCookie } from "./http/cookies.js";
 
 export interface BuildServerOptions {
@@ -132,6 +138,50 @@ export function buildServer(options: BuildServerOptions = {}): FastifyInstance {
     const accountId = requireSession(request);
     const body = PartyOrderRequestSchema.parse(request.body);
     const { result, revision } = applyPartyOrder(db, accountId, body);
+    return { ok: true, data: result, revision };
+  });
+
+  // Loadout, expedition and boss (M1-08). Every route is a runMutation
+  // service call; the route only resolves the session and parses the body.
+  app.post("/equipment/equip", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = equip(db, accountId, EquipRequestSchema.parse(request.body));
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/equipment/unequip", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = unequip(db, accountId, UnequipRequestSchema.parse(request.body));
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/hero/specialization", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = chooseSpecialization(db, accountId, SpecializationRequestSchema.parse(request.body));
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/expedition/start", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = startExpedition(db, accountId, NoPayloadMutationRequestSchema.parse(request.body), clock);
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/expedition/settle", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = settleExpedition(db, accountId, NoPayloadMutationRequestSchema.parse(request.body), clock);
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/expedition/stop", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = stopExpedition(db, accountId, NoPayloadMutationRequestSchema.parse(request.body), clock);
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/boss/challenge", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = challengeBoss(db, accountId, NoPayloadMutationRequestSchema.parse(request.body), clock);
     return { ok: true, data: result, revision };
   });
 

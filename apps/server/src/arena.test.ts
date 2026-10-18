@@ -215,6 +215,8 @@ describe("arena: publish, list, challenge, and battle reports (M1-11)", () => {
   it("publishing requires a complete 3-hero party", async () => {
     const db = openDatabase(":memory:");
     const app = buildServer({ db });
+    // Accounts are seeded with a starter party (M1-08); remove it to model a save without one.
+    db.prepare("DELETE FROM party_orders WHERE accountId = ?").run(SEED_ACCOUNT_A_ID);
     const cookieA = await selectSlot(app, "A"); // no party order set
     const publish = await app.inject({
       method: "POST",

@@ -29,7 +29,7 @@ describe("GET /health", () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       ok: true,
-      data: { status: "ok", schemaVersion: 2 },
+      data: { status: "ok", schemaVersion: 3 },
     });
     await app.close();
   });
@@ -165,7 +165,11 @@ describe("ownership enforcement across accounts", () => {
 
     const cookieB = await selectSlot(app, "B");
     const state = await app.inject({ method: "GET", url: "/account/state", headers: { cookie: cookieB } });
-    expect(state.json().data.heroes).toEqual([]); // B's own (empty) roster, never A's
+    // B's own starter roster only, never A's heroes.
+    const bHeroes: Array<{ heroId: string; accountId: string }> = state.json().data.heroes;
+    expect(bHeroes).toHaveLength(3);
+    expect(bHeroes.every((h) => h.accountId === SEED_ACCOUNT_B_ID)).toBe(true);
+    expect(bHeroes.some((h) => h.heroId === heroA1)).toBe(false);
 
     const mutate = await app.inject({
       method: "PATCH",

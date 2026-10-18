@@ -19,6 +19,12 @@ export class PartyOrderRepository {
     return { accountId: row.accountId, order: [row.hero1, row.hero2, row.hero3] };
   }
 
+  insertIfMissing(accountId: string, order: [HeroId, HeroId, HeroId]): void {
+    this.db
+      .prepare("INSERT OR IGNORE INTO party_orders (accountId, hero1, hero2, hero3) VALUES (?, ?, ?, ?)")
+      .run(accountId, order[0], order[1], order[2]);
+  }
+
   upsert(accountId: string, order: [HeroId, HeroId, HeroId]): void {
     this.db
       .prepare(

@@ -7,5 +7,6 @@ export * from "./xp.js";
 export * from "./stats.js";
 export * from "./combat.js";
 export * from "./rewards.js";
+export * from "./expedition.js";
 
 export const gamePackageVersion = "0.2.0" as const;

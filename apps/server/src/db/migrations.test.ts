@@ -29,7 +29,7 @@ describe("migrations", () => {
     const db = openDatabase(":memory:");
     expect(currentSchemaVersion(db)).toBe(0);
     runMigrations(db);
-    expect(currentSchemaVersion(db)).toBe(2);
+    expect(currentSchemaVersion(db)).toBe(3);
     db.close();
   });
 
@@ -38,8 +38,28 @@ describe("migrations", () => {
     runMigrations(db);
     runMigrations(db);
     const rows = db.prepare("SELECT * FROM schema_version").all();
-    expect(rows).toHaveLength(2);
+    expect(rows).toHaveLength(3);
     db.close();
+  });
+
+  it("upgrades an existing version-2 save to version 3 without losing accounts or heroes", () => {
+    const dbPath = tempDbPath("upgrade");
+    openedPaths.push(dbPath);
+
+    const v2 = openDatabase(dbPath);
+    runMigrations(v2, 2);
+    v2.prepare("INSERT INTO accounts (accountId, displayName, createdAt, slot, revision) VALUES ('acc', 'Old Save', 't', 'A', 7)").run();
+    v2.prepare("INSERT INTO heroes (heroId, accountId, classId, level, xp) VALUES ('h1', 'acc', 'class_ranger', 4, 12)").run();
+    expect(currentSchemaVersion(v2)).toBe(2);
+    v2.close();
+
+    const v3 = openDatabase(dbPath);
+    runMigrations(v3);
+    expect(currentSchemaVersion(v3)).toBe(3);
+    expect(v3.prepare("SELECT revision, gold FROM accounts WHERE accountId = 'acc'").get()).toEqual({ revision: 7, gold: 0 });
+    expect(v3.prepare("SELECT level, xp FROM heroes WHERE heroId = 'h1'").get()).toEqual({ level: 4, xp: 12 });
+    expect(v3.prepare("SELECT COUNT(*) AS n FROM expeditions").get()).toEqual({ n: 0 });
+    v3.close();
   });
 
   it("reopening an existing save file preserves applied schema and seeded data", () => {
@@ -54,7 +74,7 @@ describe("migrations", () => {
 
     const second = openDatabase(dbPath);
     runMigrations(second); // no-op; must not fail or re-create tables
-    expect(currentSchemaVersion(second)).toBe(2);
+    expect(currentSchemaVersion(second)).toBe(3);
     const accountIdAfter = new AccountRepository(second).findBySlot("A")?.accountId;
     expect(accountIdAfter).toBe(accountIdBefore);
     second.close();

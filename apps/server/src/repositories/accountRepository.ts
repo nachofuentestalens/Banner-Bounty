@@ -45,6 +45,18 @@ export class AccountRepository {
     );
   }
 
+  getGold(accountId: string): number {
+    const row = this.db.prepare("SELECT gold FROM accounts WHERE accountId = ?").get(accountId) as
+      | { gold: number }
+      | undefined;
+    if (!row) throw new Error(`unknown accountId ${accountId}`);
+    return row.gold;
+  }
+
+  addGold(accountId: string, amount: number): void {
+    this.db.prepare("UPDATE accounts SET gold = gold + ? WHERE accountId = ?").run(amount, accountId);
+  }
+
   insertSeed(accountId: string, displayName: string, slot: AccountSlot, createdAt: string): void {
     this.db
       .prepare(

@@ -95,6 +95,49 @@ const MIGRATIONS: Migration[] = [
       CREATE INDEX idx_battle_reports_accountId ON battle_reports(accountId);
     `,
   },
+  {
+    // M1-08: gold, item instances, expedition state and boss claims.
+    // heroes.equipment* stays the authoritative slot record; items.equippedBy
+    // mirrors it and both are written in the same transaction. seq gives the
+    // inventory a stable creation order.
+    version: 3,
+    sql: `
+      ALTER TABLE accounts ADD COLUMN gold INTEGER NOT NULL DEFAULT 0 CHECK (gold >= 0);
+
+      CREATE TABLE item_instances (
+        seq INTEGER PRIMARY KEY AUTOINCREMENT,
+        itemInstanceId TEXT NOT NULL UNIQUE,
+        accountId TEXT NOT NULL REFERENCES accounts(accountId),
+        definitionId TEXT NOT NULL,
+        affixId TEXT,
+        equippedBy TEXT REFERENCES heroes(heroId),
+        createdAt TEXT NOT NULL
+      );
+      CREATE INDEX idx_item_instances_account ON item_instances(accountId, equippedBy);
+
+      CREATE TABLE expeditions (
+        accountId TEXT PRIMARY KEY REFERENCES accounts(accountId),
+        status TEXT NOT NULL CHECK (status IN ('none', 'active')),
+        startedAt TEXT,
+        checkpointAt TEXT,
+        subCycleRemainderMs INTEGER NOT NULL DEFAULT 0,
+        frozenLoadout TEXT,
+        rulesVersion INTEGER,
+        seed INTEGER,
+        rngState INTEGER,
+        cyclesCompleted INTEGER NOT NULL DEFAULT 0,
+        wins INTEGER NOT NULL DEFAULT 0,
+        losses INTEGER NOT NULL DEFAULT 0
+      );
+
+      CREATE TABLE boss_claims (
+        accountId TEXT NOT NULL REFERENCES accounts(accountId),
+        bossId TEXT NOT NULL,
+        claimedAt TEXT,
+        PRIMARY KEY (accountId, bossId)
+      );
+    `,
+  },
 ];
 
 function schemaVersionTableExists(db: DatabaseSync): boolean {
@@ -104,7 +147,8 @@ function schemaVersionTableExists(db: DatabaseSync): boolean {
   return row !== undefined;
 }
 
-export function runMigrations(db: DatabaseSync): void {
+/** `upToVersion` exists so tests can build an older save and then upgrade it. */
+export function runMigrations(db: DatabaseSync, upToVersion = Number.POSITIVE_INFINITY): void {
   const applied = schemaVersionTableExists(db)
     ? new Set(
         (db.prepare("SELECT version FROM schema_version").all() as Array<{ version: number }>)
@@ -113,7 +157,7 @@ export function runMigrations(db: DatabaseSync): void {
     : new Set<number>();
 
   for (const migration of MIGRATIONS) {
-    if (applied.has(migration.version)) continue;
+    if (applied.has(migration.version) || migration.version > upToVersion) continue;
     db.exec("BEGIN IMMEDIATE;");
     try {
       db.exec(migration.sql);

@@ -172,6 +172,60 @@ export interface SchemaVersionRow {
 }
 
 // ---------------------------------------------------------------------------
+// M1-08 response DTOs (expedition, settlement, boss). Fields marked
+// "additive" extend the contracts.md shapes without changing existing ones.
+// ---------------------------------------------------------------------------
+
+export interface FrozenPartyMemberDTO {
+  heroId: HeroId;
+  classId: string;
+  level: number;
+  specializationId: string | null;
+  equipment: Record<EquipmentSlot, { definitionId: string; affixId: string | null } | null>;
+  equippedInstanceIds: HeroEquipment;
+}
+
+/** Expedition entity as returned by start/stop; rngState and seed stay server-private. */
+export interface ExpeditionViewDTO {
+  status: ExpeditionStatus;
+  startedAt: string | null;
+  checkpointAt: string | null;
+  subCycleRemainderMs: number;
+  frozenLoadout: FrozenPartyMemberDTO[] | null;
+  rulesVersion: number | null;
+  cyclesCompleted: number;
+  wins: number; // additive
+  losses: number; // additive
+}
+
+export interface CycleLogEntryDTO {
+  cycle: number;
+  result: "win" | "loss" | "draw";
+  rounds: number;
+  gold: number;
+  drop: { definitionId: string; affixId: string | null } | null;
+  converted: boolean;
+}
+
+export interface SettlementResultDTO {
+  creditedCycles: number;
+  elapsedMs: number;
+  discardedMs: number;
+  rewards: { xp: number; gold: number; items: ItemInstance[] };
+  checkpointAt: string;
+  outcomes: { wins: number; losses: number }; // additive
+  overflow: { convertedCount: number; convertedGold: number }; // additive
+  recentCycles: CycleLogEntryDTO[]; // additive, at most 10 entries
+}
+
+export interface BossChallengeResultDTO {
+  report: BattleReport & { kind: "boss" };
+  rewardGranted: boolean;
+  /** Additive: what the one-time grant contained, or null when nothing was granted. */
+  reward: { xp: number; gold: number; items: ItemInstance[]; overflowConvertedGold: number } | null;
+}
+
+// ---------------------------------------------------------------------------
 // Endpoint request schemas (payload validation only; implemented in
 // apps/server by the task that owns each endpoint's service logic)
 // ---------------------------------------------------------------------------

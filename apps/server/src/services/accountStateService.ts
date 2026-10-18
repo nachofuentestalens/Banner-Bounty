@@ -1,30 +1,41 @@
 import type { DatabaseSync } from "node:sqlite";
 import { AccountRepository } from "../repositories/accountRepository.js";
+import { BossClaimRepository } from "../repositories/bossClaimRepository.js";
+import { ExpeditionRepository } from "../repositories/expeditionRepository.js";
 import { HeroRepository } from "../repositories/heroRepository.js";
+import { ItemRepository } from "../repositories/itemRepository.js";
 import { PartyOrderRepository } from "../repositories/partyOrderRepository.js";
 
-// GET /account/state. Expedition/inventory/gold/bossClaims fields are fixed
-// M1-01 defaults until M1-08 implements expedition/equipment/reward storage
-// (deliberately out of this task's scope); heroes/partyOrder are real, since
-// this task owns the hero/party tables used to demonstrate ownership checks.
+// GET /account/state. Read-only: never settles, grants or advances anything
+// (contracts.md M1-01 invariant). Settlement happens only via
+// /expedition/settle or /expedition/stop.
 export function buildAccountState(db: DatabaseSync, accountId: string) {
   const accounts = new AccountRepository(db);
-  const heroes = new HeroRepository(db).listByAccount(accountId);
-  const partyOrder = new PartyOrderRepository(db).find(accountId);
+  const expeditionRow = new ExpeditionRepository(db).find(accountId);
   const revision = accounts.getRevision(accountId);
+
+  const expedition =
+    expeditionRow?.status === "active"
+      ? {
+          status: "active" as const,
+          startedAt: expeditionRow.startedAt,
+          checkpointAt: expeditionRow.checkpointAt,
+          frozenLoadout: expeditionRow.frozenLoadout,
+          rulesVersion: expeditionRow.rulesVersion,
+          cyclesCompletedSinceStart: expeditionRow.cyclesCompleted,
+          wins: expeditionRow.wins,
+          losses: expeditionRow.losses,
+        }
+      : { status: "none" as const, checkpointAt: null, cyclesCompletedSinceStart: 0 };
 
   return {
     data: {
-      heroes,
-      inventory: [] as unknown[],
-      partyOrder,
-      expedition: {
-        status: "none" as const,
-        checkpointAt: null,
-        cyclesCompletedSinceStart: 0,
-      },
-      gold: 0,
-      bossClaims: [] as unknown[],
+      heroes: new HeroRepository(db).listByAccount(accountId),
+      inventory: new ItemRepository(db).listByAccount(accountId),
+      partyOrder: new PartyOrderRepository(db).find(accountId),
+      expedition,
+      gold: accounts.getGold(accountId),
+      bossClaims: new BossClaimRepository(db).listByAccount(accountId),
       revision,
     },
     revision,

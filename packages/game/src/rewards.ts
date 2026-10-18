@@ -59,12 +59,14 @@ export function overflowGoldValue(hasAffix: boolean): number {
   return hasAffix ? 9 : 5;
 }
 
-const INVENTORY_CAP = 100;
+export const INVENTORY_CAP = 100;
 
 export interface CycleRewardResult {
   readonly xpPerParticipant: number;
   readonly gold: number;
   readonly itemInstance: ItemDropRoll | null;
+  /** The rolled drop that was converted to gold because the inventory was full, if any. */
+  readonly overflowConverted: ItemDropRoll | null;
   readonly unequippedCountAfter: number;
   readonly nextRngState: RngState;
 }
@@ -82,24 +84,27 @@ export function resolveExpeditionCycleReward(rngState: RngState, unequippedCount
 
   let gold = 10;
   let itemInstance: ItemDropRoll | null = null;
+  let overflowConverted: ItemDropRoll | null = null;
   let unequippedCountAfter = unequippedCountBefore;
 
   if (drop) {
     if (unequippedCountBefore >= INVENTORY_CAP) {
       gold += overflowGoldValue(drop.affixId !== null);
+      overflowConverted = drop;
     } else {
       itemInstance = drop;
       unequippedCountAfter = unequippedCountBefore + 1;
     }
   }
 
-  return { xpPerParticipant: 4, gold, itemInstance, unequippedCountAfter, nextRngState };
+  return { xpPerParticipant: 4, gold, itemInstance, overflowConverted, unequippedCountAfter, nextRngState };
 }
 
 export interface BossRewardResult {
   readonly xpPerParticipant: number;
   readonly gold: number;
   readonly itemInstance: ItemDropRoll | null;
+  readonly overflowConverted: ItemDropRoll | null;
   readonly unequippedCountAfter: number;
   readonly nextRngState: RngState;
 }
@@ -116,14 +121,16 @@ export function resolveBossFirstClearReward(rngState: RngState, unequippedCountB
 
   let gold = 150;
   let itemInstance: ItemDropRoll | null = drop;
+  let overflowConverted: ItemDropRoll | null = null;
   let unequippedCountAfter = unequippedCountBefore;
 
   if (unequippedCountBefore >= INVENTORY_CAP) {
     gold += overflowGoldValue(true);
+    overflowConverted = drop;
     itemInstance = null;
   } else {
     unequippedCountAfter = unequippedCountBefore + 1;
   }
 
-  return { xpPerParticipant: 40, gold, itemInstance, unequippedCountAfter, nextRngState };
+  return { xpPerParticipant: 40, gold, itemInstance, overflowConverted, unequippedCountAfter, nextRngState };
 }

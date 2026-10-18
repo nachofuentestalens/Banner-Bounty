@@ -6,13 +6,12 @@ import {
   computePartyEffectiveStats,
   effectiveSpecialization,
   simulateArenaBattle,
+  toHeroCombatants,
   type HeroCombatantInput,
-  type HeroLoadoutInput,
 } from "@banner-and-bounty/game";
 import { AppError } from "../errors.js";
 import type { Clock } from "../clock.js";
-import { HeroRepository } from "../repositories/heroRepository.js";
-import { PartyOrderRepository } from "../repositories/partyOrderRepository.js";
+import { loadLiveParty, toFrozenMembers } from "./partyLoadout.js";
 import {
   SnapshotRepository,
   type SnapshotPartyEntry,
@@ -23,54 +22,10 @@ import { BattleReportRepository } from "../repositories/battleReportRepository.j
 import { runMutation } from "../mutation.js";
 import { CURRENT_RULES_VERSION } from "../rulesVersion.js";
 
-// M1-10 (item instances/equipment) has not landed: no table backs
-// hero.equipment.* yet and no endpoint ever sets it, so every hero's
-// equipment is unconditionally empty in this build. Arena stats therefore
-// only reflect class/level/specialization until M1-10 lands; documented as
-// a known limitation in this task's evidence report, not silently assumed.
-const EMPTY_EQUIPMENT = { weapon: null, armor: null, trinket: null } as const;
-
-function toLoadoutInput(hero: Hero): HeroLoadoutInput {
-  return {
-    classId: hero.classId as ClassId,
-    level: hero.level,
-    specializationId: hero.specializationId as SpecializationId | null,
-    equipment: EMPTY_EQUIPMENT,
-  };
-}
-
-/** Loads the account's current party in order, or throws `validation` if incomplete/foreign. */
-function loadLiveParty(db: DatabaseSync, accountId: string): { heroes: Hero[] } {
-  const order = new PartyOrderRepository(db).find(accountId);
-  if (!order) {
-    throw new AppError("validation", "party order is not set; a complete 3-hero party is required");
-  }
-  const heroRepo = new HeroRepository(db);
-  const byId = new Map(heroRepo.listByAccount(accountId).map((h) => [h.heroId, h]));
-  const heroes = order.order.map((heroId) => {
-    const hero = byId.get(heroId);
-    if (!hero) {
-      throw new AppError("validation", `party order references unknown/foreign heroId ${heroId}`);
-    }
-    return hero;
-  });
-  return { heroes };
-}
-
-function toCombatants(heroesOrdered: readonly Hero[]): HeroCombatantInput[] {
-  const loadouts = heroesOrdered.map(toLoadoutInput);
-  const stats = computePartyEffectiveStats(loadouts);
-  return heroesOrdered.map((hero, i) => ({
-    id: hero.heroId,
-    side: "hero" as const,
-    position: i,
-    classId: hero.classId as ClassId,
-    specializationId: effectiveSpecialization({
-      level: hero.level,
-      specializationId: hero.specializationId as SpecializationId | null,
-    }),
-    stats: stats[i]!,
-  }));
+// Live party stats include equipped items (M1-08 added item instances);
+// loadLiveParty/toFrozenMembers are shared with expedition start and boss.
+function toCombatants(db: DatabaseSync, heroesOrdered: readonly Hero[]): HeroCombatantInput[] {
+  return toHeroCombatants(toFrozenMembers(db, heroesOrdered));
 }
 
 function snapshotToCombatants(snapshot: SnapshotRow): HeroCombatantInput[] {
@@ -125,9 +80,8 @@ export function publishSnapshot(
         loadLiveParty(db, accountId);
       },
       apply: () => {
-        const { heroes: ordered } = loadLiveParty(db, accountId);
-        const loadouts = ordered.map(toLoadoutInput);
-        const stats = computePartyEffectiveStats(loadouts);
+        const ordered = loadLiveParty(db, accountId);
+        const stats = computePartyEffectiveStats(toFrozenMembers(db, ordered));
 
         const snapshotId = crypto.randomUUID();
         const publishedAt = clock.now().toISOString();
@@ -250,11 +204,11 @@ export function challenge(
         }
       },
       apply: () => {
-        const { heroes: ordered } = loadLiveParty(db, accountId);
+        const ordered = loadLiveParty(db, accountId);
         const snapshot = snapshots.findById(request.snapshotId);
         if (!snapshot) throw new AppError("not_found", `snapshot ${request.snapshotId} not found`);
 
-        const challengerCombatants = toCombatants(ordered);
+        const challengerCombatants = toCombatants(db, ordered);
         const opponentCombatants = snapshotToCombatants(snapshot);
         const battle = simulateArenaBattle(challengerCombatants, opponentCombatants);
 

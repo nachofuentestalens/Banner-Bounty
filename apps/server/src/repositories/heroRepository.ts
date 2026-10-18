@@ -1,5 +1,11 @@
 import type { DatabaseSync } from "node:sqlite";
-import type { Hero } from "@banner-and-bounty/contracts";
+import type { EquipmentSlot, Hero } from "@banner-and-bounty/contracts";
+
+const SLOT_COLUMN: Record<EquipmentSlot, string> = {
+  weapon: "equipmentWeapon",
+  armor: "equipmentArmor",
+  trinket: "equipmentTrinket",
+};
 
 interface HeroRow {
   heroId: string;
@@ -34,9 +40,34 @@ export class HeroRepository {
 
   listByAccount(accountId: string): Hero[] {
     const rows = this.db
-      .prepare("SELECT * FROM heroes WHERE accountId = ?")
+      .prepare("SELECT * FROM heroes WHERE accountId = ? ORDER BY rowid")
       .all(accountId) as unknown as HeroRow[];
     return rows.map(toHero);
+  }
+
+  /** Any account's hero; callers compare accountId to tell not_found from forbidden. */
+  findById(heroId: string): Hero | null {
+    const row = this.db.prepare("SELECT * FROM heroes WHERE heroId = ?").get(heroId) as HeroRow | undefined;
+    return row ? toHero(row) : null;
+  }
+
+  setEquipmentSlot(heroId: string, slot: EquipmentSlot, itemInstanceId: string | null): void {
+    this.db.prepare(`UPDATE heroes SET ${SLOT_COLUMN[slot]} = ? WHERE heroId = ?`).run(itemInstanceId, heroId);
+  }
+
+  setSpecialization(heroId: string, specializationId: string | null): void {
+    this.db.prepare("UPDATE heroes SET specializationId = ? WHERE heroId = ?").run(specializationId, heroId);
+  }
+
+  setLevelXp(heroId: string, level: number, xp: number): void {
+    this.db.prepare("UPDATE heroes SET level = ?, xp = ? WHERE heroId = ?").run(level, xp, heroId);
+  }
+
+  /** Starter roster seeding: idempotent on a fixed heroId. */
+  insertIfMissing(hero: Pick<Hero, "heroId" | "accountId" | "classId">): void {
+    this.db
+      .prepare("INSERT OR IGNORE INTO heroes (heroId, accountId, classId, level, xp) VALUES (?, ?, ?, 1, 0)")
+      .run(hero.heroId, hero.accountId, hero.classId);
   }
 
   /** Ownership check: the hero must exist and belong to the given account. */
