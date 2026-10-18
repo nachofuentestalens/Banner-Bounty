@@ -18,7 +18,7 @@
     "build": "npm run build --workspace=packages/contracts --workspace=packages/game --workspace=packages/content --workspace=apps/server --workspace=apps/web",
     "validate": "npm run typecheck && npm run test && npm run build",
     "test:e2e": "node scripts/not-implemented.mjs test:e2e \"owned by tests/e2e (QA), not yet implemented\"",
-    "simulate": "node scripts/not-implemented.mjs simulate \"added in M1-12, real production rules only\""
+    "simulate": "node scripts/simulate.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
