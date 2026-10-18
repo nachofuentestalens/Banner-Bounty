@@ -4,6 +4,9 @@ import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest }
 import {
   PartyOrderRequestSchema,
   SelectSessionRequestSchema,
+  NoPayloadMutationRequestSchema,
+  ArenaChallengeRequestSchema,
+  ArenaSnapshotsQuerySchema,
   type Account,
 } from "@banner-and-bounty/contracts";
 import { MAX_BODY_BYTES } from "@banner-and-bounty/contracts";
@@ -18,6 +21,8 @@ import { SessionRepository } from "./repositories/sessionRepository.js";
 import { SessionService } from "./services/sessionService.js";
 import { buildAccountState } from "./services/accountStateService.js";
 import { applyPartyOrder } from "./services/partyOrderService.js";
+import { publishSnapshot, listSnapshotSummaries, getSnapshotDetail, challenge } from "./services/arenaService.js";
+import { getOwnedReport } from "./services/battleReportService.js";
 import { SESSION_COOKIE_NAME, parseCookies, serializeSessionCookie, serializeClearedSessionCookie } from "./http/cookies.js";
 
 export interface BuildServerOptions {
@@ -128,6 +133,44 @@ export function buildServer(options: BuildServerOptions = {}): FastifyInstance {
     const body = PartyOrderRequestSchema.parse(request.body);
     const { result, revision } = applyPartyOrder(db, accountId, body);
     return { ok: true, data: result, revision };
+  });
+
+  // Arena (design/studio/contracts.md "Arena, boss, and migration
+  // invariants"; design/game/combat.md). Publish/challenge are session-only
+  // mutations; the two snapshot reads are public, since previewing a
+  // published opponent before challenging must work without the defender
+  // online.
+  app.post("/arena/publish", async (request) => {
+    const accountId = requireSession(request);
+    const body = NoPayloadMutationRequestSchema.parse(request.body);
+    const { result, revision } = publishSnapshot(db, accountId, body, clock);
+    return { ok: true, data: result, revision };
+  });
+
+  app.get("/arena/snapshots", async (request) => {
+    const query = ArenaSnapshotsQuerySchema.parse(request.query);
+    const snapshots = listSnapshotSummaries(db, request.accountId, query.excludeMine);
+    return { ok: true, data: { snapshots } };
+  });
+
+  app.get("/arena/snapshots/:snapshotId", async (request) => {
+    const { snapshotId } = request.params as { snapshotId: string };
+    const snapshot = getSnapshotDetail(db, snapshotId);
+    return { ok: true, data: { snapshot } };
+  });
+
+  app.post("/arena/challenge", async (request) => {
+    const accountId = requireSession(request);
+    const body = ArenaChallengeRequestSchema.parse(request.body);
+    const { result, revision } = challenge(db, accountId, body, clock);
+    return { ok: true, data: result, revision };
+  });
+
+  app.get("/battle-reports/:reportId", async (request) => {
+    const accountId = requireSession(request);
+    const { reportId } = request.params as { reportId: string };
+    const report = getOwnedReport(db, accountId, reportId);
+    return { ok: true, data: { report } };
   });
 
   app.addHook("onClose", async () => {

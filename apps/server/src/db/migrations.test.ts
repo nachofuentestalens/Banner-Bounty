@@ -29,7 +29,7 @@ describe("migrations", () => {
     const db = openDatabase(":memory:");
     expect(currentSchemaVersion(db)).toBe(0);
     runMigrations(db);
-    expect(currentSchemaVersion(db)).toBe(1);
+    expect(currentSchemaVersion(db)).toBe(2);
     db.close();
   });
 
@@ -38,7 +38,7 @@ describe("migrations", () => {
     runMigrations(db);
     runMigrations(db);
     const rows = db.prepare("SELECT * FROM schema_version").all();
-    expect(rows).toHaveLength(1);
+    expect(rows).toHaveLength(2);
     db.close();
   });
 
@@ -54,7 +54,7 @@ describe("migrations", () => {
 
     const second = openDatabase(dbPath);
     runMigrations(second); // no-op; must not fail or re-create tables
-    expect(currentSchemaVersion(second)).toBe(1);
+    expect(currentSchemaVersion(second)).toBe(2);
     const accountIdAfter = new AccountRepository(second).findBySlot("A")?.accountId;
     expect(accountIdAfter).toBe(accountIdBefore);
     second.close();

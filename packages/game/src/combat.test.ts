@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { OLD_ROAD_ENEMIES, TOLLKEEPER } from "@banner-and-bounty/content";
-import { simulateBattle, type EnemyCombatantInput, type HeroCombatantInput } from "./combat.js";
+import { simulateBattle, simulateArenaBattle, type EnemyCombatantInput, type HeroCombatantInput } from "./combat.js";
 import { computePartyEffectiveStats, statAtLevel, type HeroLoadoutInput } from "./stats.js";
 
 const emptyEquipment = { weapon: null, armor: null, trinket: null };
@@ -242,5 +242,68 @@ describe("Boss: Tollkeeper pattern (content.md section 4)", () => {
     const round3 = result.events.find((e) => e.round === 3 && e.type === "toll_smash");
     expect(round1?.targetId).toBe("front"); // lowest party position
     expect(round3).toBeDefined();
+  });
+});
+
+describe("simulateArenaBattle (M1-11: two hero teams, no PvE enemy AI)", () => {
+  it("same inputs yield identical outputs", () => {
+    const teamA = heroCombatants(unspecializedParty(), ["a1", "a2", "a3"]);
+    const teamB = heroCombatants(unspecializedParty(), ["b1", "b2", "b3"]);
+    const r1 = simulateArenaBattle(teamA, teamB);
+    const r2 = simulateArenaBattle(teamA, teamB);
+    expect(r2).toEqual(r1);
+  });
+
+  it("a mirrored matchup resolves deterministically (never a timeout) via the team-A-first speed tie-break", () => {
+    const teamA = heroCombatants(unspecializedParty(), ["a1", "a2", "a3"]);
+    const teamB = heroCombatants(unspecializedParty(), ["b1", "b2", "b3"]);
+    const result = simulateArenaBattle(teamA, teamB);
+    expect(result.result).toBe("win"); // team A acts first on every SPD tie, so it always lands the decisive hit first
+    expect(result.rounds).toBeLessThan(100);
+  });
+
+  it("a stalemate times out as a draw, not a loss (combat.md 5: timeout is a draw in arena)", () => {
+    const tanky = (id: string): HeroCombatantInput => ({
+      id,
+      side: "hero",
+      position: 0,
+      classId: "class_vanguard",
+      specializationId: null,
+      stats: { maxHp: 10_000, atk: 1, def: 100_000, spd: 8 },
+    });
+    const result = simulateArenaBattle([tanky("a")], [tanky("b")]);
+    expect(result.result).toBe("draw");
+    expect(result.rounds).toBe(100);
+  });
+
+  it("a Guardian on either side still redirects damage from the opposing team (3.4 applies symmetrically)", () => {
+    const guardianB: HeroCombatantInput = {
+      id: "guardianB",
+      side: "hero",
+      position: 0,
+      classId: "class_vanguard",
+      specializationId: "spec_guardian",
+      stats: { maxHp: 60, atk: 1, def: 10, spd: 20 }, // acts before the ally it guards resolves damage this round
+    };
+    const allyB: HeroCombatantInput = {
+      id: "allyB",
+      side: "hero",
+      position: 1,
+      classId: "class_arcanist",
+      specializationId: null,
+      stats: { maxHp: 28, atk: 1, def: 3, spd: 1 },
+    };
+    const attackerA: HeroCombatantInput = {
+      id: "attackerA",
+      side: "hero",
+      position: 0,
+      classId: "class_ranger",
+      specializationId: null,
+      stats: { maxHp: 32, atk: 20, def: 0, spd: 5 },
+    };
+    const result = simulateArenaBattle([attackerA], [guardianB, allyB]);
+    const redirect = result.events.find((e) => e.type === "strike_guard_redirect");
+    expect(redirect).toBeDefined();
+    expect(redirect?.targetId).toBe("guardianB");
   });
 });

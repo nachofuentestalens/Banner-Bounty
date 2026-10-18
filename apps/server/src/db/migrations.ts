@@ -65,6 +65,36 @@ const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    // M1-11: immutable arena snapshots and battle reports. Insert-only by
+    // convention (no UPDATE path in any repository) per contracts.md's
+    // "Immutable arena snapshots" invariant.
+    version: 2,
+    sql: `
+      CREATE TABLE team_snapshots (
+        snapshotId TEXT PRIMARY KEY,
+        accountId TEXT NOT NULL REFERENCES accounts(accountId),
+        publishedAt TEXT NOT NULL,
+        rulesVersion INTEGER NOT NULL,
+        frozenParty TEXT NOT NULL,
+        frozenStats TEXT NOT NULL
+      );
+      CREATE INDEX idx_team_snapshots_accountId ON team_snapshots(accountId);
+
+      CREATE TABLE battle_reports (
+        reportId TEXT PRIMARY KEY,
+        accountId TEXT NOT NULL REFERENCES accounts(accountId),
+        kind TEXT NOT NULL,
+        participantsSnapshot TEXT NOT NULL,
+        seed TEXT NOT NULL,
+        rulesVersion INTEGER NOT NULL,
+        events TEXT NOT NULL,
+        result TEXT NOT NULL,
+        createdAt TEXT NOT NULL
+      );
+      CREATE INDEX idx_battle_reports_accountId ON battle_reports(accountId);
+    `,
+  },
 ];
 
 function schemaVersionTableExists(db: DatabaseSync): boolean {
