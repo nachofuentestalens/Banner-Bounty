@@ -31,3 +31,13 @@ Economy Designer asked:
 The owner answered:
 
 yes, let's keep it at level 3, 20-40 minute grind might be a bit much, the first few hours need to be really addictive
+
+## 2026-10-18 · [M1-13] Tune first-session pacing from simulation evidence
+
+Economy Designer asked:
+
+> This re-raises the M1-13 open question for formal logging: should boss-readiness stay at level 3 as measured (coincident with specialization unlock, ~12 minutes, no content.md/combat.md hardening), or should the Tollkeeper/level-3 gate be hardened to restore the original 20-40 minute separation? You already replied in conversation ("yes, let's keep it at level 3, 20-40 minute grind might be a bit much, the first few hours need to be really addictive"), but design/decisions.md has no entry for this task, and that file is the authoritative decision log per its own header — re-asking here so your answer gets logged there before M1-14 builds on it.
+
+The owner answered:
+
+Yes, boss-readiness stay at level 3 as measured
