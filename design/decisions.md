@@ -21,3 +21,39 @@ Gameplay Programmer asked:
 The owner answered:
 
 I think the issue is the coordinator didn't account for dependencies, put this on hold and I'll get the agent dashboard to re-structure tasks so they can account for dependencies, and not only priorities
+
+## 2026-10-18 · [M1-13] Tune first-session pacing from simulation evidence
+
+Economy Designer asked:
+
+> M1-12/M1-13 confirm the Tollkeeper is winnable the instant level 3 is reached (12 cycles, ~12 minutes), coincident with specialization unlock — not in the 20-40 minute band first-playable.md hypothesized. Margin is thin if unequipped (2 of 3 heroes die while still winning). Is an early, high-stakes boss win right at the specialization-unlock moment acceptable for first playable, or should content.md's Tollkeeper stats (or combat.md's level-3 gate) be hardened to restore a real separation between the two milestones? This is a combat/content stat-balance change outside design/game/economy's scope, so I have not filed or implemented anything — flagging for your decision before any follow-up task is created.
+
+The owner answered:
+
+yes, let's keep it at level 3, 20-40 minute grind might be a bit much, the first few hours need to be really addictive
+
+## 2026-10-18 · [M1-13] Tune first-session pacing from simulation evidence
+
+Economy Designer asked:
+
+> This re-raises the M1-13 open question for formal logging: should boss-readiness stay at level 3 as measured (coincident with specialization unlock, ~12 minutes, no content.md/combat.md hardening), or should the Tollkeeper/level-3 gate be hardened to restore the original 20-40 minute separation? You already replied in conversation ("yes, let's keep it at level 3, 20-40 minute grind might be a bit much, the first few hours need to be really addictive"), but design/decisions.md has no entry for this task, and that file is the authoritative decision log per its own header — re-asking here so your answer gets logged there before M1-14 builds on it.
+
+The owner answered:
+
+Yes, boss-readiness stay at level 3 as measured
+
+## 2026-10-18 · design/studio/contracts.md updated
+
+Proposed by Gameplay Programmer; accepted by the owner.
+
+M1-10 code review found apps/web computing hero effective stats client-side (computeHeroEffectiveStats) to satisfy ui-spec.md's Company/Inventory stat display, violating architecture.md's 'apps/web: ... No client-authoritative loot, XP, time, stats or victory' and creating an undeclared apps/web -> game/content/contracts package edge. The fix removes the client computation, but ui-spec.md's requirement then has no data source: GET /account/state's Hero shape never included computed stats. This proposal adds an additive, server-computed field so the UI can show real numbers again without recomputing them.
+
+## 2026-10-18 · Add server-computed effectiveStats to account/state and equip responses
+
+Gameplay Programmer asked:
+
+> Please accept and integrate the existing effectiveStats contract proposal into this task’s baseline so implementation can proceed.
+
+The owner answered:
+
+Accepted

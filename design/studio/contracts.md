@@ -61,7 +61,7 @@ Every endpoint below lists its **complete** error set; omit none even when an er
 
 ### `GET /account/state`
 - Payload: none. Session-only; a read never grants rewards and never advances settlement (M1-01 invariant: reads are side-effect free).
-- Response: `{ ok: true, data: { heroes, inventory, partyOrder, expedition: { status, checkpointAt, frozenLoadout?, cyclesCompletedSinceStart }, gold, bossClaims, revision } }`. **M1-08 additive fields:** while `status="active"`, `expedition` also includes `startedAt`, `rulesVersion`, `wins`, and `losses`.
+- Response: `{ ok: true, data: { heroes, inventory, partyOrder, expedition: { status, checkpointAt, frozenLoadout?, cyclesCompletedSinceStart }, gold, bossClaims, revision } }`. **M1-08 additive fields:** while `status="active"`, `expedition` also includes `startedAt`, `rulesVersion`, `wins`, and `losses`. **M1-10 additive field (proposed):** each entry in `heroes` additionally includes `effectiveStats: { maxHp, atk, def, spd }`, computed server-side via `packages/game`'s existing `computeHeroEffectiveStats` (combat.md 1.2: level + equipped gear + specialization + party Pathfinder bonus) at response-build time — never persisted, never accepted from the client, read-only like the rest of this endpoint. This closes the gap `design/game/ui-spec.md`'s Company/Inventory screens depend on ("effective stats ... display only, no recompute in UI"): apps/web must display these numbers, not derive them, and this field is the server-supplied source that makes that possible without apps/web importing `packages/game`/`packages/content` (see "Package interface consistency" below, now explicit that apps/web depends on neither).
 - Errors: `unauthenticated`, `internal`.
 
 ### `PATCH /party/order`
@@ -73,19 +73,19 @@ Every endpoint below lists its **complete** error set; omit none even when an er
 ### `POST /equipment/equip`
 - Payload: `{ requestId, expectedRevision, heroId, itemInstanceId, slot: "weapon"|"armor"|"trinket" }`. Session-only.
 - Ownership: hero and item must belong to account; item must not already be equipped by a different hero; item's definition slot must match `slot`.
-- Response: `{ ok: true, data: { hero }, revision }`.
+- Response: `{ ok: true, data: { hero }, revision }`. **M1-10 decision:** this `hero` also carries the same additive `effectiveStats` field as `/account/state`, recomputed post-equip, so the UI can refresh a single hero's displayed stats from this response without a full refetch.
 - Errors: `unauthenticated`, `validation` (wrong slot), `forbidden` (foreign hero/item), `not_found` (unknown heroId/itemInstanceId), `active_expedition` (expedition active — checked before `conflict`; see Revision & idempotency protocol), `conflict` (duplicate equip target / stale revision), `internal`.
 - **M1-08 decision — precondition order (equip/unequip):** ownership → `active_expedition` → `validation` (wrong slot/level/class) → `conflict` (item equipped by another hero). All run at protocol step 3, so none writes a receipt.
 
 ### `POST /equipment/unequip`
 - Payload: `{ requestId, expectedRevision, heroId, slot }`. Session-only.
-- Ownership/errors mirror equip: `unauthenticated`, `validation`, `forbidden`, `not_found`, `active_expedition`, `conflict`, `internal`.
+- Ownership/errors mirror equip: `unauthenticated`, `validation`, `forbidden`, `not_found`, `active_expedition`, `conflict`, `internal`. **M1-10 decision:** `hero` in the response also carries `effectiveStats`, same as equip.
 - **M1-08 decision:** unequipping at a full inventory (100 unequipped item instances already held) returns `validation` with `details.reason="inventory_full"`. The 100-item cap (see Arena, boss, and migration invariants) is an inventory invariant that applies here too — unequip can never create a 101st unequipped item.
 
 ### `POST /hero/specialization`
 - Payload: `{ requestId, expectedRevision, heroId, specializationId }`. Session-only.
 - Ownership: hero belongs to account, hero level ≥ 3, specializationId valid for hero's class.
-- Response: `{ ok: true, data: { hero }, revision }`.
+- Response: `{ ok: true, data: { hero }, revision }`. **M1-10 decision:** `hero` also carries `effectiveStats`, same as equip/unequip.
 - Errors: `unauthenticated`, `validation` (level < 3, wrong class/specialization), `forbidden` (unknown or foreign heroId), `active_expedition`, `conflict`, `internal`. **M1-08 decision:** this endpoint lists no `not_found` — an unknown `heroId` returns `forbidden`, matching `/party/order`'s treatment of unrecognized hero IDs, rather than distinguishing "doesn't exist" from "not yours."
 
 ### `POST /expedition/start`
@@ -221,6 +221,7 @@ Settlement's "bounded computation before commit with revision recheck" (architec
 - `packages/game` exports pure functions consuming `{ state, rulesVersion, rngSeed, elapsedDuration }`-shaped arguments and returning a new state + event log; it imports nothing from `packages/contracts` (contracts may reference game's output *types* via a one-way dependency: `contracts -> game` types only, never `game -> contracts`).
 - `apps/server` is the only package allowed to import `node:sqlite`, read `Date.now()`, or generate unseeded randomness; it depends on `contracts`, `game`, and `content`.
 - `packages/content` exports versioned, validated static data (class/item/enemy definitions, affix tables) consumed by both `game` (rules) and `apps/server` (lookups for responses); it has no dependency on `contracts`, `game`, or `apps/server`.
+- **M1-10 decision (makes an implicit rule explicit after a review finding):** `apps/web` depends on none of `contracts`, `game`, or `content` — it imports only the DTO shapes it needs as hand-written local types and reads server-computed values (including the `effectiveStats` field proposed above) rather than recomputing anything. `apps/web`'s only legitimate package-graph edge in this document's terms is the HTTP boundary to `apps/server`, never a direct source dependency on the engine/content packages.
 
 No circular package dependency exists in this graph: `content` and `contracts`' type-only edge to `game` are the only cross-package imports besides `apps/server`'s aggregation.
 
@@ -275,3 +276,4 @@ Area { areaId, name, unlockRequirement: { kind: string, value?: unknown } }
 ### Open question for Systems Designer (M2-02)
 
 Before M2-02 specifies area-2 content, it must pin down: (1) the concrete `areaId` values including the starter area's `areaId` (used for the M1-save migration default above), (2) the `unlockRequirement.kind` values this contract leaves opaque (e.g. a hero-level threshold vs. a specific boss clear) and their exact evaluation rule, and (3) whether area 2 introduces a distinct `bossId` (no contract change needed either way — `BossClaim` is already keyed by `bossId`, so multiple areas each owning a boss is already supported by the existing M1 shape). None of these block this amendment; they are content decisions within the shape fixed here.
+- **M1-10 proposal (pending CTO review):** add `effectiveStats`/`xpToNext` server-computed fields to `GET /account/state` and the equip/unequip/specialization responses so `apps/web` can display real hero stats without importing `packages/game`/`packages/content` (see `GET /account/state` and `Package interface consistency` above). Until accepted and implemented by an `apps/server`-scoped task, `apps/web`'s Company/Inventory screens show raw hero fields only (level/xp/class/spec/gear names), with an inline note that stat deltas aren't available yet.
