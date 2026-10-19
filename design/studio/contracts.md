@@ -230,3 +230,48 @@ No circular package dependency exists in this graph: `content` and `contracts`' 
 - M1-02 supplies the exact XP curve. The mid-expedition level-up stat-timing question is resolved by the M1-08 decision recorded in Worked example 10: expedition combat uses levels frozen at start for the rest of that run; boss/arena use live levels immediately.
 - M1-05 must confirm `node:sqlite` supports the transaction pattern described (short transactions, prepared statements, revision recheck before commit) on the pinned Node version; if it cannot, report back here before M1-07 proceeds, since the idempotency/revision protocol assumes standard ACID transactions.
 - M1-07 implements session/auth and the ownership checks enumerated per endpoint above; the account-private vs public data split here is the authorization contract it must satisfy.
+
+---
+
+## M2-01 addition: second expedition area (M2 amendment, additive only)
+
+The sections above (through "Open items for downstream tasks") are the frozen M1-01 surface and are **unchanged** by this amendment. Everything below is new for M2: it adds one entity, one account-private field, one Expedition field, and two endpoints. No M1 endpoint payload, response shape, or error set changes.
+
+### New entity
+
+```ts
+Area { areaId, name, unlockRequirement: { kind: string, value?: unknown } }
+```
+
+`Area` is server-owned reference data, not a per-account row — analogous to `packages/content`'s class/item/enemy definitions, not to `Account`/`Hero`. `unlockRequirement` is an opaque, versioned descriptor; this contract fixes only that the field exists and is evaluated server-side into a boolean `unlocked` per account (see `GET /areas` below). The exact `kind` values (e.g. hero-level threshold, prior boss clear) and the concrete area roster/IDs are **not** fixed here — that is M2-02's content decision, constrained only by this shape.
+
+### Additive fields on existing entities
+
+- **`Account`** gains `selectedAreaId` (the account's currently chosen area for future expedition starts). Every existing M1 account is migrated to the starter area's `areaId` when this field is introduced, so `/account/state` never returns a null/missing `selectedAreaId` for a pre-existing save. The starter area's exact `areaId` constant is assigned by M2-02; this contract only requires that the migration target be unambiguous and resolvable at migration time.
+- **`Expedition`** gains `areaId`, frozen at `/expedition/start` exactly like `rulesVersion` (copied from the account's `selectedAreaId` at that instant; later changing `selectedAreaId` does not affect an already-running expedition). `ExpeditionViewDTO` (returned by `start`/`stop`) gains `areaId` as an additive field, following the same additive-field convention already used for M1-08's `wins`/`losses`/`outcomes`/`overflow`/`recentCycles`.
+
+### `GET /account/state` (additive field only)
+
+- Existing response shape is unchanged except: `data` gains `selectedAreaId`. No new error cases. This is the one touch to an M1-01 endpoint, and it is strictly additive — any M1 client reading the existing fields is unaffected.
+
+### `GET /areas` (new endpoint)
+
+- Payload: none. Session-only — unlocked/selected status is per-account, so this follows the session-only rule for account-private data (architecture.md's public/private split), unlike the static, account-agnostic content served by `packages/content`.
+- Response: `{ ok: true, data: { areas: AreaSummaryDTO[] } }` where `AreaSummaryDTO = { areaId, name, unlocked: boolean, isSelected: boolean }`. A read never grants rewards or mutates state (same invariant as `/account/state`).
+- Errors: `unauthenticated`, `internal`.
+
+### `POST /area/select` (new endpoint)
+
+- Payload: `{ requestId, expectedRevision, areaId }`. Session-only.
+- Ownership/precondition, in protocol order (step 3): account has no active expedition (`active_expedition` — switching the selected area mid-run must not desync from the already-frozen `Expedition.areaId`, mirroring the equip/unequip/specialization lock in Worked example 9); `areaId` must reference a known `Area` (`not_found` otherwise, matching the `arena/challenge` treatment of an unknown `snapshotId`); the area must be `unlocked` for this account (`forbidden` otherwise — the area exists but access is denied, the same semantic `forbidden` already carries for valid-but-disallowed references elsewhere in this document).
+- Transaction: sets `Account.selectedAreaId = areaId`. Follows the canonical revision/idempotency protocol unchanged (steps 1-8 above); a no-op reselect of the already-selected area still increments revision only if the stored value actually changes (selecting the currently-selected area again is a zero-effect commit under the same no-op rule used for zero-credit settlement).
+- Response: `{ ok: true, data: { selectedAreaId }, revision }`.
+- Errors: `unauthenticated`, `not_found` (unknown `areaId`), `forbidden` (known but locked `areaId`), `active_expedition` (expedition running), `conflict` (stale `expectedRevision`), `internal`.
+
+### Package boundaries (unchanged)
+
+`Area` definitions live in `packages/content` (static, validated, versioned, no dependency on `contracts`/`game`/`apps/server` — unchanged rule). Per-account `selectedAreaId`/unlock evaluation lives in `apps/server`, consistent with `apps/server` being the only package that reads account state and generates derived per-account views. `packages/contracts` exports `Area`, `AreaSummaryDTO`, and the new endpoints' Zod schemas alongside the existing M1 exports — same import rules as before (no new edges).
+
+### Open question for Systems Designer (M2-02)
+
+Before M2-02 specifies area-2 content, it must pin down: (1) the concrete `areaId` values including the starter area's `areaId` (used for the M1-save migration default above), (2) the `unlockRequirement.kind` values this contract leaves opaque (e.g. a hero-level threshold vs. a specific boss clear) and their exact evaluation rule, and (3) whether area 2 introduces a distinct `bossId` (no contract change needed either way — `BossClaim` is already keyed by `bossId`, so multiple areas each owning a boss is already supported by the existing M1 shape). None of these block this amendment; they are content decisions within the shape fixed here.
