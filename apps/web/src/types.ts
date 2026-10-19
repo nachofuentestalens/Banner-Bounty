@@ -69,6 +69,7 @@ export interface CycleLogEntry {
 }
 
 export interface SettlementResult {
+  latestBattleReport?: BattleReportView;
   creditedCycles: number;
   elapsedMs: number;
   discardedMs: number;

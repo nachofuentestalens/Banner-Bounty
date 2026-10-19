@@ -759,3 +759,31 @@ describe("endpoint authentication and validation", () => {
     await app.close();
   });
 });
+
+
+describe("battle presentation snapshots", () => {
+  it("keeps exact starting HP and latest credited expedition events across retries", async () => {
+    const { app, db, cookie, at } = await startedHarness();
+    try {
+      at(3 * MIN);
+      const requestId = crypto.randomUUID();
+      const expectedRevision = (await getState(app, cookie)).revision;
+      const result = await mutate(app, cookie, "/expedition/settle", {}, { requestId, expectedRevision });
+      const report = result.body.data.latestBattleReport;
+      expect(result.body.data.creditedCycles).toBe(3);
+      expect(report.kind).toBe("pve");
+      expect(report.participantsSnapshot.units).toHaveLength(6);
+      const hp = Object.fromEntries(report.participantsSnapshot.units.map((u: any) => [u.id, u.maxHp]));
+      for (const e of report.events) if (e.targetId && e.hpAfter !== null) hp[e.targetId] = e.hpAfter;
+      expect(hp).toEqual(report.result.finalHp);
+      const retry = await mutate(app, cookie, "/expedition/settle", {}, { requestId, expectedRevision });
+      expect(retry.body.data.latestBattleReport).toEqual(report);
+      const empty = await mutate(app, cookie, "/expedition/settle");
+      expect(empty.body.data.latestBattleReport).toBeUndefined();
+      const boss = await mutate(app, cookie, "/boss/challenge");
+      expect(boss.body.data.report.participantsSnapshot.units).toHaveLength(4);
+      const stored = await app.inject({ method: "GET", url: `/battle-reports/${boss.body.data.report.reportId}`, headers: { cookie } });
+      expect(stored.json().data.report.participantsSnapshot).toEqual(boss.body.data.report.participantsSnapshot);
+    } finally { await app.close(); }
+  });
+});
