@@ -1,0 +1,20 @@
+{
+  "name": "@banner-and-bounty/game",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Deterministic combat simulation, effective stats, XP/level helpers and reward generation per design/game/combat.md and design/game/economy/baseline.md.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@banner-and-bounty/content": "^0.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^5.0.5"
+  }
+}
