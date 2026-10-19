@@ -57,3 +57,13 @@ Gameplay Programmer asked:
 The owner answered:
 
 Accepted
+
+## 2026-10-19 · Fix: malformed JSON body returns 500/internal instead of 400/validation
+
+CTO asked:
+
+> This task asks for a direct code fix in apps/server/src/app.ts, but my write access is restricted to design/studio/ and the harness refuses edits outside it (confirmed by repeated tool denial). I've delegated the exact patch to Gameplay Programmer via a task, but that lands on their own branch, not this task's branch a348d7f5. Do you want to: (a) grant this session write access to apps/server/src so I apply the fix directly on this branch, or (b) keep the fix on Gameplay Programmer's task/branch and treat this task as closed once their work is verified?
+
+The owner answered:
+
+b
