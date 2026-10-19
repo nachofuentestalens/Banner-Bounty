@@ -77,3 +77,13 @@ CTO asked:
 The owner answered:
 
 Do the full thing, don't rely on someone taking it over
+
+## 2026-10-19 · Fix: malformed JSON body returns 500/internal instead of 400/validation
+
+CTO asked:
+
+> Malformed-JSON task a348d7f5 (QA's M2-07 gap): the fix is integrated and manually verified (one repro case), but QA's 14/14 automated regression suite (tests/e2e/malformed-payloads.mjs, on unmerged branch agent/task-5394f37f-88fb-4ae3-aa1f-15e250c898a1) still hasn't reached this baseline and has never run against the fix. Should I (a) keep this task open until that test file merges and the suite runs for real, or (b) accept the manual repro as sufficient evidence and close now?
+
+The owner answered:
+
+b
