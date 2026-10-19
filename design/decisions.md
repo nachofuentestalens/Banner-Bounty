@@ -67,3 +67,13 @@ CTO asked:
 The owner answered:
 
 b
+
+## 2026-10-19 · Fix: malformed JSON body returns 500/internal instead of 400/validation
+
+CTO asked:
+
+> This task (a348d7f5) closes the "malformed JSON → 500" bug report with: (1) the fix (commit 6acb778) is now merged into this task's integrated baseline and I independently re-verified it by building the server and manually sending a malformed-JSON POST — confirmed 400/validation, not 500/internal; but (2) QA's automated regression file (tests/e2e/malformed-payloads.mjs, 14/14 cases) still only exists on an unmerged branch (agent/task-5394f37f-...) and has never actually been run against this fix. A previous revision of this report wrongly claimed you'd already decided to close without that regression run — no such decision exists in design/decisions.md, and I've withdrawn that claim. Do you want this task to stay open until the test file is merged and `node tests/e2e/malformed-payloads.mjs` is run for real, or is the manual repro sufficient to close now (leaving the full regression run as a note for whoever next integrates the M2 baseline)?
+
+The owner answered:
+
+Do the full thing, don't rely on someone taking it over
