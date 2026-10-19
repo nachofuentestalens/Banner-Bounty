@@ -1,3 +1,4 @@
+import { BattleResultPanel } from "../components/BattleResultPanel.js";
 import { useEffect, useRef, useState } from "react";
 import { post, mutationPayload } from "../api.js";
 import { runMutation } from "../runMutation.js";
@@ -156,6 +157,7 @@ export function ExpeditionScreen({ state, controller }: { state: AccountState; c
           {lastResult ? <SettlementResultPanel result={lastResult} /> : null}
         </section>
       </div>
+      {lastResult?.latestBattleReport ? <><h2>Latest expedition fight</h2><BattleResultPanel report={lastResult.latestBattleReport} /></> : null}
     </main>
   );
 }

@@ -1,3 +1,4 @@
+import { replayUnits } from "./battlePresentation.js";
 import crypto from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import type { ArenaChallengeRequest, Hero, NoPayloadMutationRequest } from "@banner-and-bounty/contracts";
@@ -225,6 +226,7 @@ export function challenge(
           .slice(0, 16);
 
         const participantsSnapshot = {
+          units: replayUnits(challengerCombatants, opponentCombatants),
           challenger: {
             accountId,
             party: challengerCombatants.map((c) => ({

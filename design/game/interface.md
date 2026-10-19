@@ -24,3 +24,9 @@ Keyboard-visible focus, semantic buttons/forms, no hover-only required informati
 Loading, empty inventory, offline/reconnecting, rejected/stale action, server error, expedition locking loadout, level/spec unlock, full inventory conversion, loss/timeout, already-collected reward and no published opponent. Prevent duplicate submissions while pending but rely on server idempotency for correctness. Preserve context and explain recovery; do not hide errors in console logs.
 
 Assets are not a milestone dependency. Keep optional asset identifiers, fallback rendering and a future asset provenance list; do not spend generation calls on placeholders that CSS/text already handles.
+
+## Combat readability update
+
+Boss and arena challenges show a two-team battlefield with original vector class/enemy silhouettes, exact current/max HP, health bars, acting/target highlights, damage/healing numbers, and each unit's last action. Defeated units remain visible. Expedition collection and stopping show the last credited cycle's fight beneath the settlement summary; zero-cycle settlements do not invent a fight.
+
+Playback follows recorded server events, with pause/play, next action, restart, 1x/2x/4x speed and show-result controls. Reduced-motion users start paused and receive no CSS animation. Rewards are committed by the server regardless of playback position; replaying never submits another challenge. The full text log remains available, including for older reports without presentation metadata. This update improves combat presentation, not combat balance or the rest of the application artwork.

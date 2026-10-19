@@ -1,3 +1,4 @@
+import { replayUnits } from "./battlePresentation.js";
 import crypto from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import type { BossChallengeResultDTO, NoPayloadMutationRequest } from "@banner-and-bounty/contracts";
@@ -94,6 +95,7 @@ export function challengeBoss(
           reportId: crypto.randomUUID(),
           kind: "boss",
           participantsSnapshot: {
+            units: replayUnits(heroes, [{ id: bossId, side: "enemy", slot: TOLLKEEPER.slot, stats: { maxHp: TOLLKEEPER.hp, atk: TOLLKEEPER.atk, def: TOLLKEEPER.def, spd: TOLLKEEPER.spd } }]),
             accountId,
             party: heroes.map((h) => ({
               heroId: h.id,
