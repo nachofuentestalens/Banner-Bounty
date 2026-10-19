@@ -97,6 +97,13 @@ export function buildServer(options: BuildServerOptions = {}): FastifyInstance {
       });
       return;
     }
+    if (typeof fastifyError.code === "string" && fastifyError.code.startsWith("FST_ERR_CTP_")) {
+      reply.status(ERROR_STATUS.validation).send({
+        ok: false,
+        error: { code: "validation", message: "invalid request payload", correlationId },
+      });
+      return;
+    }
     // eslint-disable-next-line no-console
     console.error(`[server] internal error (correlationId=${correlationId})`, error);
     reply.status(ERROR_STATUS.internal).send({
