@@ -115,7 +115,7 @@ describe("ownership enforcement across accounts", () => {
       heroes.insertForFixture({
         heroId,
         accountId,
-        classId: "vanguard",
+        classId: "class_vanguard",
         level: 1,
         xp: 0,
         specializationId: null,
@@ -156,7 +156,7 @@ describe("ownership enforcement across accounts", () => {
     heroes.insertForFixture({
       heroId: heroA1,
       accountId: SEED_ACCOUNT_A_ID,
-      classId: "vanguard",
+      classId: "class_vanguard",
       level: 1,
       xp: 0,
       specializationId: null,
@@ -194,7 +194,7 @@ describe("revision and idempotency protocol", () => {
       heroes.insertForFixture({
         heroId,
         accountId: SEED_ACCOUNT_A_ID,
-        classId: "vanguard",
+        classId: "class_vanguard",
         level: 1,
         xp: 0,
         specializationId: null,

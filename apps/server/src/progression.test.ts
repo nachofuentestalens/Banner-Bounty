@@ -8,6 +8,7 @@ import { buildServer } from "./app.js";
 import { FixedClock } from "./clock.js";
 import { openDatabase } from "./db/connection.js";
 import { SEED_ACCOUNT_A_ID, SEED_ACCOUNT_B_ID, starterHeroIds } from "./db/seed.js";
+import { HeroRepository } from "./repositories/heroRepository.js";
 import { ItemRepository } from "./repositories/itemRepository.js";
 
 // M1-08 acceptance fixtures: injected FixedClock, isolated in-memory or
@@ -568,6 +569,76 @@ describe("party, equipment and specialization rules (A05)", () => {
     expect(restart.body.data.expedition.checkpointAt).toBe(new Date(T0 + 5 * MIN + 59 * SEC).toISOString());
     at(6 * MIN + 30 * SEC);
     expect((await mutate(app, cookie, "/expedition/settle")).body.data.creditedCycles).toBe(0);
+    await app.close();
+  });
+});
+
+describe("server-computed effectiveStats (M1-10 contract decision)", () => {
+  function heroStats(state: any, heroId: string) {
+    return state.heroes.find((h: any) => h.heroId === heroId).effectiveStats;
+  }
+
+  it("account/state and equip/unequip responses reflect gear and specialization bonuses", async () => {
+    const { app, db } = harness();
+    const cookie = await login(app);
+    const [sword] = addItems(db, SEED_ACCOUNT_A_ID, 1, "item_weapon_shortsword");
+
+    // Vanguard level 1, no gear/spec/party bonus: leveled stats only (content.md class_vanguard).
+    const base = heroStats(await getState(app, cookie), VANGUARD);
+    expect(base).toEqual({ maxHp: 40, atk: 7, def: 6, spd: 8 });
+
+    // Equipping a +3 ATK shortsword is reflected immediately in the equip response and account/state.
+    const equipped = await mutate(app, cookie, "/equipment/equip", { heroId: VANGUARD, itemInstanceId: sword, slot: "weapon" });
+    expect(equipped.body.data.hero.effectiveStats).toEqual({ maxHp: 40, atk: 10, def: 6, spd: 8 });
+    expect(heroStats(await getState(app, cookie), VANGUARD)).toEqual({ maxHp: 40, atk: 10, def: 6, spd: 8 });
+
+    // Leveling to 3 and taking Guardian adds the combat.md 1.2 +2 DEF modifier on top of leveled growth.
+    db.prepare("UPDATE heroes SET level = 3 WHERE heroId = ?").run(VANGUARD);
+    const specialized = await mutate(app, cookie, "/hero/specialization", { heroId: VANGUARD, specializationId: "spec_guardian" });
+    expect(specialized.body.data.hero.effectiveStats).toEqual({ maxHp: 50, atk: 12, def: 10, spd: 8 });
+
+    // Unequipping drops the weapon bonus but keeps the level/spec contribution.
+    const unequipped = await mutate(app, cookie, "/equipment/unequip", { heroId: VANGUARD, slot: "weapon" });
+    expect(unequipped.body.data.hero.effectiveStats).toEqual({ maxHp: 50, atk: 9, def: 10, spd: 8 });
+    await app.close();
+  });
+
+  it("the party Pathfinder SPD bonus applies to every party member but not a benched hero", async () => {
+    const { app, db } = harness();
+    const cookie = await login(app);
+    const heroes = new HeroRepository(db);
+
+    // A 4th, benched hero: owned but never placed in the party order.
+    const benched = crypto.randomUUID();
+    heroes.insertForFixture({
+      heroId: benched,
+      accountId: SEED_ACCOUNT_A_ID,
+      classId: "class_ranger",
+      level: 3,
+      xp: 0,
+      specializationId: "spec_pathfinder",
+      equipment: { weapon: null, armor: null, trinket: null },
+    });
+
+    // No party Pathfinder yet: base SPD for every starter.
+    let state = await getState(app, cookie);
+    expect(heroStats(state, VANGUARD).spd).toBe(8);
+    expect(heroStats(state, RANGER).spd).toBe(12);
+    expect(heroStats(state, ARCANIST).spd).toBe(9);
+    // The benched Pathfinder's own stats are unaffected by not being in the party.
+    expect(heroStats(state, benched).spd).toBe(12);
+
+    // Promoting the in-party Ranger to Pathfinder (level 3) grants the whole party +2 SPD.
+    db.prepare("UPDATE heroes SET level = 3 WHERE heroId = ?").run(RANGER);
+    const specialized = await mutate(app, cookie, "/hero/specialization", { heroId: RANGER, specializationId: "spec_pathfinder" });
+    expect(specialized.body.data.hero.effectiveStats.spd).toBe(14);
+
+    state = await getState(app, cookie);
+    expect(heroStats(state, VANGUARD).spd).toBe(10);
+    expect(heroStats(state, RANGER).spd).toBe(14);
+    expect(heroStats(state, ARCANIST).spd).toBe(11);
+    // The benched hero is not in the party, so it never receives the party's SPD bonus.
+    expect(heroStats(state, benched).spd).toBe(12);
     await app.close();
   });
 });

@@ -1,15 +1,16 @@
 import type { DatabaseSync } from "node:sqlite";
 import type { EquipRequest, Hero, SpecializationRequest, UnequipRequest } from "@banner-and-bounty/contracts";
 import { ContentValidationError, assertSpecializationForClass, getItemDefinition } from "@banner-and-bounty/content";
-import { INVENTORY_CAP } from "@banner-and-bounty/game";
+import { type EffectiveStats, INVENTORY_CAP } from "@banner-and-bounty/game";
 import { AppError } from "../errors.js";
 import { runMutation, type MutationResult } from "../mutation.js";
 import { ExpeditionRepository } from "../repositories/expeditionRepository.js";
 import { HeroRepository } from "../repositories/heroRepository.js";
 import { ItemRepository } from "../repositories/itemRepository.js";
+import { attachEffectiveStats } from "./partyLoadout.js";
 
 export interface HeroResult {
-  hero: Hero;
+  hero: Hero & { effectiveStats: EffectiveStats };
 }
 
 // Equip/unequip/specialization (contracts.md). Precondition order, all at
@@ -66,13 +67,15 @@ export function equip(db: DatabaseSync, accountId: string, request: EquipRequest
       apply: () => {
         const hero = heroes.findById(heroId)!;
         const previous = hero.equipment[slot];
-        if (previous === itemInstanceId) return { result: { hero }, changed: false };
+        if (previous === itemInstanceId) {
+          return { result: { hero: attachEffectiveStats(db, accountId, hero) }, changed: false };
+        }
         // A swap moves the previous item back to inventory and the new one
         // out of it, so the unequipped count is unchanged.
         if (previous) items.setEquippedBy(previous, null);
         heroes.setEquipmentSlot(heroId, slot, itemInstanceId);
         items.setEquippedBy(itemInstanceId, heroId);
-        return { result: { hero: heroes.findById(heroId)! }, changed: true };
+        return { result: { hero: attachEffectiveStats(db, accountId, heroes.findById(heroId)!) }, changed: true };
       },
     },
   );
@@ -107,10 +110,10 @@ export function unequip(db: DatabaseSync, accountId: string, request: UnequipReq
       apply: () => {
         const hero = heroes.findById(heroId)!;
         const previous = hero.equipment[slot];
-        if (!previous) return { result: { hero }, changed: false };
+        if (!previous) return { result: { hero: attachEffectiveStats(db, accountId, hero) }, changed: false };
         items.setEquippedBy(previous, null);
         heroes.setEquipmentSlot(heroId, slot, null);
-        return { result: { hero: heroes.findById(heroId)! }, changed: true };
+        return { result: { hero: attachEffectiveStats(db, accountId, heroes.findById(heroId)!) }, changed: true };
       },
     },
   );
@@ -153,9 +156,11 @@ export function chooseSpecialization(
       },
       apply: () => {
         const hero = heroes.findById(heroId)!;
-        if (hero.specializationId === specializationId) return { result: { hero }, changed: false };
+        if (hero.specializationId === specializationId) {
+          return { result: { hero: attachEffectiveStats(db, accountId, hero) }, changed: false };
+        }
         heroes.setSpecialization(heroId, specializationId);
-        return { result: { hero: heroes.findById(heroId)! }, changed: true };
+        return { result: { hero: attachEffectiveStats(db, accountId, heroes.findById(heroId)!) }, changed: true };
       },
     },
   );
