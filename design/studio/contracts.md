@@ -275,3 +275,413 @@ Area { areaId, name, unlockRequirement: { kind: string, value?: unknown } }
 ### Open question for Systems Designer (M2-02)
 
 Before M2-02 specifies area-2 content, it must pin down: (1) the concrete `areaId` values including the starter area's `areaId` (used for the M1-save migration default above), (2) the `unlockRequirement.kind` values this contract leaves opaque (e.g. a hero-level threshold vs. a specific boss clear) and their exact evaluation rule, and (3) whether area 2 introduces a distinct `bossId` (no contract change needed either way — `BossClaim` is already keyed by `bossId`, so multiple areas each owning a boss is already supported by the existing M1 shape). None of these block this amendment; they are content decisions within the shape fixed here.
+
+---
+
+## M2-25 addition: roster, dual class/skills, formation, crafting, dungeons, battle replay (M2 amendment)
+
+Everything through the M2-01 addition above is **unchanged** by this amendment except where this
+section says otherwise. This section formalizes, as frozen contract shapes, the migration plan in
+`classes.md` section 9 and the implementation requirements in `gear.md` sections 4-6, per
+`design/studio/milestones/M2.md`. It is additive to the package-boundary rules already frozen above:
+`packages/contracts` still imports nothing from `apps/server`/`apps/web`; `packages/game` still takes
+no dependency on `contracts`; `apps/server` is still the only package touching `node:sqlite`/clock/RNG;
+`packages/content` still owns static class/skill/recipe/dungeon definitions.
+
+Two M1 shapes are **replaced**, not extended, because their M1 shape cannot express the new rules
+(a fixed 3-tuple party, a single specialization choice). Both have an explicit migration below.
+
+- `Hero.specializationId` is **removed**; replaced by `secondaryClassId` and `skillLoadout`.
+- `PartyOrder` (fixed 3-tuple) is **removed**; replaced by `PartyFormation` (5 slots, 1-5 filled).
+- `ItemInstance.affixId` is **removed**; replaced by `rarityId` and `affixes` (gear.md section 2).
+
+This is acceptable pre-launch (M1 is not released to real players; `release-verdict.md` accepted the
+milestone internally, not a live save base to preserve across a real deployment) and is scoped
+narrowly to these three fields — every other M1 entity/endpoint above is untouched.
+
+### New `ErrorCode` value
+
+`ErrorCode` gains `"active_dungeon"`, additive to the M1-01 enum (`"validation" | "unauthenticated" |
+"forbidden" | "not_found" | "conflict" | "active_expedition" | "active_dungeon" | "internal"`). Any
+client branching only on known M1 codes is unaffected, since it already has a default/`internal`-style
+fallback (no client code change is implied by adding an enum member in a closed `switch` without one,
+but this document does not audit `apps/web` — that is M2-26/27's implementation concern).
+
+**Progression-activity lock (gear.md section 4: "Only one progression activity — expedition OR
+dungeon — may run per account"):** `POST /expedition/start` and `POST /dungeon/start` each check, at
+protocol step 3, that *neither* activity is active. If an expedition is active, both return
+`active_expedition`; if a dungeon is active, both return `active_dungeon`. The lock is symmetric: an
+active expedition blocks starting a dungeon and vice versa.
+
+### Changed entities
+
+```ts
+Hero {
+  heroId, accountId,
+  primaryClassId: string,            // was `classId`; direct rename, same values (classes.md section 9.1)
+  secondaryClassId: string | null,   // NEW — null until assigned at level >= 3
+  level, xp,
+  skillLoadout: {                    // NEW — replaces specializationId
+    active: [string, string],        // skillId slot 1, slot 2 (classes.md 4.1 priority order); "" for an unfilled slot
+    passive: [string, string],       // skillId slot 1, slot 2; "" for an unfilled slot
+  },
+  equipment: { weapon, armor, trinket }  // unchanged shape
+}
+
+PartyFormation {
+  accountId,
+  slots: [HeroId | null, HeroId | null, HeroId | null, HeroId | null, HeroId | null],
+  // index 0-2 = front row, 3-4 = back row (classes.md section 3); 1-5 non-null distinct owned heroes;
+  // nulls only in positions not currently filled — a null is simply "no hero in this slot," not a
+  // placeholder actor (classes.md section 3: "no phantom actor, no effect on row-pool computation")
+}
+
+ItemInstance {
+  itemInstanceId, accountId, definitionId,
+  rarityId: "common" | "uncommon" | "rare" | "epic",   // NEW — was absent (rarity didn't exist pre-M2)
+  affixes: { affixId: string, value: number }[],        // NEW — replaces affixId; ordered = selection
+                                                          // order, stable for reforge (gear.md section 2)
+  equippedBy: HeroId | null
+}
+```
+
+An empty skill-loadout slot (`""`) occurs only for a hero whose class(es) haven't unlocked a second
+active/passive yet (classes.md 5.7); it is never a valid `skillId` to submit in `PATCH /hero/loadout`
+below, and the engine's action-priority (classes.md 4.1) treats an empty active slot as "not ready."
+
+### New entities
+
+```ts
+MaterialBalance { accountId, scrap: number, sigil: number, core: number }
+// Account-scoped nonnegative counters (gear.md section 4), returned via /account/state like gold;
+// not exposed as a standalone endpoint, same pattern as gold's existing implicit account-state field.
+
+DungeonRun {
+  accountId,
+  status: "none" | "active",
+  dungeonId: string | null,
+  startedAt: string | null,
+  checkpointAt: string | null,
+  currentFloor: number,              // 1-based; the next floor to attempt on settlement
+  floorsCleared: number,             // cumulative within this run
+  frozenLoadout: unknown | null,     // formation + per-hero primary/secondary/skillLoadout/equipment,
+                                      // frozen at /dungeon/start exactly like Expedition.frozenLoadout
+                                      // (classes.md 4.2, gear.md section 4: "party/build/gear is frozen
+                                      // for the whole run")
+  rulesVersion: number | null,
+  rngState: string | null,
+  outcome: "none" | "cleared" | "failed",  // set when the run ends; "none" while active or unstarted
+}
+```
+
+`DungeonRun` is deliberately not a repeating-cycle entity like `Expedition`: a dungeon has a fixed,
+content-defined floor count (`packages/content`, M2-31) and the run terminates on either clearing the
+final (boss) floor or losing any floor (gear.md section 4: "a loss/timeout ends the run with no reward
+for that floor" — the whole run, not just that floor, per the content requirement that floors cannot be
+retried individually and "no checkpoints for restarting at a cleared floor: a new run begins at floor
+1"). Only one `DungeonRun` row per account; starting a new run after one ends overwrites `dungeonId`/
+`currentFloor`/`floorsCleared`/`outcome` — the prior run's already-granted floor rewards are not
+re-derived from this row (they were credited at settlement time via ordinary gold/XP/material/item
+writes) and are not stored as a "run history" beyond the `BattleReport` rows already produced.
+
+### Changed entity: `BattleReport`
+
+```ts
+BattleReport {
+  reportId, kind: "pve" | "boss" | "arena" | "dungeon_floor" | "dungeon_boss",  // two new kinds, additive
+  participantsSnapshot: BattleParticipantsSnapshotDTO,  // was `unknown`; now the typed shape below
+  seed, rulesVersion,
+  events: BattleEventDTO[],                              // was loosely typed; now the shape below
+  result, createdAt
+}
+
+BattleParticipantsSnapshotDTO {
+  units: BattleUnitDTO[]
+}
+
+BattleUnitDTO {
+  unitId: string,            // HeroId for a hero; a stable per-battle enemy-instance ID otherwise
+  side: "A" | "B",           // "A" = the account's own party in every kind except arena, where it is
+                              // always the challenger (contracts.md's existing `arenaSpeedOrderCompare`
+                              // tie-break convention, combat.md 8.1)
+  kind: "hero" | "enemy",
+  name: string,               // hero display name, or the enemy/boss content display name
+  classId: string | null,     // hero's primaryClassId; null for an enemy/boss unit
+  secondaryClassId: string | null,  // null for an enemy/boss unit or a hero with none assigned
+  slotIndex: number,          // 0-4; classes.md 3 / combat.md 8.1's shared slot-index range
+  maxHp: number,
+}
+
+BattleEventDTO {
+  round: number,
+  type: string,                 // unchanged M1 field; now also carries skill-specific values
+  sourceId: string | null,
+  targetId: string | null,      // one event per target for an AoE hit (combat.md 8.6)
+  amount: number,                // negative=damage, positive=healing, 0 for non-HP events
+  hpAfter: number | null,
+  skillId: string | null,                                      // NEW
+  crit: boolean,                                                // NEW
+  dodged: boolean,                                              // NEW
+  statusApplied: { statusId: string, duration: number, stacks?: number } | null,  // NEW
+  statusExpired: string | null,                                  // NEW
+  death: boolean,                                                // NEW
+}
+```
+
+This is the exact TypeScript shape `combat.md` section 8.6 left to this document. The battle view
+(M2-27) can render every acceptance-check-4/5 requirement (name, class, numeric HP, status + duration,
+turn-by-turn actor/skill/target/amount, explicit death) from `participantsSnapshot.units` (initial state:
+every unit's starting HP equals `maxHp`) plus a forward replay of `events` — no separate "current state"
+endpoint or per-round snapshot is needed, since `hpAfter` and `statusApplied`/`statusExpired` make the
+full timeline reconstructible from the event list alone, consistent with architecture.md's existing
+"UI initializes HP from this snapshot and applies each recorded `hpAfter`" note. A dungeon floor is one
+`BattleReport` each (kind `dungeon_floor` for an ordinary floor, `dungeon_boss` for the final floor),
+fetched individually via the existing `GET /battle-reports/:reportId` — no new report-retrieval endpoint.
+
+### New endpoints
+
+#### `POST /hero/recruit`
+- Payload: `{ requestId, expectedRevision, primaryClassId }`. Session-only.
+- Precondition (step 3): `primaryClassId` is one of the 6 base classes (classes.md section 1);
+  `ownedHeroCount < 20` (roster cap, classes.md section 8); account gold `>= 150 * ownedHeroCount`
+  (reference cost, classes.md section 8 — a placeholder constant Economy Designer may retune in M2-28
+  without a contract change, since the formula shape, not the `150`/`20` constants, is what's frozen
+  here). Not locked by `active_expedition`/`active_dungeon` — recruiting only adds to the roster, never
+  touches a frozen loadout or formation.
+- Transaction: debits gold, creates `Hero { primaryClassId, secondaryClassId: null, level: 1, xp: 0,
+  skillLoadout: auto-filled per classes.md 5.7, equipment: all-null }`.
+- Response: `{ ok: true, data: { hero }, revision }`.
+- Errors: `unauthenticated`, `validation` (unknown `primaryClassId`, `details.reason="roster_full"`, or
+  `details.reason="insufficient_gold"`), `conflict`, `internal`.
+
+#### `PATCH /party/formation`
+- Payload: `{ requestId, expectedRevision, slots: [HeroId|null, HeroId|null, HeroId|null, HeroId|null, HeroId|null] }`. Session-only. **Replaces `PATCH /party/order`**, which is removed (M2+; see entity
+  change above). There is no payload-compatible overlap worth preserving under the old path: the old
+  3-tuple cannot represent 5 slots or nulls, so reusing the path would silently change its contract
+  under the same name, which this document avoids per its own convention of explicit, named changes.
+- Ownership: every non-null entry is a distinct heroId belonging to the session account; 1-5 non-null
+  entries (classes.md section 3's relaxed minimum, section 11). Allowed at any expedition or dungeon
+  status, like M1's `/party/order` (classes.md section 3: formation only affects future
+  expedition/dungeon starts, never the already-frozen `frozenLoadout` of a running activity) — so
+  `active_expedition`/`active_dungeon` do **not** apply to this endpoint, mirroring the M1-01 decision
+  on `/party/order`.
+- Response: `{ ok: true, data: { formation: PartyFormation }, revision }`.
+- Errors: `unauthenticated`, `validation` (0 or >5 non-null entries, duplicate heroId), `forbidden`
+  (a non-null entry is a foreign heroId), `conflict` (stale revision), `internal`.
+
+#### `POST /hero/secondary-class`
+- Payload: `{ requestId, expectedRevision, heroId, secondaryClassId }`. Session-only. `secondaryClassId`
+  must be one of the 6 base classes and may equal the hero's current `secondaryClassId` (a no-op commit
+  under the standard no-op-revision rule) but may never equal the hero's own `primaryClassId` (a hero
+  cannot dual-class into itself). **Decision:** this contract does not accept `null` — once assigned, a
+  secondary class can be switched to a different class but not cleared, since nothing in `classes.md`
+  requires un-assignment and a "has no secondary" state is already reachable (every hero starts there).
+- Ownership/precondition (step 3, in order): hero belongs to account (`forbidden` if not, matching
+  `/hero/specialization`'s existing unknown-or-foreign-heroId-returns-`forbidden` precedent) → hero
+  `level >= 3` (`validation`) → `active_expedition` → `active_dungeon` (classes.md 4.2: same lock timing
+  as loadout changes) → `secondaryClassId` valid and distinct from `primaryClassId` (`validation`).
+- Transaction: sets `Hero.secondaryClassId`. Does **not** auto-fill `skillLoadout` with the new class's
+  skills — the hero's existing loadout slots are left exactly as they were (now drawing from a pool that
+  additionally includes the new secondary's unlocked skills, classes.md 5.7) until a separate
+  `PATCH /hero/loadout` call changes them. This keeps the two decisions (which secondary class; which
+  skills from the resulting pool) independently reversible, matching classes.md section 4's framing of
+  loadout choice as the thing that "starts to matter" once a secondary exists, not an automatic side
+  effect of assigning one.
+- Response: `{ ok: true, data: { hero }, revision }`.
+- Errors: `unauthenticated`, `validation` (level < 3, unknown `secondaryClassId`, equals own
+  `primaryClassId`), `forbidden` (unknown or foreign `heroId`), `active_expedition`, `active_dungeon`,
+  `conflict`, `internal`.
+
+#### `PATCH /hero/loadout`
+- Payload: `{ requestId, expectedRevision, heroId, active: [string, string], passive: [string, string] }`.
+  Session-only. An entry may be `""` to leave a slot empty (classes.md 5.7); a non-empty entry must be a
+  `skillId` currently unlocked for the hero (union of primary's and, if assigned, secondary's unlocked
+  skills at the hero's current level, classes.md 5.7) and of the matching kind (`active` entries must be
+  active skills, `passive` entries must be passive skills) — Basic Attack is never a valid entry (it is
+  never slotted, classes.md section 4).
+- Ownership/precondition (step 3): hero belongs to account (`forbidden` if not) → `active_expedition` →
+  `active_dungeon` → each non-empty entry is unlocked-and-correct-kind for this hero right now
+  (`validation`) → no duplicate non-empty skillId within the same kind-array (`validation`; the same
+  skillId may appear once in `active` and does not conflict with appearing conceptually once in
+  `passive`, since kinds are disjoint by construction).
+- Response: `{ ok: true, data: { hero }, revision }`.
+- Errors: `unauthenticated`, `validation` (unlocked/kind/duplicate violations), `forbidden` (unknown or
+  foreign `heroId`), `active_expedition`, `active_dungeon`, `conflict`, `internal`.
+
+#### `POST /craft`
+- Payload: `{ requestId, expectedRevision, recipeId, definitionId, replacementItemInstanceId? }`.
+  Session-only. `recipeId` is one of `craft_uncommon`/`craft_rare`/`craft_epic` (gear.md section 5);
+  `definitionId` is one of the 9 base item definitions (`content.md` 2.1); `replacementItemInstanceId`
+  is optional and only meaningful when the account is at the 100-item unequipped cap.
+- Ownership/precondition (step 3, in order): not locked by neither activity — `active_expedition` →
+  `active_dungeon` (gear.md section 5: "craft/reforge require no active progression activity") →
+  `recipeId`/`definitionId` known (`validation` if not — these are closed, content-defined sets, so an
+  unknown value is a malformed request, not a missing-resource lookup) → account gold/scrap/sigil/core
+  balances each `>=` the recipe's cost (`validation`, `details.reason="insufficient_materials"` or
+  `"insufficient_gold"`) → bag space: if the account is at 100 unequipped items, `replacementItemInstanceId`
+  must be supplied and must reference an owned, currently-unequipped item (`forbidden` if it belongs to
+  another account, `validation` with `details.reason="bag_full"` if omitted or not unequipped/owned).
+- Transaction: debits gold/materials; if a replacement was required and supplied, deletes that item
+  instance (gear.md: "consumed atomically by the craft, yields no refund"); draws definition-is-fixed,
+  rarity-is-fixed reward RNG for affix IDs/values only (gear.md section 6: crafts omit the chance and
+  definition/rarity draws since both are chosen, not rolled); creates one new `ItemInstance` at the
+  chosen `definitionId`/rarity with the rolled `affixes`.
+- Response: `{ ok: true, data: { item: ItemInstance, replacementConsumed: ItemInstanceId | null }, revision }`.
+- Errors: `unauthenticated`, `validation` (unknown recipe/definition, insufficient gold/materials,
+  bag-full-without-replacement, replacement not unequipped), `forbidden` (foreign
+  `replacementItemInstanceId`), `active_expedition`, `active_dungeon`, `conflict`, `internal`.
+
+#### `POST /reforge`
+- Payload: `{ requestId, expectedRevision, itemInstanceId, affixIndex }`. Session-only. `recipeId` is
+  **not** part of the payload — the server derives `reforge_uncommon`/`reforge_rare`/`reforge_epic` from
+  the target item's own `rarityId`, so a client can never under-pay by claiming a cheaper recipe than
+  the item's actual rarity.
+- Ownership/precondition (step 3, in order): item belongs to account (`forbidden` if not) →
+  `active_expedition` → `active_dungeon` → item is currently unequipped (`validation`,
+  `details.reason="item_equipped"` — gear.md: "reforge requires an owned, unequipped item; unequip
+  normally first") → item's `rarityId !== "common"` (`validation` — common items cannot reforge) →
+  `affixIndex` is a valid index into the item's current `affixes` array (`validation` if out of range) →
+  account gold/scrap/sigil/core balances each `>=` the derived recipe's cost (`validation`,
+  `details.reason="insufficient_materials"`/`"insufficient_gold"`).
+- Transaction: debits gold/materials; rolls a replacement `(affixId, value)` pair per gear.md section 5's
+  exact algorithm (eligible-ID pool excludes IDs already present on other untouched affixes; for the
+  current slot's own ID, excludes its current value, dropping the ID entirely if no alternative value
+  remains; picks ID uniformly, then value uniformly); replaces `affixes[affixIndex]` in place, preserving
+  `itemInstanceId`, `definitionId`, `rarityId`, and every other affix untouched.
+- Response: `{ ok: true, data: { item: ItemInstance }, revision }`.
+- Errors: `unauthenticated`, `validation` (equipped, common rarity, bad `affixIndex`, insufficient
+  gold/materials), `forbidden` (foreign `itemInstanceId`), `not_found` (unknown `itemInstanceId`),
+  `active_expedition`, `active_dungeon`, `conflict`, `internal`.
+
+#### `POST /dungeon/start`
+- Payload: `{ requestId, expectedRevision, dungeonId }`. Session-only.
+- Ownership/precondition (step 3, in order): no active expedition (`active_expedition`) → no active
+  dungeon (`active_dungeon`) → `dungeonId` references a known dungeon (`not_found` otherwise, matching
+  `area/select`'s precedent for an unknown reference) → the dungeon is unlocked for this account
+  (`forbidden` otherwise, same precedent) → `PartyFormation` has 1-5 distinct owned heroes (`validation`
+  if empty — a dungeon run, like an expedition, needs at least one hero fielded).
+- Transaction: freezes current formation/loadout/equipment into `frozenLoadout`; sets `status="active"`,
+  `dungeonId`, `startedAt=checkpointAt=serverNow()`, `currentFloor=1`, `floorsCleared=0`,
+  `outcome="none"`, `rulesVersion=currentRulesVersion`, `rngState=seed(accountId, dungeonId, startedAt)`.
+- Response: `{ ok: true, data: { dungeonRun: DungeonRunViewDTO }, revision }` — `DungeonRunViewDTO` omits
+  `rngState`/`seed` exactly like `ExpeditionViewDTO` omits them (M1-08 precedent).
+- Errors: `unauthenticated`, `validation` (empty formation), `not_found` (unknown `dungeonId`),
+  `forbidden` (known but locked `dungeonId`), `active_expedition`, `active_dungeon`, `conflict`,
+  `internal`.
+
+#### `POST /dungeon/settle`
+- Payload: `{ requestId, expectedRevision }`. Session-only.
+- Ownership: an active `DungeonRun` must belong to the account (`validation` if none, mirroring
+  `expedition/settle`'s precedent — this is a precondition failure on an endpoint that *requires* an
+  active run, not an `active_dungeon`-style lock).
+- **Dungeon floor settlement algorithm** (specializes the Offline settlement algorithm above: same
+  `elapsedMs`/clamp/8-hour-cap math, substituting a 180,000 ms floor length for the 60,000 ms cycle
+  length, with one added early-termination rule the expedition algorithm doesn't have):
+  1. Compute `elapsedMs`, `cappedMs` (8h cap), `discardedMs` exactly as the expedition algorithm.
+  2. `eligibleFloors = floor(cappedMs / 180_000)`, further capped at `(dungeon's total floor count) -
+     currentFloor + 1` (a run cannot process floors past its own last floor).
+  3. Simulate floors one at a time, in order, starting at `currentFloor`, using `rngState` (advancing it
+     each floor) and the dungeon's content-defined enemy roster per floor (`packages/content`, M2-31):
+     a. Simulate the floor's battle; write one `BattleReport` (`kind: "dungeon_floor"`, or
+        `"dungeon_boss"` if this is the dungeon's final floor).
+     b. If the result is a win: credit that floor's XP/gold/materials/item reward (gear.md section 4)
+        in the same transaction; increment `floorsCleared` and `currentFloor`; if this was the final
+        floor, set `outcome="cleared"`, `status="none"` and **stop** (no further floors processed even
+        if more `eligibleFloors` remain — the run is over).
+     b. If the result is a loss: grant no reward for that floor; set `outcome="failed"`,
+        `status="none"` and **stop** — no further floors in this batch are attempted, matching gear.md
+        section 4 ("a loss/timeout ends the run with no reward for that floor" — the run, in context).
+  4. `checkpointAt_new = checkpointAt + discardedMs + (floors actually processed) * 180_000` — the same
+     "re-add discarded time" rule as the expedition algorithm (Worked example 5/6 above), applied per
+     floor instead of per cycle; if the run ended mid-batch (win-final or loss), remaining unconsumed
+     `eligibleFloors` time is irrelevant, since there is no "next floor" to credit it to once
+     `status="none"`.
+  5. Persist all of the above plus the revision bump and idempotency receipt in the single transaction,
+     exactly like `expedition/settle`.
+- Response: `{ ok: true, data: DungeonSettleResultDTO, revision }` where `DungeonSettleResultDTO = {
+  floorResults: { floor: number, reportId: ReportId, result: "win" | "loss", isBoss: boolean, rewards: {
+  xp, gold, materials: { scrap, sigil, core }, items } }[], outcome: "in_progress" | "cleared" |
+  "failed", elapsedMs, discardedMs, creditedFloors: number, checkpointAt, overflow: { convertedCount,
+  convertedGold } }`. `floorResults` is in floor order for this call only (not cumulative across calls),
+  mirroring `settle`'s `recentCycles` being this-call-scoped-by-construction.
+- Errors: `unauthenticated`, `validation` (no active dungeon run), `conflict` (stale revision),
+  `internal`.
+- **No-op settlement:** identical rule to expedition settlement — if `eligibleFloors === 0` (less than
+  180s elapsed), nothing persists, revision does not increment, and a receipt recording zero floors is
+  still written for retry-idempotency, exactly like Worked example 1 above.
+
+#### `POST /dungeon/stop`
+- Payload: `{ requestId, expectedRevision }`. Session-only. Voluntary abandon (gear.md section 4: "keeps
+  earned floors but discards the current floor's partial time; restart cannot reuse it").
+- Transaction: runs the same settlement as `dungeon/settle` first (crediting any fully-eligible floors
+  completed in the elapsed window), then, in the same transaction, discards any partial progress toward
+  the *next* floor (there is no partial-floor credit to discard beyond what settlement already
+  processes — a floor is indivisible, same as an expedition cycle) and sets `status="none"`,
+  `outcome="none"` if the run had not already reached `"cleared"`/`"failed"` via the settlement step.
+- Response: `{ ok: true, data: { finalSettlement: DungeonSettleResultDTO, dungeonRun: DungeonRunViewDTO }, revision }`.
+- Errors: `unauthenticated`, `validation` (no active dungeon run), `conflict`, `internal`.
+
+### `GET /account/state` (additive fields only)
+
+- `data` gains `heroes[*].primaryClassId`/`secondaryClassId`/`skillLoadout` (replacing
+  `heroes[*].classId`/`specializationId`), `formation: PartyFormation` (replacing `partyOrder`),
+  `materials: { scrap, sigil, core }`, and `dungeon: { status, dungeonId, currentFloor, floorsCleared,
+  checkpointAt, outcome }` (mirroring the existing `expedition` block's shape) while `status="active"`
+  additionally includes `startedAt`, `rulesVersion`. `ItemInstance` entries in `inventory` gain
+  `rarityId`/`affixes` in place of `affixId`. No new error cases; reads remain side-effect-free.
+
+### Migration (frozen procedure, formalizing `classes.md` section 9 and `gear.md` section 6)
+
+Applied once by a `SchemaVersion` bump on server startup, inside one migration transaction per account
+row (or one global pass; implementation detail for M2-26), before any new endpoint above is reachable:
+
+1. `Hero.classId` → `Hero.primaryClassId`: value copied unchanged (`class_vanguard`/`class_ranger`/
+   `class_arcanist` keep their IDs and stat curves, classes.md section 1).
+2. `Hero.secondaryClassId` := `null` for every migrated hero.
+3. `Hero.specializationId` is dropped. `Hero.skillLoadout` is derived, not copied: auto-filled with the
+   hero's primary class's full currently-unlocked kit per classes.md 5.7 (both actives + both passives
+   if `level >= 8`; fewer slots filled below that, in unlock order) — never conditioned on the old
+   specialization value, since the new system doesn't fork behavior by which of the 2 old specs was
+   picked (classes.md section 9, point 3).
+4. `Hero.equipment` copied as-is, unchanged.
+5. `PartyOrder.order[0..2]` → `PartyFormation.slots[0..2]` (front row), in the same order; `slots[3..4]
+   := null` (back row starts empty). `PartyOrder` row is then dropped.
+6. `ItemInstance.affixId` → `ItemInstance.rarityId`/`affixes` per gear.md section 6's exact table: no
+   affix → `rarityId: "common"`, `affixes: []`; legacy `power` or `warding` → `rarityId: "uncommon"`,
+   `affixes: [{ affixId: <same id>, value: 2 }]`; legacy `vigor` → `rarityId: "uncommon"`,
+   `affixes: [{ affixId: "vigor", value: 3 }]`. `equippedBy` copied as-is. Every migrated value is legal
+   in its item's slot pool (gear.md section 2) by construction of this mapping.
+7. New account-scoped `MaterialBalance` row created at `{ scrap: 0, sigil: 0, core: 0 }` for every
+   existing account; gold, XP, `BossClaim`, `TeamSnapshot`, and inventory counts are untouched.
+8. `DungeonRun` row created at `{ status: "none", dungeonId: null, outcome: "none", ... }` for every
+   existing account; no account starts mid-dungeon.
+9. Stored `BattleReport` rows are **not** rewritten: `participantsSnapshot` and `events` on pre-M2-25
+   rows may be the old loose `unknown` shape (architecture.md's "legacy text-log fallback"); the battle
+   view renders them via that fallback path rather than assuming the new typed shape on every row.
+10. `Expedition.rulesVersion`/`frozenLoadout` for any account mid-expedition at migration time are left
+    untouched by this migration (an active run keeps its pre-M2-25 frozen loadout shape until it next
+    settles/stops); the existing `unsupported_rules_version` guard (Arena/boss/migration invariants
+    above) is the mechanism that already prevents settling a stale-rules-version run under new rules.
+
+### Package boundary notes (unchanged rule, new owners)
+
+`packages/content` gains class/skill definitions (classes.md), affix/recipe/dungeon-floor tables
+(gear.md), consumed by `packages/game` (combat/crafting rules) and `apps/server` (lookups), with the
+same no-dependency-on-`contracts`/`game`/`apps/server` rule already frozen above. No new package is
+introduced and no existing import edge changes.
+
+### Open items for downstream tasks (not blockers)
+
+- M2-26 implements the dungeon floor-settlement transaction and the craft/reforge RNG-consumption order
+  exactly per gear.md section 6's draw-ordering rule (chance, then definition/rarity/affix IDs/values in
+  that order; crafts/reforges skip the draws that don't apply to them).
+- M2-31 supplies concrete `dungeonId` values, per-dungeon floor counts/rosters, and the
+  `floorCount*180 <= 28800` content validation gear.md section 4 requires; no contract shape here
+  depends on the exact count.
+- M2-28 may retune the `150 * ownedHeroCount` recruit-cost constant and the craft/reforge gold/material
+  costs in gear.md's tables; this contract only fixes the mechanic shape (gold-priced, closed recipe
+  set, derived-not-client-supplied reforge recipe), not the numbers.
+- M2-27 implements the battle-view rendering of `BattleParticipantsSnapshotDTO`/`BattleEventDTO`; no
+  further contract decision is anticipated for playback (pause/step/speed/skip are pure client-side
+  replay over an already-fetched `events` array, per `gear.md` section 4: "playback ... is purely
+  presentation and cannot advance timers or rewards").
