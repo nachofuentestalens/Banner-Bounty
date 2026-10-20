@@ -1,14 +1,14 @@
 # First playable: a company worth returning to
 
-M1 proves a satisfying prepare, dispatch, collect, improve loop with a three-hero company and a locally hosted authoritative server. It is a small playable vertical slice, not a public launch.
+M1 proved a satisfying prepare, dispatch, collect, improve loop with a three-hero company and a locally hosted authoritative server. It was a small playable vertical slice, not a public launch, and the owner's M1 playtest verdict was that it was "way too basic" and the fights were "extremely boring" — too little to see, too little tactical depth. M2 (see `design/studio/milestones/M2.md`) answers that directly: watchable combat with a full battle view and playback controls, a larger dual-class hero roster with real skill decisions, formations, and gear crafting.
 
-The owner wants classes, specializations, gear and teams; mostly text now, graphics later; asynchronous multiplayer and local PC testing without paid hosting; development directed through prompts. Idle Adventure is a genre reference, not an asset or text source: https://store.steampowered.com/app/714020/Idle_Adventure/.
+The owner wants a genre-deep team-builder: a larger roster of heroes who each combine two classes with real skills, cooldowns, buffs/debuffs, taunt/threat, formations, gear rarity/affixes, and crafting — with mostly text UI (graphics later), deterministic server-authoritative combat, asynchronous multiplayer, and local PC testing without paid hosting; development directed through prompts. Idle Adventure is a genre reference for depth and feel, not an asset or text source: https://store.steampowered.com/app/714020/Idle_Adventure/. Never copy its names, text, or assets.
 
 ## Player promise
 
 Recruit a company, choose complementary builds, send it on a bounty, understand the combat outcome, and return to meaningful progression. Decisions should be readable and consequential without constant clicking. Tone: grounded, inviting frontier fantasy with brief flashes of dry humor.
 
-## M1 scope
+## M1 scope (delivered and accepted — see `design/studio/release-verdict.md`)
 
 - Exactly three starter heroes: Vanguard, Ranger, and Arcanist; two specializations per class.
 - A three-slot ordered party; equipment, basic affixes, experience and levels.
@@ -19,9 +19,22 @@ Recruit a company, choose complementary builds, send it on a bounty, understand 
 - Usable desktop browser interface with keyboard access and responsive narrow layout.
 - A documented local launch path, repeatable test data, automated checks, and a short playtest script.
 
-## Explicit exclusions
+## M2 scope: watchable combat and depth
 
-No live cooperative combat, matchmaking, shared market, guilds, chat, crafting, monetization, procedural campaign, mobile app, Steam integration, desktop packaging, generated art campaign, or public account system. Gold may be earned and displayed; an economy with shops is not required. No recurring production infrastructure.
+M1's class count, specialization model, and lack of crafting were deliberate first-playable cuts,
+not permanent exclusions. M2 (`design/studio/milestones/M2.md`) removes those cuts: a larger
+dual-class roster, real skills with cooldowns/buffs/taunt, formations, gear rarity/affixes, and
+crafting/reforging, alongside a battle view that shows every unit's HP and status effects with a
+turn-by-turn action feed and pause/step/speed/skip controls. See that document for the full scope,
+out-of-scope list, and acceptance checks.
+
+## Exclusions still in effect
+
+No live cooperative combat, matchmaking beyond the existing async arena snapshot model, shared
+market, guilds, chat, monetization, procedural campaign, mobile app, Steam integration, desktop
+packaging, generated art campaign, rendered 3D/real-time graphics, or public account system. Gold
+may be earned and displayed; an economy with shops is not required. No recurring production
+infrastructure.
 
 ## Authority and defaults
 
