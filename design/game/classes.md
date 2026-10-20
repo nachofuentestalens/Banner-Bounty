@@ -299,10 +299,10 @@ itself a contract change (this document does not touch `contracts.md`).
 
 1. **Dual-class stat layering.** A level-5 Vanguard primary / Cleric secondary, unequipped:
    `primaryLeveled` (Vanguard L5) = HP60/ATK11/DEF10/SPD8. `secondaryLeveled` (Cleric L5) =
-   HP38/ATK8/DEF6/SPD9. `dualClassBase = primaryLeveled + floor(secondaryLeveled/4)` =
-   HP `60+floor(38/4)=60+9=69`, ATK `11+floor(8/4)=11+2=13`, DEF `10+floor(6/4)=10+1=11`,
+   HP50/ATK11/DEF9/SPD9. `dualClassBase = primaryLeveled + floor(secondaryLeveled/4)` =
+   HP `60+floor(50/4)=60+12=72`, ATK `11+floor(11/4)=11+2=13`, DEF `10+floor(9/4)=10+2=12`,
    SPD `8+floor(9/4)=8+2=10`. Thick Hide (Vanguard Passive I, if slotted) then adds +15% DEF on top:
-   `floor(11*115/100)=12`.
+   `floor(12*115/100)=13`.
 2. **Loadout priority.** A Ranger has Volley (CD3) in slot 1 and Aimed Shot (CD2) in slot 2. Round 1:
    both off cooldown (fresh battle) → Volley fires (slot 1 wins), CD set to 3. Round 2: Volley on CD
    (2 remaining after this round's decrement), Aimed Shot off CD → Aimed Shot fires. Round 3: Volley at
