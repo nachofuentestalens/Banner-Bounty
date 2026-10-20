@@ -74,3 +74,69 @@ Solo encounter (one actor, slot 0) vs. the challenger's full 3-hero party. Manua
 This gives the Tollkeeper a deterministic, telegraphable pattern (every 3rd round it punishes whoever is weakest instead of just hitting the front line) without any RNG or player-visible "choice," consistent with "no player scripting" and the fully deterministic combat model.
 
 First victory grants the one-time reward (amount: economy table, M1-04) via the atomic `BossClaim` flag already specified in `contracts.md`; later victories produce a `BattleReport` only, no reward (`rewardGranted: false`).
+
+---
+
+## 5. M2-22 additions: dual-class system, new classes, and combat v2 content
+
+Sections 1-4 above are the unchanged M1-02 freeze. This section amends them for M2's combat v2
+(`combat.md` section 8, `classes.md`). The owner's M1 playtest verdict ("extremely boring") and
+`design/studio/milestones/M2.md` are the reason for this amendment.
+
+### 5.1 Classes and specializations table (section 1) — superseded
+
+Section 1's `classId`/`specializationId` table is **superseded**: `specializationId` no longer exists
+as a concept (`classes.md` section 9, migration point 3). The current class roster, stats, and skill
+kits are the authoritative source in `classes.md` sections 1 and 5. The three `classId`s
+(`class_vanguard`/`class_ranger`/`class_arcanist`) and the three starter heroes
+(`hero_starter_vanguard`/`hero_starter_ranger`/`hero_starter_arcanist`) are unchanged IDs. Three new
+`classId`s are added: `class_cleric`, `class_rogue`, `class_herald` (no starter hero of these — they
+are only available via recruitment, `classes.md` section 8).
+
+### 5.2 Reworked Old Road enemies (demonstrate combat v2 depth on existing content)
+
+All three keep their section 3 stats (HP/ATK/DEF/SPD) unchanged. Behavior is extended:
+
+| enemyId | New behavior |
+| --- | --- |
+| `enemy_road_brigand` | Every round where `round % 4 == 0`: **Crushing Blow** — targets the lowest-position living hero in the row-respecting valid pool (`combat.md` 8.2); damage `floor(basic(ATK,targetDEF)*3/2)`; applies `status_weaken` (-30% ATK, 2 rounds) to the target. All other rounds: unchanged basic attack (lowest party position, row-respecting pool). |
+| `enemy_road_wolf` | On odd rounds: targets the lowest-*current-HP* living hero in the row-respecting valid pool instead of lowest position (demonstrates HP-seeking AI variety). Even rounds: unchanged (lowest position). Damage formula unchanged (`basic(ATK,targetDEF)`), no status applied. |
+| `enemy_road_cutpurse` | Unchanged from section 3 — kept as the plain baseline enemy for contrast. |
+
+None of the three ignore row protection — a back-row hero is safe from all Old Road trash while any
+front-row hero lives, giving formation a concrete payoff against this content (M2.md acceptance check
+7).
+
+### 5.3 Reworked Tollkeeper boss
+
+Stats (section 4) unchanged: HP220/ATK14/DEF8/SPD9, solo slot 0. Behavior amendment:
+
+- **Row protection**: the Tollkeeper **ignores row protection** for both Toll Strike and Toll Smash — it
+  always considers the full living party, not just the front row.
+- **Taunt**: if the challenging party has an active `status_taunt` (`combat.md` 8.2), the Tollkeeper's
+  single-target action targets the taunter instead, exactly like any other opposing-side enemy — this
+  is the intended counterplay to the boss's row-ignoring behavior (a Vanguard's Bulwark Call protects
+  the back row specifically against this fight).
+- **Toll Smash** (round is a multiple of 3, unchanged trigger): target = lowest HP% among the full
+  living party (or the taunter, if taunted) per the amended targeting rule; damage
+  `floor(basic(ATK,targetDEF)*3/2)` (unchanged); **new**: also applies `status_weaken` (-30% ATK, 2
+  rounds) to its target.
+- **Toll Strike** (all other rounds, unchanged trigger): target = lowest party position among the full
+  living party (or the taunter, if taunted); damage `basic(ATK,targetDEF)` (unchanged formula).
+
+First-clear reward and `BossClaim` semantics (section 4, `contracts.md`) are unchanged by this
+amendment — only the Tollkeeper's targeting/damage behavior changes.
+
+### 5.4 Roster cap and recruit cost (authoritative numbers; mechanic described in `classes.md` 8)
+
+- Roster cap: **20** owned heroes per account.
+- Recruit cost: `150 * ownedHeroCount` gold (placeholder default, open for Economy Designer retuning in
+  M2-28 — see `classes.md` section 11).
+
+### 5.5 Scope note: additional areas/dungeons
+
+This section's enemy rework (5.2-5.3) is the reference implementation of combat v2 against the
+*existing* Old Road content only. Designing additional expedition areas' and dungeons' enemy rosters
+beyond Old Road (M2.md scope item 6) is **not** undertaken here — it is out of this task's bounded
+scope (`AGENTS.md`: "keep scope fixed... bounded content") and is flagged as an open item in
+`reports/M2-22.md` for the Producer to assign an owner, not resolved or delegated by this document.
