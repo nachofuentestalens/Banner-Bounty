@@ -1,5 +1,9 @@
 # Progression and reward baseline (M1-04 freeze)
 
+M2 amendment (2026-10-21, M2-23): [gear.md](gear.md) defines the new rarity,
+affix, crafting, dungeon and area reward tables and their exact precedence over
+sections 2-6 below. The M1 XP curve and historical evidence remain unchanged.
+
 This document is the frozen numeric surface for XP, gold, drops/affixes, boss first-clear reward,
 and inventory overflow conversion, consumed by `packages/game`'s reward-generation functions and
 `packages/content`'s static tables (`content.md`). `combat.md` fixes battle *outcomes* (win/loss/draw);

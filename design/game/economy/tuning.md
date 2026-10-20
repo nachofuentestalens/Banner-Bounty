@@ -1,5 +1,11 @@
 # M1-13: Pacing tuning decision
 
+M2 note (2026-10-21, M2-23): [gear.md](gear.md) section 7 contains the M2
+week-one analytical targets; production measurement belongs to M2-28. Historical
+M1 results below do not validate combat v2. The historical decision-log gap described
+below is now resolved: `design/decisions.md` contains two 2026-10-18 owner approvals
+to retain level-3 boss readiness. M2-23 preserves that direction.
+
 Owner: Economy Designer. Inputs: `design/game/economy/baseline.md` section 7 (hypotheses),
 `reports/engineering/M1-12.md` (simulation evidence), a repeat `scripts/simulate.mjs` run on a
 second independent build/seed base (this task, see `design/game/reports/M1-13.md`).
