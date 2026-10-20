@@ -1,6 +1,8 @@
-# M1 delivery order
+# M1 delivery order (complete — M1 accepted, see `design/studio/release-verdict.md`)
 
 The task registry in `planning/milestone.json` is authoritative for dependency edges and acceptance criteria. Dashboard statuses track execution. Everything begins staged; planning completion is not game completion.
+
+M1 is accepted and closed; the gates and policy below are the historical record of how it shipped. Current priority is M2 — see `design/studio/milestones/M2.md` for scope and `## M2 delivery order` below for the task graph.
 
 ## Gates
 
@@ -27,3 +29,27 @@ Tasks are not required to run in numeric order: use dependency readiness, then p
 - If a failed gate changes an upstream contract, reopen the affected task and re-evaluate dependents. Do not conceal invalidated evidence with a green status.
 
 Keep work serial until a future milestone establishes isolated worktrees and independent file ownership. Adding seats does not imply extra concurrency or additional running processes.
+
+## M2 delivery order
+
+M2 replaces the earlier "second area + boss rebalance" plan with the owner-directed depth
+milestone in `design/studio/milestones/M2.md`: watchable combat (full battle view, playback
+controls), combat v2 (cooldowns, buffs/debuffs, taunt/threat, AoE, crit/dodge, formation), a
+≥6-class dual-class roster with skill loadouts, gear rarity/affixes/crafting, and multi-area,
+multi-floor dungeon content. M2-01 (area-2 contract amendment), M2-07 (gap tests) and M2-08
+(contrast audit) from the earlier plan are integrated and stay valid; they are not redone.
+
+Tasks M2-21 through M2-30 carry the milestone (see the task table in
+`design/studio/milestones/M2.md`). The Producer's milestone plan is authoritative for the exact
+dependency graph and priority numbers for these tasks; this document does not duplicate that
+graph. General ordering intent: specification tasks (M2-22 combat/class/skill/formation spec,
+M2-23 gear/crafting spec, M2-24 copy, M2-25 contracts) before implementation (M2-26 engine/content,
+M2-27 server/browser including the battle view), before tuning (M2-28) and independent QA (M2-29),
+before the milestone verdict (M2-30). M2-21 (land prior combat-replay work) is a prerequisite for
+M2-22 and M2-26 so the new combat spec and engine build on the current baseline, not a stale one.
+
+Completion policy for M2 follows the same rules as M1 above: no acceptance with a P0/P1 defect, a
+successful run is not the same as a passing review, and invalidated evidence must not be concealed
+behind a green status. A P0/P1 defect specific to M2 also includes: a battle view that cannot show
+what happened in a fight, or combat state that desyncs from a playback control (pause/step/speed/
+skip).
