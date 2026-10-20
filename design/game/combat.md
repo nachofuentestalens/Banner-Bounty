@@ -1,4 +1,11 @@
-# Combat rules (M1-02 freeze)
+# Combat rules (M1-02 freeze, extended by the M2-22 addition below)
+
+Sections 1-7 below are the **unchanged M1-02 freeze** (kept verbatim for traceability). Section 8 is
+the **M2-22 addition**: it supersedes sections 3.3-3.7 (the two-choice specialization system) for all
+M2+ content — `packages/game` must implement section 8's rules, not 3.3-3.7, once M2-26 lands. Sections
+1-2 and 4-7 remain the baseline, extended (not replaced) by section 8 where noted inline there. The
+owner's M1 playtest verdict ("extremely boring... I need to see what each unit is doing") is the reason
+for this amendment; see `design/studio/milestones/M2.md`.
 
 This document is the frozen numeric/behavioral surface for `packages/game`'s battle simulation. It implements the discrete-round contract in `first-playable.md` ("Combat rules to freeze") against the state shapes frozen in `contracts.md`. All math is integer; every division specified below is a floor (truncating) integer division unless stated otherwise. Changing a number or rule here after `packages/game` implementation starts (M1-05+) requires a recorded decision in this file.
 
@@ -126,3 +133,154 @@ All examples use the level-1 base stats from 1.1 with no equipment unless stated
 - Expedition cycles simulate against `frozenLoadout` (equipment + specialization fixed at `/expedition/start`); boss and arena challenges simulate against live hero stats at challenge time. Both cases use the same formulas above — only which stat snapshot feeds `effective` (1.2) differs.
 - Reset/loadout: every battle starts all participants at full HP with no active statuses (section 5), regardless of the outcome of a previous cycle's battle in the same expedition — this matches `first-playable.md` and introduces no additional carry-over state beyond what `contracts.md` already tracks (`Hero.level/xp`, `Hero.equipment`, `Hero.specializationId`).
 - This document fixes combat *outcomes*, not reward quantities: XP/gold/drop amounts per cycle/boss/arena result are the economy table's responsibility (M1-04), consumed as "given a win/loss/draw and participant list, grant X" — no numbers here compete with that table.
+
+---
+
+## 8. Combat v2 (M2-22 addition — supersedes sections 3.3-3.7 for M2+ content)
+
+Scope: cooldowns, buffs/debuffs, threat/taunt, healing, AoE, crit/dodge, front/back row targeting, and
+the per-action event log the battle view renders, per `design/studio/milestones/M2.md`. Class-specific
+skill numbers live in `classes.md`; this section specifies the shared combat-engine mechanics every
+class and enemy skill is built from. All math stays integer floor division, same convention as above.
+
+### 8.1 Round structure v2 (supersedes section 2)
+
+A battle still runs up to 100 rounds. Each round:
+
+1. **Dynamic SPD recompute, then speed order.** Before sorting, recompute every living actor's
+   `effective SPD` fresh from: the battle-start-fixed value (section 1.2/`classes.md` 2.1) + any
+   currently-active flat SPD statuses (`status_haste`, +3) + any dynamically-rechecked passive SPD
+   modifiers (e.g. Ranger's Momentum, `classes.md` 5.3 — recomputed from the current count of dead
+   opposing-side units). This recompute happens once per round, using state as of the end of the
+   previous round; a status/passive granted mid-round never reorders the round already in progress.
+   Then sort all living actors both sides by this round's `effective SPD` descending; tie-break, in
+   order: (a) heroes before enemies (PvE/boss) or team A before team B (arena, matching the existing
+   engine's `arenaSpeedOrderCompare`), (b) ascending slot index. Slot indices now range **0-4** for
+   both heroes (formation slots, `classes.md` 3) and opposing-side units (extended from M1's 0-2 to
+   allow larger encounters, e.g. boss adds).
+2. **Actions.** Walk the speed order. A defeated actor cannot act later this round (unchanged M1 rule).
+   For each living actor: resolve its action per `classes.md` 4.1's priority (equipped active slot 1 if
+   ready and legal, else slot 2, else Basic Attack) for heroes, or the content-defined behavior
+   (`content.md`'s addition) for enemies. Every damaging/healing/status effect applies immediately,
+   visible to later actors' targeting this round, per the existing M1 invariant.
+3. **End-of-round status ticks**, in the same speed order (living-at-this-point only): all
+   `status_burn` ticks first (speed order), then all `status_regen` ticks (speed order) — a fixed,
+   documented order so a target holding both effects in the same round always resolves damage before
+   healing. HP is clamped to `[0, maxHP]` after each tick exactly as before.
+4. **Cooldown and duration decrement.** Every hero's two equipped active skills: if the skill's
+   remaining cooldown is > 0, decrement by 1 (a skill goes from "just used, CD=N" to "N-1 remaining" at
+   the end of the round it was used in, same bookkeeping pattern as M1's Burn duration). Every active
+   status's remaining duration decrements by 1; at 0 it is removed before the next round (unchanged
+   pattern from M1 section 2 step 4, now applied to every status kind in `classes.md` section 6, not
+   only Burn). An active `status_taunt` pointer on a side is cleared the same way.
+5. **Resolution check** (section 5, unchanged): 0 living actors on a side ends the battle this round;
+   otherwise round 100 ends it in timeout; otherwise proceed.
+
+### 8.2 Targeting and row protection (supersedes 3.1 for offensive actions)
+
+- **Row protection** (full rule and rationale in `classes.md` section 3): an offensive action's valid
+  target pool on the opposing side is restricted to the living front row (slot 0-2) while any front-row
+  member lives, else the living back row (slot 3-4). A skill flagged **ignores row protection** uses
+  the full living set instead. This applies identically to hero-vs-enemy, enemy-vs-hero, and (in arena)
+  hero-vs-hero targeting — "opposing side" replaces M1's hardcoded "enemy"/"hero" framing in 3.1.
+- **Taunt overrides everything** for single-target offensive actions only: if the opposing side
+  currently has an active `status_taunt`, a single-target offensive action must target the taunter,
+  skipping row protection, HP, HP%, and position rules entirely. AoE target selection (Meteor, Volley,
+  Sanctuary, War Hymn) is never affected by taunt.
+- Within whatever pool applies (row-restricted, full-set via an ignore-flag, or taunt-forced-to-one),
+  the existing M1 tie-break rules select among multiple remaining candidates unchanged: hero default
+  enemy-targeting = lowest current HP (tie by slot index); generic enemy default targeting = lowest
+  party position (tie is moot, position is the tie-break); "smart" HP%-based targeting (e.g. a boss's
+  execute-style skill) = lowest HP% (tie by slot index). Ally-targeting (heals/buffs) is never
+  row-gated and keeps 3.1's lowest-HP% rule unchanged.
+
+### 8.3 Crit and dodge (new — consumes `rngSeed`, previously reserved-but-unused per section 7)
+
+Every damaging hit (Basic Attack or an active skill's direct-damage component) resolves through this
+pipeline before applying to HP. A hit that is flagged **guaranteed critical** (Rogue's Backstab) skips
+both rolls and always applies the crit multiplier; nothing else skips rolls.
+
+1. **Dodge roll.** Draw the next value from the battle's RNG stream (8.5), `r1 ∈ [0,99]`. The
+   defender's effective dodge chance = `5 + (10 if defender is currently in the back row else 0) +
+   (sum of the defender's own flat dodge-chance passive/status bonuses, e.g. Rogue's Evasion +15,
+   Choir's Haste-linked +5)`, clamped to `[0, 50]`. If `r1 < dodgeChance`: the hit deals **0** damage,
+   no crit roll is drawn, and the event log records `dodged: true`.
+2. **Crit roll** (only if not dodged). Draw the next RNG value, `r2 ∈ [0,99]`. The attacker's effective
+   crit chance = `10 + (sum of the attacker's own flat crit-chance passive bonuses, e.g. Ranger's
+   Hunter's Focus +15)`, clamped to `[0, 75]`. If `r2 < critChance`: this hit is a **critical hit**.
+3. **Damage computation.** Compute the skill's base damage per its own formula (`classes.md` section 5
+   / `content.md`'s addition), applying any skill-specific conditional multipliers in the order listed
+   in that skill's own definition (e.g. Ranger's execute bonus, Rogue's Opportunist). If step 2 found a
+   critical hit, apply `×3/2` (floor) as the final multiplier, after all other multipliers.
+4. Apply the resulting damage via the existing HP-clamp/guard-style redirect rules (8.4).
+
+For an AoE skill hitting N targets, repeat steps 1-3 independently **per target**, processed in
+ascending slot-index order of the targets hit, each target's rolls consuming the next 1-2 values from
+the single shared stream in that order (so the whole battle's RNG consumption is one deterministic,
+replayable sequence).
+
+### 8.4 Healing, buffs/debuffs, AoE (generalizes sections 3.6/4)
+
+- **Healing** (Cleric's Mending Light/Sanctuary) never rolls dodge/crit — it is unconditional, clamped
+  to the target's max HP exactly like M1's Mend (section 4, unchanged healing-cap rule).
+- **Buffs/debuffs** are read, never baked permanently, per `classes.md` 2.1 step 7 — every formula that
+  consults a stat affected by an active status recombines `effective` with the status's net
+  percentage/flat at evaluation time.
+- **AoE target-set selection** is specified per-skill (`classes.md` section 5, `content.md`'s addition)
+  — e.g. "up to 2 lowest-HP row-respecting valid enemies," "all living opposing-side units ignoring
+  row," "all living allies." There is no generic AoE formula beyond "resolve each selected target
+  independently through 8.2's targeting pool and 8.3's roll pipeline, in ascending slot-index order."
+- Guarded/redirected damage (any future guard-style mechanic) would layer on top of 8.3 step 4 exactly
+  as M1's Guardian redirect layered on top of the old formula — no change to that general pattern, only
+  no class currently has a guard-redirect skill in the M2-22 kit (Vanguard's tanking tool is Taunt,
+  `classes.md` 5.1, not a redirect).
+
+### 8.5 Deterministic RNG stream
+
+`rngSeed` (already part of every `simulateBattle`/`simulateArenaBattle` call per section 7) now seeds a
+32-bit PRNG state, consumed **only** by 8.3's dodge/crit rolls — never by action choice, targeting, or
+any other decision, preserving "same seed/log → same replay" for the whole engine. Reference generator
+(any deterministic PRNG satisfying this seeding/update contract is an acceptable substitute; this is
+the formula used for this document's worked examples): `state_0 = rngSeed`; each roll computes
+`state_{n+1} = (state_n * 1103515245 + 12345) mod 2^31` and returns `value_n = state_{n+1} mod 100`.
+Rolls are drawn in the exact order the round/action/AoE-target loop visits them (8.1-8.3) — this order,
+not the formula choice, is the part that must match exactly for replay determinism.
+
+### 8.6 Event log shape (additive extension of `BattleEvent`)
+
+The existing `BattleEvent` (`packages/game/src/combat.ts`: `{round, type, sourceId, targetId, amount,
+hpAfter}`) gains the following fields, all additive — no existing field is renamed or removed, so every
+stored M1 `BattleReport` remains valid and renderable (see `classes.md` section 9, migration point 7):
+
+```
+BattleEvent {
+  round: number            // unchanged
+  type: string              // unchanged; now includes skill-specific values, e.g. "bulwark_call", "mending_light"
+  sourceId: string | null   // unchanged
+  targetId: string | null   // unchanged; one event per target for an AoE hit
+  amount: number             // unchanged (negative=damage, positive=healing, 0 for non-HP events)
+  hpAfter: number | null     // unchanged
+  skillId: string | null              // NEW — the class skill that produced this event, null for a basic attack or a passive-triggered tick
+  crit: boolean                        // NEW — true if 8.3's crit roll/flag applied to this hit
+  dodged: boolean                      // NEW — true if 8.3's dodge roll avoided this hit entirely (amount is 0 when true)
+  statusApplied: { statusId: string, duration: number, stacks?: number } | null  // NEW — set when this event applies/refreshes a status (`classes.md` section 6)
+  statusExpired: string | null         // NEW — the statusId that expired this event's round-4 decrement, if any
+  death: boolean                        // NEW — true when this event's hpAfter reached 0 for a previously-living target (the acceptance-check-required "explicit death notice" — no separate event type needed)
+}
+```
+
+This is the shape the battle view (M2-27) renders per `design/studio/milestones/M2.md`'s acceptance
+checks 4-5-8: live HP (`hpAfter`), the acting skill (`skillId`), exact numbers (`amount`), crit/dodge
+flags, status duration (`statusApplied.duration`), and explicit death (`death`). The exact TypeScript
+shape in `packages/contracts`/`packages/game` is M2-25's/M2-26's decision; this is the logical contract
+they must satisfy.
+
+### 8.7 Alignment with section 7 / `contracts.md`
+
+Battles still never read a client-supplied clock; `rngSeed` is still accepted as an explicit parameter
+(section 7), now genuinely consumed (8.5) rather than reserved-but-unused. Given the same participants,
+loadouts, formation, and `rngSeed`, a battle is still fully deterministic and reproducible — satisfying
+`design/studio/milestones/M2.md`'s "same seed/log → same replay" requirement and the P0/P1 definition in
+`design/studio/priorities.md` ("combat state that desyncs from a playback control"). Expedition cycles
+still simulate against `frozenLoadout` (now including formation, primary/secondary class, and skill
+loadout, not only equipment+specialization); boss/arena still use live stats/loadout at challenge time.
