@@ -1,8 +1,8 @@
-# Fix: malformed JSON body returns 500/internal instead of 400/validation — evidence report (closed)
+# Fix: malformed JSON body returns 500/internal instead of 400/validation — evidence report (reopened)
 
-Date: 2026-10-20 (closed: QA independently reran the automated regression suite against the fix and
-reports 14/14 passing) · Owner: CTO · Task ID a348d7f5-50ff-474a-9f09-7269875e43a1 · Priority 3
-(from QA Tester)
+Date: 2026-10-20 (reopened: the prior "closed" revision cited a 14/14 regression-suite pass that nobody in
+this worktree ran or can verify — see Correction below) · Owner: CTO · Task ID
+a348d7f5-50ff-474a-9f09-7269875e43a1 · Priority 3 (from QA Tester)
 
 ## Gap (as reported by QA, task M2-07)
 
@@ -44,27 +44,45 @@ No contract change was made or needed; `contracts.md` is unchanged.
 
 ## Resolution
 
-Closing this task on the strength of two independent checks against the fix (`6acb778`):
+**Correction (this revision, superseding the prior "Resolution" below the line):** the previous revision
+closed this task "on the strength of two independent checks," one of which was QA's self-reported 14/14
+regression result on commit `de0cc85` (branch `agent/task-5394f37f-88fb-4ae3-aa1f-15e250c898a1`). That
+commit, `tests/e2e/malformed-payloads.mjs`, and `qa/reports/M2-07.md` are not present in this worktree —
+confirmed again this revision via directory listing (`tests/e2e/` has no `malformed-payloads.mjs`;
+`qa/reports/` has no `M2-07.md`). No tool available in this environment, including subagents, can run
+`git` to inspect an unmerged branch or confirm those commits' contents. Citing that result as evidence
+against *this* baseline was wrong: it is an unverified claim about a branch this worktree cannot see, not
+evidence executed here. That closure is withdrawn.
 
-1. My own manual repro in this session (malformed JSON → `400 validation`; server stays healthy) — one
-   case of the fourteen, executed directly.
-2. QA's full automated suite, reported in `qa/reports/M2-07.md`'s 2026-10-20 addendum: 14/14 pass,
-   including the exact case this task was opened to fix.
+What remains verified directly in this worktree, independent of QA's claim:
 
-The earlier revision of this report withheld closure pending that regression run because QA's test file
-had not reached this baseline and no owner decision authorized skipping it. QA has since run it
-independently and reported the result; that satisfies the outstanding evidence gap. Hands-off delivery
-is in effect for this task, so this closure is my own call, not an owner-recorded decision in
-`design/decisions.md`.
+1. The code fix itself: `apps/server/src/app.ts:99-104` (current baseline) maps any Fastify
+   `FST_ERR_CTP_*` error, including `FST_ERR_CTP_INVALID_JSON_BODY`, to `400 validation`, placed after the
+   existing 413/`FST_ERR_CTP_BODY_TOO_LARGE` case. Matches the specified fix and `contracts.md`'s
+   boundary-violation convention.
+2. One manual repro in this session (own server instance): malformed JSON body → `400 validation`; server
+   stays healthy afterward (`/health` → `200`).
+
+That is one case out of the fourteen the regression suite covers, executed directly. It is not a 14/14
+regression-suite pass, and this report does not claim one.
+
+This task stays open, not closed, until `tests/e2e/malformed-payloads.mjs` (or equivalent) is merged into
+this task's integrated baseline and actually run against it in a session that can show the output.
 
 ## Unresolved
 
-- QA's addendum and the regression run it describes live only in commit `de0cc85` on
-  `agent/task-5394f37f-88fb-4ae3-aa1f-15e250c898a1`; they are not merged into this task's branch, so this
-  report cites QA's reported result rather than an execution I reproduced directly against that file in
-  this worktree.
+- `tests/e2e/malformed-payloads.mjs` and `qa/reports/M2-07.md` do not exist in this worktree. The 14/14
+  result referenced in the prior revision lives only in an unmerged branch (`de0cc85`/`f3629ba` on
+  `agent/task-5394f37f-88fb-4ae3-aa1f-15e250c898a1`) that cannot be inspected from here with any available
+  tool (no `git` access to foreign branches, and subagents have the same limitation). This report no longer
+  relies on that claim.
+- The underlying code fix is not in doubt (confirmed twice now by direct manual repro against the current
+  baseline), but task closure requires the automated suite to run against the merged baseline, not a
+  report about a run on a different branch.
 
 ## Next task
 
-None. This closes the fix-verification gap `qa/reports/M2-07.md` originally filed to the CTO. No new
-backlog task opened.
+Not closed. QA Tester: merge `tests/e2e/malformed-payloads.mjs` (and any `qa/reports/M2-07.md` content
+worth keeping) into the integrated baseline this task branches from, then run
+`node tests/e2e/malformed-payloads.mjs` against a server started from that baseline and report the exact
+pass/fail count. See task block below.
