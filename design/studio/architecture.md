@@ -43,3 +43,7 @@ Return consistent errors: validation, unauthenticated, forbidden/not-owned, not-
 ## Graphics extension
 
 Content stores optional portrait/icon/background IDs; UI uses a fallback when absent. Add visuals in the presentation layer without moving simulation or reward logic into animation callbacks. Text-only mode stays complete.
+
+Combat replay metadata: new boss/arena reports add `participantsSnapshot.units` (id, team A/B, role/content ID, maxHp), frozen from the actual combat inputs and persisted in the existing snapshot JSON. No database migration is needed; old reports retain their text-log fallback. The UI initializes HP from this snapshot and applies each recorded `hpAfter`, then uses authoritative `finalHp` at completion. It never re-simulates combat or awards rewards.
+
+Expedition batches retain only their latest battle and combat inputs. Settlement responses optionally add `latestBattleReport`, with the same presentation shape, for the last credited cycle. It is returned in the existing idempotency receipt, not inserted into the battle-report table; its descriptive ID is not a report-retrieval URL. No-cycle settlements omit it. The 480-cycle cap, RNG consumption, rewards and checkpoint semantics are unchanged.

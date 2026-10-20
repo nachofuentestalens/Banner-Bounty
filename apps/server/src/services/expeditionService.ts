@@ -1,3 +1,4 @@
+import { replayUnits } from "./battlePresentation.js";
 import crypto from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import type { ExpeditionViewDTO, NoPayloadMutationRequest, SettlementResultDTO } from "@banner-and-bounty/contracts";
@@ -165,6 +166,14 @@ function applySettlement(
       outcomes: { wins: batch.wins, losses: batch.losses },
       overflow: { convertedCount: batch.overflowConvertedCount, convertedGold: batch.overflowConvertedGold },
       recentCycles: [...batch.recentCycles],
+      ...(batch.latestBattle ? { latestBattleReport: {
+        reportId: `expedition:${accountId}:${plan.checkpointAt}`,
+        kind: "pve" as const,
+        participantsSnapshot: { units: replayUnits(batch.latestBattle.heroes, batch.latestBattle.enemies) },
+        seed: "", rulesVersion: CURRENT_RULES_VERSION, createdAt,
+        events: [...batch.latestBattle.battle.events],
+        result: { outcome: batch.latestBattle.battle.result, rounds: batch.latestBattle.battle.rounds, finalHp: batch.latestBattle.battle.finalHp },
+      } } : {}),
     },
     changed: true,
   };

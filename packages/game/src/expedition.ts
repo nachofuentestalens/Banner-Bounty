@@ -4,7 +4,7 @@
 // hero levels, the persisted rngState and the current unequipped count.
 
 import { OLD_ROAD_ENEMIES, type ClassId, type SpecializationId } from "@banner-and-bounty/content";
-import { type BattleResultKind, type EnemyCombatantInput, type HeroCombatantInput, simulateBattle } from "./combat.js";
+import { type BattleResult, type BattleResultKind, type EnemyCombatantInput, type HeroCombatantInput, simulateBattle } from "./combat.js";
 import { type RngState } from "./rng.js";
 import { type ItemDropRoll, overflowGoldValue, resolveExpeditionCycleReward } from "./rewards.js";
 import { type HeroLoadoutInput, computePartyEffectiveStats, effectiveSpecialization } from "./stats.js";
@@ -90,6 +90,7 @@ export interface CycleBatchInput {
 }
 
 export interface CycleBatchResult {
+  readonly latestBattle: { battle: BattleResult; heroes: readonly HeroCombatantInput[]; enemies: readonly EnemyCombatantInput[] } | null;
   readonly wins: number;
   readonly losses: number;
   /** XP granted to each participant (pre-cap); identical for all three. */
@@ -126,9 +127,11 @@ export function simulateExpeditionCycles(input: CycleBatchInput): CycleBatchResu
   let unequippedCount = input.unequippedCount;
   const items: ItemDropRoll[] = [];
   const recentCycles: CycleLogEntry[] = [];
+  let latestBattle: CycleBatchResult["latestBattle"] = null;
 
   for (let i = 0; i < input.cycles; i++) {
     const battle = simulateBattle(heroes, enemies, "pve");
+    latestBattle = { battle, heroes, enemies };
     const cycle = input.cyclesCompletedBefore + i + 1;
     let entry: CycleLogEntry;
 
@@ -165,6 +168,7 @@ export function simulateExpeditionCycles(input: CycleBatchInput): CycleBatchResu
   }
 
   return {
+    latestBattle,
     wins,
     losses,
     xpPerParticipant,

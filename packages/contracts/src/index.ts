@@ -208,6 +208,7 @@ export interface CycleLogEntryDTO {
 }
 
 export interface SettlementResultDTO {
+  latestBattleReport?: BattleReport; // additive: last credited cycle only
   creditedCycles: number;
   elapsedMs: number;
   discardedMs: number;
