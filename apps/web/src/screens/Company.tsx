@@ -170,6 +170,13 @@ function FormationEditor({ state, controller }: { state: AccountState; controlle
 
   function setSlot(index: number, heroId: string | null) {
     const next = [...slots] as typeof slots;
+    // Assigning a hero already fielded elsewhere moves it here instead of
+    // duplicating it, so picking the same hero into two selects acts as a
+    // swap rather than requiring the user to clear the old slot first.
+    if (heroId) {
+      const existingIndex = next.indexOf(heroId);
+      if (existingIndex >= 0) next[existingIndex] = null;
+    }
     next[index] = heroId;
     setSlots(next);
   }
@@ -199,8 +206,9 @@ function FormationEditor({ state, controller }: { state: AccountState; controlle
             <select key={i} aria-label={`Front row slot ${i + 1}`} value={slots[i] ?? ""} onChange={(e) => setSlot(i, e.target.value || null)}>
               <option value="">(empty)</option>
               {state.heroes.map((h) => (
-                <option key={h.heroId} value={h.heroId} disabled={slots.includes(h.heroId) && slots[i] !== h.heroId}>
+                <option key={h.heroId} value={h.heroId}>
                   {heroName(h.heroId)}
+                  {slots.includes(h.heroId) && slots[i] !== h.heroId ? " (fielded elsewhere)" : ""}
                 </option>
               ))}
             </select>
@@ -212,8 +220,9 @@ function FormationEditor({ state, controller }: { state: AccountState; controlle
             <select key={i} aria-label={`Back row slot ${i - 2}`} value={slots[i] ?? ""} onChange={(e) => setSlot(i, e.target.value || null)}>
               <option value="">(empty)</option>
               {state.heroes.map((h) => (
-                <option key={h.heroId} value={h.heroId} disabled={slots.includes(h.heroId) && slots[i] !== h.heroId}>
+                <option key={h.heroId} value={h.heroId}>
                   {heroName(h.heroId)}
+                  {slots.includes(h.heroId) && slots[i] !== h.heroId ? " (fielded elsewhere)" : ""}
                 </option>
               ))}
             </select>

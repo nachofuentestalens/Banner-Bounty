@@ -184,19 +184,6 @@ export const COPY = {
 
 type NameDesc = { name: string; desc: string };
 
-const SPEC_COPY: Record<string, NameDesc> = {
-  spec_guardian: COPY.class_vanguard_spec_guardian,
-  spec_berserker: COPY.class_vanguard_spec_berserker,
-  spec_marksman: COPY.class_ranger_spec_marksman,
-  spec_pathfinder: COPY.class_ranger_spec_pathfinder,
-  spec_pyromancer: COPY.class_arcanist_spec_pyromancer,
-  spec_warden: COPY.class_arcanist_spec_warden,
-};
-
-export function specializationCopy(specializationId: string): NameDesc {
-  return SPEC_COPY[specializationId] ?? { name: specializationId, desc: "" };
-}
-
 const CLASS_COPY: Record<string, NameDesc> = {
   class_vanguard: COPY.class_vanguard,
   class_ranger: COPY.class_ranger,
