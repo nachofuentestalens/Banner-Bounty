@@ -140,3 +140,186 @@ This section's enemy rework (5.2-5.3) is the reference implementation of combat 
 beyond Old Road (M2.md scope item 6) is **not** undertaken here — it is out of this task's bounded
 scope (`AGENTS.md`: "keep scope fixed... bounded content") and is flagged as an open item in
 `reports/M2-22.md` for the Producer to assign an owner, not resolved or delegated by this document.
+Section 6 below (M2-31) is that owner.
+
+---
+
+## 6. M2-31 additions: second expedition area and a multi-floor dungeon with a boss
+
+Fulfils `design/studio/milestones/M2.md` scope item 6 and acceptance check 11. Builds on
+`contracts.md`'s M2-01 `Area { areaId, name, unlockRequirement: { kind, value? } }` amendment and on
+`economy/gear.md`'s `reward_area_2`/`reward_dungeon_1` profiles (which already fix XP/gold/material/
+item numbers for this content — this section only binds those profiles to concrete encounters, per
+`gear.md`'s own statement that "M2-31 owns encounter IDs, unlocks, floor counts, enemy rosters and
+bosses"). Section 5 (Old Road/Tollkeeper) is unchanged by this section; nothing below renames or
+retunes it. All enemy/boss behavior below is built only from the existing combat v2 engine rules
+(`combat.md` section 8) and the existing status vocabulary (`classes.md` section 6, `status_burn` /
+`status_weaken` / `status_fortify` / `status_haste` / `status_regen` / `status_taunt`) — this section
+adds no new status, skill, class, or gear rule.
+
+### 6.1 Areas (binds `contracts.md`'s `Area` entity)
+
+| areaId | Display | unlockRequirement | Reward profile (`gear.md` 3) |
+| --- | --- | --- | --- |
+| `area_old_road` | The Old Road | none (starter area; migration default for `Account.selectedAreaId`, per `reports/M2-01.md`'s open question 1) | `reward_area_1` |
+| `area_sunken_aqueduct` | The Sunken Aqueduct | `{ kind: "bossClear", value: "boss_tollkeeper" }` — unlocked the instant the account's `BossClaim` for `boss_tollkeeper` exists (first clear or later; the claim record itself is the gate, not specifically the reward grant) | `reward_area_2` |
+
+This resolves `reports/M2-01.md`'s open questions for M2-02 (superseded by this task): `area_old_road`
+is the starter `areaId`; `unlockRequirement.kind = "bossClear"` is the one new kind this document
+defines, evaluated as "does `BossClaim(accountId, value)` exist" — a boolean, already-tracked fact, no
+new server state. `reward_area_3` (`gear.md` 3) stays unused — per `gear.md`, "an unused profile does
+not require another area" — and is available for a future area beyond M2's bounded scope.
+
+Gating area 2 behind the Tollkeeper clear (rather than a raw hero-level threshold) reuses an existing
+deterministic account fact, keeps the gate diegetic (clear the road's toll boss, the road beyond opens),
+and lines up with `economy/baseline.md`'s simulation finding that Tollkeeper readiness is pinned to
+hero level 3 — so area 2 content below is tuned for parties a little past that point (level ~4-6,
+partially geared from Old Road/Tollkeeper drops), not from level 1.
+
+### 6.2 Sunken Aqueduct enemies (normal encounter, `reward_area_2`)
+
+Exactly 3 normal enemy definitions, fixed composition (same deterministic-selection convention as
+section 3 — no randomized composition). Slot indices use the 0-4 range from `combat.md` 8.1; this
+composition only uses slots 0-2.
+
+| enemyId | Display | Slot | HP | ATK | DEF | SPD |
+| --- | --- | --- | --- | --- | --- | --- |
+| `enemy_aqueduct_drowned` | Drowned Warden-Thrall | 0 | 65 | 12 | 6 | 9 |
+| `enemy_aqueduct_current` | Riptide Current | 1 | 48 | 13 | 4 | 13 |
+| `enemy_aqueduct_husk` | Aqueduct Husk | 2 | 40 | 9 | 4 | 10 |
+
+**Behavior** (content-defined, per `combat.md` 8.1 step 2 — "or the content-defined behavior for
+enemies"):
+
+- `enemy_aqueduct_drowned`: default action targets per the row-respecting pool (`combat.md` 8.2),
+  lowest current HP, damage `basic(ATK, targetDEF)`. On every round where `round % 3 == 0`: instead
+  applies `status_weaken` (-30% ATK, 2 rounds, `classes.md` 6) to the lowest-HP%-living hero in the
+  row-respecting pool (tie by slot index), **no direct damage that round** — a telegraphed debuff
+  round, same cadence convention as the Old Road brigand's Crushing Blow (5.2) but applied as a pure
+  debuff rather than a damage spike, so its pressure is about eroding sustained damage output over a
+  longer fight, not a single burst.
+- `enemy_aqueduct_current`: **ignores row protection** for its single-target action every round (the
+  only normal-tier enemy to do so — Old Road has none; this is the area's one "learn the taunt
+  counterplay before you need it for the dungeon boss" enemy). Target: lowest current HP among the
+  *full* living opposing side (tie by slot index), or the taunter if the party has an active
+  `status_taunt` (`combat.md` 8.2's taunt-overrides-everything rule applies automatically — no special
+  case needed here). Damage: `basic(ATK, targetDEF)`, no status applied.
+- `enemy_aqueduct_husk`: unchanged plain baseline (identical role to the Old Road cutpurse) — default
+  action only, row-respecting pool, lowest current HP, `basic(ATK, targetDEF)` damage, no behavior
+  override. Kept as the area's contrast enemy so a player can isolate what `drowned`/`current` add.
+
+**Team-building payoff** (M2.md acceptance check 7): a party with no front-row tank/taunt lets
+`enemy_aqueduct_current` snipe its squishiest back-row hero (a Cleric or Arcanist) every single round
+from turn one, which a row-respecting-only encounter (Old Road) never does. A Vanguard with Bulwark
+Call's `status_taunt` absorbs this entirely (the current's row-ignoring target selection is overridden
+by the taunt rule); a party without one takes sustained unmitigated backline damage on top of the
+drowned's periodic weaken, materially lengthening or losing the fight. This is measurable the same way
+M2.md check 7 specifies: run the encounter with/without a taunter and compare turns-to-clear or HP
+remaining.
+
+### 6.3 Sunken Aqueduct Depths (multi-floor dungeon, `reward_dungeon_1` — introductory profile)
+
+`dungeonId`: `dungeon_aqueduct_depths`. 4 ordered floors (floors 1-3 ordinary, floor 4 final boss);
+`floorCount*180 = 720` seconds, well inside `gear.md`'s `28800`-second cap. Same content-level unlock
+rule as `area_sunken_aqueduct` (6.1): `{ kind: "bossClear", value: "boss_tollkeeper" }` — entering the
+dungeon requires the same Tollkeeper clear as the area it is thematically set beneath; the exact
+`Dungeon` entity/endpoint shape that carries this rule is M2-25's contract decision, not fixed here
+(mirrors how `contracts.md`'s `Area.unlockRequirement` left its own evaluation rule open for this
+document to fill in). Every floor starts at full HP with fresh battle-local effects and uses the run's
+frozen party/build/gear, per `gear.md` section 4; a loss/timeout ends the run with no reward for that
+floor and restarts at floor 1 on the next attempt.
+
+| Floor | Composition | Reward row (`gear.md` 4) |
+| --- | --- | --- |
+| 1 | `enemy_aqueduct_husk` (slot 0), `enemy_aqueduct_husk` (slot 1) | dungeon 1 ordinary |
+| 2 | `enemy_aqueduct_drowned` (slot 0), `enemy_aqueduct_husk` (slot 1) | dungeon 1 ordinary |
+| 3 | `enemy_depths_broodling` (slot 0), `enemy_depths_broodling` (slot 1) | dungeon 1 ordinary |
+| 4 | `boss_drowned_warden` (slot 0, solo) | dungeon 1 final boss |
+
+**Floor 3 enemy** (new, dungeon-only — not used in the area-2 expedition):
+
+| enemyId | Display | Slot | HP | ATK | DEF | SPD |
+| --- | --- | --- | --- | --- | --- | --- |
+| `enemy_depths_broodling` | Depths Broodling | 0 or 1 (two copies) | 55 | 14 | 5 | 11 |
+
+Behavior: default action is row-respecting lowest-current-HP targeting, `basic(ATK, targetDEF)`
+damage. On every round where `round % 3 == 1` (rounds 1, 4, 7, ...): **Brood Surge** — same target
+rule, damage `floor(basic(ATK, targetDEF) * 3 / 2)` (+50%). With two Broodlings sharing this cadence,
+round 1 of the floor opens with a double burst against whichever single front-row hero is lowest-HP,
+testing whether the party has either enough front-line DEF/HP (Vanguard's Thick Hide/Last Stand) or
+enough burst healing (Cleric's Mending Light/Devotion) to absorb an opening spike — a glass-cannon
+party that dumped every hero into pure ATK and skipped a healer is noticeably more likely to lose a
+hero on floor 3's first round than a party that fielded a tank or healer, directly demonstrating
+"good team building over raw stat totals" (`design/studio/milestones/M2.md` scope item 6).
+
+### 6.4 Boss: The Drowned Warden (`boss_drowned_warden`, dungeon floor 4)
+
+| bossId | Display | Slot | HP | ATK | DEF | SPD |
+| --- | --- | --- | --- | --- | --- | --- |
+| `boss_drowned_warden` | The Drowned Warden | 0 | 300 | 16 | 9 | 10 |
+
+Solo encounter (one actor, slot 0) vs. the challenger's full living party (1-5 heroes, `classes.md`
+section 3). Always **ignores row protection** for every action below, like the Tollkeeper (`content.md`
+5.3); `combat.md` 8.2's taunt-overrides-everything rule applies automatically to its single-target
+actions if the party has an active `status_taunt` (no special-case restatement needed — this is the
+shared engine rule, reused here exactly as the Tollkeeper reuses it).
+
+**Behavior** (evaluated every round in its speed-order turn, a 4-round telegraphed cycle — harder than
+the Tollkeeper's 3-round cycle, consistent with this being later-game content):
+
+- `round % 4 == 2`: **Crushing Current** (single-target) — target = lowest HP% among the full living
+  party (or the taunter, if taunted), tie by slot index. Damage `floor(basic(ATK, targetDEF) * 3 / 2)`
+  (+50%, same formula shape as the Tollkeeper's Toll Smash), and additionally applies `status_weaken`
+  (-30% ATK, 2 rounds) to its target.
+- `round % 4 == 0`: **Tidal Surge** (AoE, ignores row — AoE target selection is never affected by taunt
+  per `combat.md` 8.2/`classes.md` 6's `status_taunt` definition) — all living heroes, each independently
+  resolved per `combat.md` 8.3's per-target crit/dodge pipeline. Per target: `attenuatedATK =
+  floor(ATK * 7 / 10)`, damage `max(1, attenuatedATK - floor(targetDEF/2))`, and applies `status_weaken`
+  (-30% ATK, 2 rounds, refreshing if already active) to each target hit.
+- All other rounds (`round % 4 == 1` or `round % 4 == 3`): **Warden's Grasp** (single-target, basic
+  attack-equivalent) — target = lowest party position among the full living party (or the taunter),
+  damage `basic(ATK, targetDEF)`.
+
+This gives a deterministic, telegraphable pattern (Grasp, Smash, Grasp, Surge, repeat) with no RNG in
+action selection, matching the Tollkeeper's design precedent and `first-playable.md`'s "no player
+scripting" invariant. Reward: the dungeon's floor-4 "dungeon 1 final boss" row (`gear.md` 4) — 16 XP per
+participant, 40 gold, 4 scrap, 2 sigil, 1 core, guaranteed item at conditional rarity weights
+0/70/28/2 — re-earned on every successful full clear, per `gear.md`'s "every successful run can earn
+these rows again" rule. This is **not** a `BossClaim`-gated one-time reward like the Tollkeeper; per
+`gear.md` section 3, "dungeon final bosses instead use section 4 [reward row]: they must not also grant
+standalone-boss rewards or consume the Tollkeeper claim" — so `boss_drowned_warden` never touches
+`BossClaim` and has no separate first-clear bonus.
+
+**Team-building payoff** (M2.md acceptance checks 7 and 11): because the boss ignores row protection
+unconditionally, a party with no taunter exposes its lowest-HP%/lowest-position hero (frequently a
+squishy backline Cleric or Arcanist) to both Crushing Current's execute-style target selection and
+Warden's Grasp's position-based targeting every single non-Surge round; Tidal Surge then adds
+unavoidable AoE chip damage and weaken stacking across the whole party regardless of formation. A
+well-built team (Vanguard taunting via Bulwark Call to eat the single-target hits, Cleric sustaining
+through Sanctuary/Mending Light against the periodic AoE) clears this comfortably within the 100-round
+cap; a poorly-built team of equal average power (e.g. 5 pure-damage heroes, no tank, no healer) takes
+unmitigated single-target execute damage onto whichever hero is weakest each cycle and accumulating
+weaken stacks eroding its own damage output, making a loss or a timeout materially more likely — the
+same directional contrast the Tollkeeper already demonstrates, raised one tier.
+
+### 6.5 Assumptions and open items (recorded per `AGENTS.md` rule 4)
+
+- `unlockRequirement.kind = "bossClear"` is a new kind this document defines to fill `contracts.md`'s
+  deliberately-left-opaque `Area.unlockRequirement` shape; it requires no new contract field (evaluates
+  against the existing `BossClaim(accountId, bossId)` fact) — flagged for M2-25 to confirm when it
+  formalizes the areas/dungeons contract surface, not expected to need a shape change.
+- A `Dungeon` entity/endpoint (list, select, start/advance-floor, abandon) does not yet exist in
+  `contracts.md` — this document fixes the *content* (floors, enemies, boss, reward-profile binding)
+  that such an entity must carry, per `gear.md`'s explicit division of labor ("M2-31 owns encounter
+  IDs... this document supplies reusable reward profiles, not additional encounters"); the actual
+  entity/DTO shape is M2-25's decision.
+- `reward_area_3` and `reward_dungeon_2` (`gear.md` 3-4) are intentionally left unbound — one new area
+  and one new dungeon satisfy M2.md scope item 6 and acceptance check 11's "at least" wording; a third
+  area or second dungeon is additional content beyond this task's bounded scope, available for a future
+  task without any further contract or economy change.
+- Narrative copy for `area_sunken_aqueduct`, its three enemies, `dungeon_aqueduct_depths`, the floor-3
+  broodling, and `boss_drowned_warden` does not exist yet in `narrative/copy.md` (M1-03 freeze lists
+  only the Old Road/Tollkeeper keys) — M2-24 (already `in_progress` per `design/studio/milestones/M2.md`'s
+  sequencing-gap note) must add these `enemyId`/`bossId`/area `.name`/`.desc` keys, since this document
+  only fixes IDs and stats, not display copy, matching `content.md`'s existing division of labor with
+  `narrative/copy.md`.
