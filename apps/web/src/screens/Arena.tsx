@@ -4,13 +4,13 @@ import { runMutation } from "../runMutation.js";
 import type { AccountStateController } from "../useAccountState.js";
 import type { AccountState, ArenaChallengeResult, SnapshotDetail, SnapshotSummary } from "../types.js";
 import { COPY, classCopy } from "../copy.js";
-import { isPartyComplete } from "../rules.js";
-import { BattleResultPanel } from "../components/BattleResultPanel.js";
+import { isFormationComplete } from "../rules.js";
+import { BattleView } from "../components/BattleView.js";
 
 function PublishPanel({ state, controller }: { state: AccountState; controller: AccountStateController }) {
   const [pending, setPending] = useState(false);
   const [published, setPublished] = useState(false);
-  const partyComplete = isPartyComplete(state);
+  const partyComplete = isFormationComplete(state);
 
   async function publish() {
     setPending(true);
@@ -101,7 +101,7 @@ function SnapshotPreviewPanel({ snapshotId, controller, accountRevision, onRefre
                 const stats = detail.frozenStats.find((s) => s.heroId === member.heroId);
                 return (
                   <tr key={member.heroId}>
-                    <td>{classCopy(member.classId).name}</td>
+                    <td>{classCopy(member.primaryClassId).name}</td>
                     <td>{member.level}</td>
                     <td>{stats?.maxHp ?? "—"}</td>
                     <td>{stats?.atk ?? "—"}</td>
@@ -126,7 +126,7 @@ function SnapshotPreviewPanel({ snapshotId, controller, accountRevision, onRefre
           {COPY.action_retry}
         </button>
       ) : null}
-      {result ? <BattleResultPanel report={result.report} /> : null}
+      {result ? <BattleView report={result.report} /> : null}
     </div>
   );
 }

@@ -3,9 +3,9 @@ import { post, mutationPayload } from "../api.js";
 import { runMutation } from "../runMutation.js";
 import type { AccountStateController } from "../useAccountState.js";
 import type { AccountState, EquipmentSlot, Hero, ItemInstance } from "../types.js";
-import { COPY, classCopy, composeItemName, itemCopy } from "../copy.js";
-import { isExpeditionActive } from "../rules.js";
-import { itemSlot } from "../frozenIds.js";
+import { COPY, affixCopy, classCopy, composeItemName, itemCopy, rarityLabel } from "../copy.js";
+import { isActivityActive } from "../rules.js";
+import { ITEM_DEFINITION_IDS, itemSlot } from "../frozenIds.js";
 
 type SlotFilter = "all" | EquipmentSlot;
 type OwnerFilter = "all" | "equipped" | "unequipped";
@@ -15,7 +15,7 @@ function ownerLabel(item: ItemInstance, heroes: Hero[]): string {
   const hero = heroes.find((h) => h.heroId === item.equippedBy);
   if (!hero) return "Unequipped";
   const slot = (Object.entries(hero.equipment).find(([, id]) => id === item.itemInstanceId)?.[0] as EquipmentSlot | undefined) ?? "weapon";
-  return `${classCopy(hero.classId).name} (${slot})`;
+  return `${classCopy(hero.primaryClassId).name} (${slot})`;
 }
 
 /**
@@ -75,12 +75,14 @@ function GearComparisonPanel({
 
   return (
     <div className="gear-comparison-panel" ref={panelRef} tabIndex={-1}>
-      <h3>Compare: {composeItemName(item.definitionId, item.affixId)}</h3>
+      <h3>
+        Compare: {composeItemName(item.definitionId, item.affixes)} ({rarityLabel(item.rarityId)})
+      </h3>
       <label htmlFor="compare-hero-select">Hero</label>
       <select id="compare-hero-select" value={heroId} onChange={(e) => setHeroId(e.target.value)}>
         {heroes.map((h) => (
           <option key={h.heroId} value={h.heroId}>
-            {classCopy(h.classId).name}
+            {classCopy(h.primaryClassId).name}
           </option>
         ))}
       </select>
@@ -93,8 +95,8 @@ function GearComparisonPanel({
         </thead>
         <tbody>
           <tr>
-            <td>{currentItem ? composeItemName(currentItem.definitionId, currentItem.affixId) : "Empty"}</td>
-            <td>{composeItemName(item.definitionId, item.affixId)}</td>
+            <td>{currentItem ? composeItemName(currentItem.definitionId, currentItem.affixes) : "Empty"}</td>
+            <td>{composeItemName(item.definitionId, item.affixes)}</td>
           </tr>
           <tr>
             <td>{currentItem ? itemCopy(currentItem.definitionId).desc : "—"}</td>
@@ -137,6 +139,8 @@ function ItemRow({
   const equippedHero = item.equippedBy ? heroes.find((h) => h.heroId === item.equippedBy) : undefined;
   const slot = (equippedHero && (Object.entries(equippedHero.equipment).find(([, id]) => id === item.itemInstanceId)?.[0] as EquipmentSlot | undefined)) ?? itemSlot(item.definitionId);
 
+  const [reforging, setReforging] = useState(false);
+
   async function unequip() {
     if (!equippedHero) return;
     setPending(true);
@@ -147,9 +151,20 @@ function ItemRow({
     setPending(false);
   }
 
+  async function reforge(affixIndex: number) {
+    setReforging(true);
+    await runMutation(async () => {
+      await post("/reforge", mutationPayload(accountRevision, { itemInstanceId: item.itemInstanceId, affixIndex }));
+      await controller.refetch();
+    }, controller);
+    setReforging(false);
+  }
+
   return (
     <li className="item-row">
-      <span className="item-name">{composeItemName(item.definitionId, item.affixId)}</span>
+      <span className="item-name">
+        {composeItemName(item.definitionId, item.affixes)} <span className="rarity-tag">({rarityLabel(item.rarityId)})</span>
+      </span>
       <span className="item-desc">{itemCopy(item.definitionId).desc}</span>
       <span className="item-owner">{ownerLabel(item, heroes)}</span>
       {item.equippedBy ? (
@@ -161,7 +176,75 @@ function ItemRow({
           {COPY.action_equip}
         </button>
       )}
+      {!item.equippedBy && item.rarityId !== "common" ? (
+        <span className="reforge-row">
+          {item.affixes.map((affix, i) => (
+            <button key={i} type="button" disabled={reforging || expeditionActive} onClick={() => reforge(i)} title={`Reforge this item's ${affixCopy(affix.affixId).name} affix`}>
+              {reforging ? COPY.state_action_pending.label : `${COPY.action_reforge} ${affixCopy(affix.affixId).name}`}
+            </button>
+          ))}
+        </span>
+      ) : null}
     </li>
+  );
+}
+
+const RECIPES = [
+  { recipeId: "craft_uncommon", label: "Craft uncommon" },
+  { recipeId: "craft_rare", label: "Craft rare" },
+  { recipeId: "craft_epic", label: "Craft epic" },
+] as const;
+
+function CraftingPanel({ state, controller }: { state: AccountState; controller: AccountStateController }) {
+  const [recipeId, setRecipeId] = useState<string>(RECIPES[0].recipeId);
+  const [definitionId, setDefinitionId] = useState<string>(ITEM_DEFINITION_IDS[0]!);
+  const [pending, setPending] = useState(false);
+  const [resultMessage, setResultMessage] = useState<string | null>(null);
+  const unequippedCount = state.inventory.filter((i) => !i.equippedBy).length;
+
+  async function craft() {
+    setPending(true);
+    setResultMessage(null);
+    const payload: Record<string, unknown> = { recipeId, definitionId };
+    if (unequippedCount >= 100) {
+      const replacement = state.inventory.find((i) => !i.equippedBy);
+      if (replacement) payload.replacementItemInstanceId = replacement.itemInstanceId;
+    }
+    await runMutation(async () => {
+      const { data } = await post<{ item: ItemInstance }>("/craft", mutationPayload(state.revision, payload));
+      setResultMessage(`Crafted ${composeItemName(data.item.definitionId, data.item.affixes)} (${rarityLabel(data.item.rarityId)}).`);
+      await controller.refetch();
+    }, controller);
+    setPending(false);
+  }
+
+  return (
+    <section className="crafting-panel" aria-labelledby="crafting-heading">
+      <h2 id="crafting-heading">Crafting</h2>
+      <p>
+        Materials: {state.materials.scrap} scrap, {state.materials.sigil} sigil, {state.materials.core} core.
+      </p>
+      <label htmlFor="craft-recipe">Recipe</label>
+      <select id="craft-recipe" value={recipeId} onChange={(e) => setRecipeId(e.target.value)}>
+        {RECIPES.map((r) => (
+          <option key={r.recipeId} value={r.recipeId}>
+            {r.label}
+          </option>
+        ))}
+      </select>
+      <label htmlFor="craft-definition">Item</label>
+      <select id="craft-definition" value={definitionId} onChange={(e) => setDefinitionId(e.target.value)}>
+        {ITEM_DEFINITION_IDS.map((id) => (
+          <option key={id} value={id}>
+            {itemCopy(id).name}
+          </option>
+        ))}
+      </select>
+      <button type="button" onClick={craft} disabled={pending}>
+        {pending ? COPY.state_action_pending.label : COPY.action_craft}
+      </button>
+      {resultMessage ? <p role="status">{resultMessage}</p> : null}
+    </section>
   );
 }
 
@@ -175,7 +258,7 @@ export function InventoryScreen({ state, controller }: { state: AccountState; co
   const [ownerFilter, setOwnerFilter] = useState<OwnerFilter>("all");
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
-  const expeditionActive = isExpeditionActive(state);
+  const expeditionActive = isActivityActive(state);
   const unequippedCount = state.inventory.filter((i) => !i.equippedBy).length;
 
   const filtered = state.inventory.filter((item) => {
@@ -192,6 +275,7 @@ export function InventoryScreen({ state, controller }: { state: AccountState; co
       <h1 ref={headingRef} tabIndex={-1}>
         Inventory
       </h1>
+      <CraftingPanel state={state} controller={controller} />
       <div className="inventory-filter-bar">
         <label htmlFor="slot-filter">Slot</label>
         <select id="slot-filter" value={slotFilter} onChange={(e) => setSlotFilter(e.target.value as SlotFilter)}>

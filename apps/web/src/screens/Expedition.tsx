@@ -1,11 +1,11 @@
-import { BattleResultPanel } from "../components/BattleResultPanel.js";
+import { BattleView } from "../components/BattleView.js";
 import { useEffect, useRef, useState } from "react";
 import { post, mutationPayload } from "../api.js";
 import { runMutation } from "../runMutation.js";
 import type { AccountStateController } from "../useAccountState.js";
 import type { AccountState, SettlementResult } from "../types.js";
-import { COPY, composeItemName } from "../copy.js";
-import { isPartyComplete } from "../rules.js";
+import { COPY, areaCopy, itemCopy, rarityLabel } from "../copy.js";
+import { isActivityActive, isFormationComplete } from "../rules.js";
 
 const CYCLE_MS = 60_000;
 
@@ -67,7 +67,7 @@ function SettlementResultPanel({ result }: { result: SettlementResult }) {
                   <td>{cycle.result}</td>
                   <td>{cycle.rounds}</td>
                   <td>{cycle.gold}</td>
-                  <td>{cycle.drop ? `${composeItemName(cycle.drop.definitionId, cycle.drop.affixId)}${cycle.converted ? " (converted to gold)" : ""}` : "—"}</td>
+                  <td>{cycle.drop ? `${itemCopy(cycle.drop.definitionId).name} (${rarityLabel(cycle.drop.rarityId)})${cycle.converted ? " (converted to gold)" : ""}` : "—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -75,6 +75,33 @@ function SettlementResultPanel({ result }: { result: SettlementResult }) {
         </div>
       ) : null}
     </div>
+  );
+}
+
+function AreaSelector({ state, controller }: { state: AccountState; controller: AccountStateController }) {
+  const [pending, setPending] = useState(false);
+  const locked = isActivityActive(state);
+
+  async function select(areaId: string) {
+    setPending(true);
+    await runMutation(async () => {
+      await post("/area/select", mutationPayload(state.revision, { areaId }));
+      await controller.refetch();
+    }, controller);
+    setPending(false);
+  }
+
+  return (
+    <ul className="area-select-list" aria-label="Expedition area">
+      {state.areas.map((area) => (
+        <li key={area.areaId}>
+          <button type="button" disabled={pending || locked || !area.unlocked || area.isSelected} onClick={() => select(area.areaId)} aria-pressed={area.isSelected}>
+            {areaCopy(area.areaId).name}
+            {area.isSelected ? " (selected)" : !area.unlocked ? " (locked)" : ""}
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -86,7 +113,9 @@ export function ExpeditionScreen({ state, controller }: { state: AccountState; c
 
   const [pending, setPending] = useState<"start" | "settle" | "stop" | null>(null);
   const [lastResult, setLastResult] = useState<SettlementResult | null>(null);
-  const partyComplete = isPartyComplete(state);
+  const partyComplete = isFormationComplete(state);
+  const activityActive = isActivityActive(state);
+  const selectedArea = areaCopy(state.selectedAreaId);
 
   async function start() {
     setPending("start");
@@ -119,13 +148,11 @@ export function ExpeditionScreen({ state, controller }: { state: AccountState; c
       </h1>
       <div className="expedition-columns">
         <section aria-labelledby="area-summary-heading" className="area-summary-card">
-          <h2 id="area-summary-heading">{COPY.area_old_road.name}</h2>
-          <p>{COPY.area_old_road.desc}</p>
-          <ul>
-            <li>{COPY.enemy_road_brigand.name}</li>
-            <li>{COPY.enemy_road_wolf.name}</li>
-            <li>{COPY.enemy_road_cutpurse.name}</li>
-          </ul>
+          <h2 id="area-summary-heading">{selectedArea.name}</h2>
+          <p>{selectedArea.desc}</p>
+          <h3>Areas</h3>
+          <AreaSelector state={state} controller={controller} />
+          {activityActive ? <p className="disabled-note">Area choice is locked while an expedition or dungeon run is active.</p> : null}
           {state.expedition.status === "active" ? <CountdownNote checkpointAt={state.expedition.checkpointAt} /> : null}
         </section>
         <section aria-labelledby="expedition-controls-heading" className="expedition-controls-column">
@@ -138,10 +165,11 @@ export function ExpeditionScreen({ state, controller }: { state: AccountState; c
           <div className="expedition-controls">
             {state.expedition.status === "none" ? (
               <>
-                <button type="button" onClick={start} disabled={pending !== null || !partyComplete}>
+                <button type="button" onClick={start} disabled={pending !== null || !partyComplete || activityActive}>
                   {pending === "start" ? COPY.state_action_pending.label : COPY.action_start_expedition}
                 </button>
                 {!partyComplete ? <p className="disabled-note">{COPY.disabled_party_incomplete}</p> : null}
+                {activityActive && partyComplete ? <p className="disabled-note">A dungeon run is already active; only one progression activity may run at a time.</p> : null}
               </>
             ) : (
               <>
@@ -157,7 +185,12 @@ export function ExpeditionScreen({ state, controller }: { state: AccountState; c
           {lastResult ? <SettlementResultPanel result={lastResult} /> : null}
         </section>
       </div>
-      {lastResult?.latestBattleReport ? <><h2>Latest expedition fight</h2><BattleResultPanel report={lastResult.latestBattleReport} /></> : null}
+      {lastResult?.latestBattleReport ? (
+        <>
+          <h2>Latest expedition fight</h2>
+          <BattleView report={lastResult.latestBattleReport} />
+        </>
+      ) : null}
     </main>
   );
 }

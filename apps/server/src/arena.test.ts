@@ -1,9 +1,10 @@
 import crypto from "node:crypto";
 import { describe, expect, it } from "vitest";
+import { autoFillLoadout } from "@banner-and-bounty/content";
 import { buildServer } from "./app.js";
 import { openDatabase } from "./db/connection.js";
 import { HeroRepository } from "./repositories/heroRepository.js";
-import { PartyOrderRepository } from "./repositories/partyOrderRepository.js";
+import { PartyFormationRepository } from "./repositories/partyFormationRepository.js";
 import { SEED_ACCOUNT_A_ID, SEED_ACCOUNT_B_ID } from "./db/seed.js";
 
 function extractCookie(setCookieHeader: string | string[] | undefined): string {
@@ -26,14 +27,15 @@ function seedParty(db: ReturnType<typeof openDatabase>, accountId: string): [str
     heroes.insertForFixture({
       heroId,
       accountId,
-      classId: classes[i],
+      primaryClassId: classes[i],
+      secondaryClassId: null,
       level: 1,
       xp: 0,
-      specializationId: null,
+      skillLoadout: autoFillLoadout(classes[i], 1),
       equipment: { weapon: null, armor: null, trinket: null },
     });
   });
-  new PartyOrderRepository(db).upsert(accountId, ids);
+  new PartyFormationRepository(db).upsert(accountId, [ids[0], ids[1], ids[2], null, null]);
   return ids;
 }
 
@@ -129,7 +131,7 @@ describe("arena: publish, list, challenge, and battle reports (M1-11)", () => {
 
     // Mutate B's hero directly (simulating a later level-up/gear change
     // with no update endpoint yet wired) and confirm the snapshot/report are untouched.
-    db.prepare("UPDATE heroes SET level = 10, specializationId = 'spec_berserker' WHERE heroId = ?").run(heroB1);
+    db.prepare("UPDATE heroes SET level = 10, secondaryClassId = 'class_rogue' WHERE heroId = ?").run(heroB1);
 
     const detailAfterMutation = await app.inject({ method: "GET", url: `/arena/snapshots/${snapshotId}` });
     expect(detailAfterMutation.json().data.snapshot.frozenStats).toEqual(statsBefore);
@@ -216,7 +218,7 @@ describe("arena: publish, list, challenge, and battle reports (M1-11)", () => {
     const db = openDatabase(":memory:");
     const app = buildServer({ db });
     // Accounts are seeded with a starter party (M1-08); remove it to model a save without one.
-    db.prepare("DELETE FROM party_orders WHERE accountId = ?").run(SEED_ACCOUNT_A_ID);
+    db.prepare("DELETE FROM party_formations WHERE accountId = ?").run(SEED_ACCOUNT_A_ID);
     const cookieA = await selectSlot(app, "A"); // no party order set
     const publish = await app.inject({
       method: "POST",

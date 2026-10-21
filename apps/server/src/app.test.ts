@@ -1,10 +1,13 @@
 import crypto from "node:crypto";
 import { describe, expect, it } from "vitest";
+import { autoFillLoadout } from "@banner-and-bounty/content";
 import { buildServer } from "./app.js";
 import { openDatabase } from "./db/connection.js";
 import { HeroRepository } from "./repositories/heroRepository.js";
 import { SEED_ACCOUNT_A_ID, SEED_ACCOUNT_B_ID } from "./db/seed.js";
 import { FixedClock } from "./clock.js";
+
+const VANGUARD_LOADOUT = autoFillLoadout("class_vanguard", 1);
 
 function extractCookie(setCookieHeader: string | string[] | undefined): string {
   const header = Array.isArray(setCookieHeader) ? setCookieHeader[0] : setCookieHeader;
@@ -29,7 +32,7 @@ describe("GET /health", () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       ok: true,
-      data: { status: "ok", schemaVersion: 3 },
+      data: { status: "ok", schemaVersion: 4 },
     });
     await app.close();
   });
@@ -115,10 +118,11 @@ describe("ownership enforcement across accounts", () => {
       heroes.insertForFixture({
         heroId,
         accountId,
-        classId: "class_vanguard",
+        primaryClassId: "class_vanguard",
+        secondaryClassId: null,
         level: 1,
         xp: 0,
-        specializationId: null,
+        skillLoadout: VANGUARD_LOADOUT,
         equipment: { weapon: null, armor: null, trinket: null },
       });
     }
@@ -128,9 +132,9 @@ describe("ownership enforcement across accounts", () => {
     // Foreign hero ID (belongs to account B) is rejected without mutating anything.
     const foreign = await app.inject({
       method: "PATCH",
-      url: "/party/order",
+      url: "/party/formation",
       headers: { cookie: cookieA },
-      payload: { requestId: crypto.randomUUID(), expectedRevision: 0, order: [heroA1, heroA2, heroB1] },
+      payload: { requestId: crypto.randomUUID(), expectedRevision: 0, slots: [heroA1, heroA2, heroB1, null, null] },
     });
     expect(foreign.statusCode).toBe(403);
     expect(foreign.json().error.code).toBe("forbidden");
@@ -138,9 +142,9 @@ describe("ownership enforcement across accounts", () => {
     // A request with all-owned heroes succeeds and does not require a session swap.
     const ok = await app.inject({
       method: "PATCH",
-      url: "/party/order",
+      url: "/party/formation",
       headers: { cookie: cookieA },
-      payload: { requestId: crypto.randomUUID(), expectedRevision: 0, order: [heroA1, heroA2, heroA3] },
+      payload: { requestId: crypto.randomUUID(), expectedRevision: 0, slots: [heroA1, heroA2, heroA3, null, null] },
     });
     expect(ok.statusCode).toBe(200);
     expect(ok.json().revision).toBe(1);
@@ -148,7 +152,7 @@ describe("ownership enforcement across accounts", () => {
     await app.close();
   });
 
-  it("account B's session cannot read or mutate account A's state via /account/state or /party/order", async () => {
+  it("account B's session cannot read or mutate account A's state via /account/state or /party/formation", async () => {
     const db = openDatabase(":memory:");
     const app = buildServer({ db });
     const heroes = new HeroRepository(db);
@@ -156,10 +160,11 @@ describe("ownership enforcement across accounts", () => {
     heroes.insertForFixture({
       heroId: heroA1,
       accountId: SEED_ACCOUNT_A_ID,
-      classId: "class_vanguard",
+      primaryClassId: "class_vanguard",
+      secondaryClassId: null,
       level: 1,
       xp: 0,
-      specializationId: null,
+      skillLoadout: VANGUARD_LOADOUT,
       equipment: { weapon: null, armor: null, trinket: null },
     });
 
@@ -173,9 +178,9 @@ describe("ownership enforcement across accounts", () => {
 
     const mutate = await app.inject({
       method: "PATCH",
-      url: "/party/order",
+      url: "/party/formation",
       headers: { cookie: cookieB },
-      payload: { requestId: crypto.randomUUID(), expectedRevision: 0, order: [heroA1, heroA1, heroA1] },
+      payload: { requestId: crypto.randomUUID(), expectedRevision: 0, slots: [heroA1, heroA1, heroA1, null, null] },
     });
     // Duplicate IDs are also rejected by Zod validation before ownership runs.
     expect(mutate.statusCode).toBe(400);
@@ -194,10 +199,11 @@ describe("revision and idempotency protocol", () => {
       heroes.insertForFixture({
         heroId,
         accountId: SEED_ACCOUNT_A_ID,
-        classId: "class_vanguard",
+        primaryClassId: "class_vanguard",
+        secondaryClassId: null,
         level: 1,
         xp: 0,
-        specializationId: null,
+        skillLoadout: VANGUARD_LOADOUT,
         equipment: { weapon: null, armor: null, trinket: null },
       });
     }
@@ -208,13 +214,13 @@ describe("revision and idempotency protocol", () => {
   it("an identical retry (same requestId, same payload) returns the stored result without double-applying", async () => {
     const { app, cookieA, heroIds } = await seededPartyOrderApp();
     const requestId = crypto.randomUUID();
-    const payload = { requestId, expectedRevision: 0, order: heroIds };
+    const payload = { requestId, expectedRevision: 0, slots: [...heroIds, null, null] };
 
-    const first = await app.inject({ method: "PATCH", url: "/party/order", headers: { cookie: cookieA }, payload });
+    const first = await app.inject({ method: "PATCH", url: "/party/formation", headers: { cookie: cookieA }, payload });
     expect(first.statusCode).toBe(200);
     expect(first.json().revision).toBe(1);
 
-    const retry = await app.inject({ method: "PATCH", url: "/party/order", headers: { cookie: cookieA }, payload });
+    const retry = await app.inject({ method: "PATCH", url: "/party/formation", headers: { cookie: cookieA }, payload });
     expect(retry.statusCode).toBe(200);
     expect(retry.json()).toEqual(first.json());
 
@@ -228,24 +234,24 @@ describe("revision and idempotency protocol", () => {
 
     const first = await app.inject({
       method: "PATCH",
-      url: "/party/order",
+      url: "/party/formation",
       headers: { cookie: cookieA },
-      payload: { requestId, expectedRevision: 0, order: heroIds },
+      payload: { requestId, expectedRevision: 0, slots: [...heroIds, null, null] },
     });
     expect(first.statusCode).toBe(200);
 
     const reused = await app.inject({
       method: "PATCH",
-      url: "/party/order",
+      url: "/party/formation",
       headers: { cookie: cookieA },
-      payload: { requestId, expectedRevision: 0, order: reordered },
+      payload: { requestId, expectedRevision: 0, slots: [...reordered, null, null] },
     });
     expect(reused.statusCode).toBe(409);
     expect(reused.json().error.code).toBe("conflict");
 
     // State still reflects the first, successful application only.
     const state = await app.inject({ method: "GET", url: "/account/state", headers: { cookie: cookieA } });
-    expect(state.json().data.partyOrder.order).toEqual(heroIds);
+    expect(state.json().data.formation.slots).toEqual([...heroIds, null, null]);
 
     await app.close();
   });
@@ -254,20 +260,20 @@ describe("revision and idempotency protocol", () => {
     const { app, cookieA, heroIds } = await seededPartyOrderApp();
     const first = await app.inject({
       method: "PATCH",
-      url: "/party/order",
+      url: "/party/formation",
       headers: { cookie: cookieA },
-      payload: { requestId: crypto.randomUUID(), expectedRevision: 0, order: heroIds },
+      payload: { requestId: crypto.randomUUID(), expectedRevision: 0, slots: [...heroIds, null, null] },
     });
     expect(first.statusCode).toBe(200);
 
     const stale = await app.inject({
       method: "PATCH",
-      url: "/party/order",
+      url: "/party/formation",
       headers: { cookie: cookieA },
       payload: {
         requestId: crypto.randomUUID(),
         expectedRevision: 0, // stale: current revision is now 1
-        order: [heroIds[1], heroIds[0], heroIds[2]],
+        slots: [heroIds[1], heroIds[0], heroIds[2], null, null],
       },
     });
     expect(stale.statusCode).toBe(409);
@@ -280,16 +286,16 @@ describe("revision and idempotency protocol", () => {
   it("two concurrent distinct requests at the same revision: only one commits, the other gets conflict", async () => {
     const { app, cookieA, heroIds } = await seededPartyOrderApp();
     const [a, b, c] = heroIds;
-    const payload1 = { requestId: crypto.randomUUID(), expectedRevision: 0, order: [a, b, c] };
-    const payload2 = { requestId: crypto.randomUUID(), expectedRevision: 0, order: [c, b, a] };
+    const payload1 = { requestId: crypto.randomUUID(), expectedRevision: 0, slots: [a, b, c, null, null] };
+    const payload2 = { requestId: crypto.randomUUID(), expectedRevision: 0, slots: [c, b, a, null, null] };
 
     // node:sqlite is single-writer; issuing both "simultaneously" still
     // serializes at the transaction level, which is exactly the guarantee
     // under test (architecture.md: "SQLite's single-writer transaction
     // serialization makes this check-then-set race-free").
     const [resp1, resp2] = await Promise.all([
-      app.inject({ method: "PATCH", url: "/party/order", headers: { cookie: cookieA }, payload: payload1 }),
-      app.inject({ method: "PATCH", url: "/party/order", headers: { cookie: cookieA }, payload: payload2 }),
+      app.inject({ method: "PATCH", url: "/party/formation", headers: { cookie: cookieA }, payload: payload1 }),
+      app.inject({ method: "PATCH", url: "/party/formation", headers: { cookie: cookieA }, payload: payload2 }),
     ]);
 
     const statuses = [resp1.statusCode, resp2.statusCode].sort();

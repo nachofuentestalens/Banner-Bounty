@@ -4,6 +4,7 @@ import type { Screen } from "../App.js";
 const LINKS: Array<{ screen: Screen; label: string }> = [
   { screen: "company", label: COPY.nav_company },
   { screen: "expedition", label: COPY.nav_expedition },
+  { screen: "dungeon", label: COPY.nav_dungeon },
   { screen: "inventory", label: COPY.nav_inventory },
   { screen: "boss", label: COPY.nav_boss },
   { screen: "arena", label: COPY.nav_arena },

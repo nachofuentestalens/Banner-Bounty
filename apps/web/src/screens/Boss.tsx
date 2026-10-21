@@ -4,7 +4,7 @@ import { runMutation } from "../runMutation.js";
 import type { AccountStateController } from "../useAccountState.js";
 import type { AccountState, BossChallengeResult } from "../types.js";
 import { COPY } from "../copy.js";
-import { BattleResultPanel } from "../components/BattleResultPanel.js";
+import { BattleView } from "../components/BattleView.js";
 
 export function BossScreen({ state, controller }: { state: AccountState; controller: AccountStateController }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -42,7 +42,7 @@ export function BossScreen({ state, controller }: { state: AccountState; control
         {pending ? COPY.state_action_pending.label : COPY.action_challenge}
       </button>
       {result ? (
-        <BattleResultPanel
+        <BattleView
           report={result.report}
           extra={
             result.report.result.outcome === "win" ? (

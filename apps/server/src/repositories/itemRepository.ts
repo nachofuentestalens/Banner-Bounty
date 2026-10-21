@@ -1,12 +1,13 @@
 import type { DatabaseSync } from "node:sqlite";
-import type { ItemInstance } from "@banner-and-bounty/contracts";
+import type { AffixInstance, ItemInstance, RarityId } from "@banner-and-bounty/contracts";
 
 interface ItemRow {
   seq: number;
   itemInstanceId: string;
   accountId: string;
   definitionId: string;
-  affixId: string | null;
+  rarityId: RarityId;
+  affixes: string;
   equippedBy: string | null;
   createdAt: string;
 }
@@ -16,7 +17,8 @@ function toItem(row: ItemRow): ItemInstance {
     itemInstanceId: row.itemInstanceId,
     accountId: row.accountId,
     definitionId: row.definitionId,
-    affixId: row.affixId,
+    rarityId: row.rarityId,
+    affixes: JSON.parse(row.affixes) as AffixInstance[],
     equippedBy: row.equippedBy,
   };
 }
@@ -39,7 +41,7 @@ export class ItemRepository {
     return row ? toItem(row) : null;
   }
 
-  /** Overflow cap counts unequipped instances only (baseline.md 6). */
+  /** Overflow cap counts unequipped instances only (baseline.md 6 / gear.md section 4). */
   countUnequipped(accountId: string): number {
     const row = this.db
       .prepare("SELECT COUNT(*) AS n FROM item_instances WHERE accountId = ? AND equippedBy IS NULL")
@@ -50,13 +52,21 @@ export class ItemRepository {
   insert(item: ItemInstance, createdAt: string): void {
     this.db
       .prepare(
-        `INSERT INTO item_instances (itemInstanceId, accountId, definitionId, affixId, equippedBy, createdAt)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO item_instances (itemInstanceId, accountId, definitionId, rarityId, affixes, equippedBy, createdAt)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
       )
-      .run(item.itemInstanceId, item.accountId, item.definitionId, item.affixId, item.equippedBy, createdAt);
+      .run(item.itemInstanceId, item.accountId, item.definitionId, item.rarityId, JSON.stringify(item.affixes), item.equippedBy, createdAt);
   }
 
   setEquippedBy(itemInstanceId: string, heroId: string | null): void {
     this.db.prepare("UPDATE item_instances SET equippedBy = ? WHERE itemInstanceId = ?").run(heroId, itemInstanceId);
+  }
+
+  setAffixes(itemInstanceId: string, affixes: readonly AffixInstance[]): void {
+    this.db.prepare("UPDATE item_instances SET affixes = ? WHERE itemInstanceId = ?").run(JSON.stringify(affixes), itemInstanceId);
+  }
+
+  delete(itemInstanceId: string): void {
+    this.db.prepare("DELETE FROM item_instances WHERE itemInstanceId = ?").run(itemInstanceId);
   }
 }

@@ -1,5 +1,5 @@
 import type { DatabaseSync } from "node:sqlite";
-import type { EquipmentSlot, Hero } from "@banner-and-bounty/contracts";
+import type { EquipmentSlot, Hero, SkillLoadout } from "@banner-and-bounty/contracts";
 
 const SLOT_COLUMN: Record<EquipmentSlot, string> = {
   weapon: "equipmentWeapon",
@@ -10,10 +10,11 @@ const SLOT_COLUMN: Record<EquipmentSlot, string> = {
 interface HeroRow {
   heroId: string;
   accountId: string;
-  classId: string;
+  primaryClassId: string;
+  secondaryClassId: string | null;
   level: number;
   xp: number;
-  specializationId: string | null;
+  skillLoadout: string;
   equipmentWeapon: string | null;
   equipmentArmor: string | null;
   equipmentTrinket: string | null;
@@ -23,10 +24,11 @@ function toHero(row: HeroRow): Hero {
   return {
     heroId: row.heroId,
     accountId: row.accountId,
-    classId: row.classId,
+    primaryClassId: row.primaryClassId,
+    secondaryClassId: row.secondaryClassId,
     level: row.level,
     xp: row.xp,
-    specializationId: row.specializationId,
+    skillLoadout: JSON.parse(row.skillLoadout) as SkillLoadout,
     equipment: {
       weapon: row.equipmentWeapon,
       armor: row.equipmentArmor,
@@ -45,6 +47,11 @@ export class HeroRepository {
     return rows.map(toHero);
   }
 
+  countByAccount(accountId: string): number {
+    const row = this.db.prepare("SELECT COUNT(*) AS n FROM heroes WHERE accountId = ?").get(accountId) as { n: number };
+    return row.n;
+  }
+
   /** Any account's hero; callers compare accountId to tell not_found from forbidden. */
   findById(heroId: string): Hero | null {
     const row = this.db.prepare("SELECT * FROM heroes WHERE heroId = ?").get(heroId) as HeroRow | undefined;
@@ -55,19 +62,25 @@ export class HeroRepository {
     this.db.prepare(`UPDATE heroes SET ${SLOT_COLUMN[slot]} = ? WHERE heroId = ?`).run(itemInstanceId, heroId);
   }
 
-  setSpecialization(heroId: string, specializationId: string | null): void {
-    this.db.prepare("UPDATE heroes SET specializationId = ? WHERE heroId = ?").run(specializationId, heroId);
+  setSecondaryClass(heroId: string, secondaryClassId: string): void {
+    this.db.prepare("UPDATE heroes SET secondaryClassId = ? WHERE heroId = ?").run(secondaryClassId, heroId);
+  }
+
+  setLoadout(heroId: string, loadout: SkillLoadout): void {
+    this.db.prepare("UPDATE heroes SET skillLoadout = ? WHERE heroId = ?").run(JSON.stringify(loadout), heroId);
   }
 
   setLevelXp(heroId: string, level: number, xp: number): void {
     this.db.prepare("UPDATE heroes SET level = ?, xp = ? WHERE heroId = ?").run(level, xp, heroId);
   }
 
-  /** Starter roster seeding: idempotent on a fixed heroId. */
-  insertIfMissing(hero: Pick<Hero, "heroId" | "accountId" | "classId">): void {
+  /** Starter roster / recruit seeding: idempotent on a fixed heroId. */
+  insert(hero: Pick<Hero, "heroId" | "accountId" | "primaryClassId" | "skillLoadout">): void {
     this.db
-      .prepare("INSERT OR IGNORE INTO heroes (heroId, accountId, classId, level, xp) VALUES (?, ?, ?, 1, 0)")
-      .run(hero.heroId, hero.accountId, hero.classId);
+      .prepare(
+        "INSERT OR IGNORE INTO heroes (heroId, accountId, primaryClassId, level, xp, skillLoadout) VALUES (?, ?, ?, 1, 0, ?)",
+      )
+      .run(hero.heroId, hero.accountId, hero.primaryClassId, JSON.stringify(hero.skillLoadout));
   }
 
   /** Ownership check: the hero must exist and belong to the given account. */
@@ -82,16 +95,17 @@ export class HeroRepository {
     this.db
       .prepare(
         `INSERT INTO heroes
-          (heroId, accountId, classId, level, xp, specializationId, equipmentWeapon, equipmentArmor, equipmentTrinket)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          (heroId, accountId, primaryClassId, secondaryClassId, level, xp, skillLoadout, equipmentWeapon, equipmentArmor, equipmentTrinket)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         hero.heroId,
         hero.accountId,
-        hero.classId,
+        hero.primaryClassId,
+        hero.secondaryClassId,
         hero.level,
         hero.xp,
-        hero.specializationId,
+        JSON.stringify(hero.skillLoadout),
         hero.equipment.weapon,
         hero.equipment.armor,
         hero.equipment.trinket,

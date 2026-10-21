@@ -2,14 +2,20 @@ import crypto from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
 import {
-  PartyOrderRequestSchema,
+  PartyFormationRequestSchema,
   SelectSessionRequestSchema,
   NoPayloadMutationRequestSchema,
   ArenaChallengeRequestSchema,
   ArenaSnapshotsQuerySchema,
   EquipRequestSchema,
   UnequipRequestSchema,
-  SpecializationRequestSchema,
+  HeroRecruitRequestSchema,
+  SecondaryClassRequestSchema,
+  LoadoutRequestSchema,
+  CraftRequestSchema,
+  ReforgeRequestSchema,
+  DungeonStartRequestSchema,
+  AreaSelectRequestSchema,
   type Account,
 } from "@banner-and-bounty/contracts";
 import { MAX_BODY_BYTES } from "@banner-and-bounty/contracts";
@@ -23,10 +29,14 @@ import { AccountRepository } from "./repositories/accountRepository.js";
 import { SessionRepository } from "./repositories/sessionRepository.js";
 import { SessionService } from "./services/sessionService.js";
 import { buildAccountState } from "./services/accountStateService.js";
-import { applyPartyOrder } from "./services/partyOrderService.js";
+import { applyPartyFormation } from "./services/partyFormationService.js";
+import { listAreas, selectArea } from "./services/areaService.js";
 import { publishSnapshot, listSnapshotSummaries, getSnapshotDetail, challenge } from "./services/arenaService.js";
 import { getOwnedReport } from "./services/battleReportService.js";
-import { chooseSpecialization, equip, unequip } from "./services/equipmentService.js";
+import { equip, unequip } from "./services/equipmentService.js";
+import { recruitHero, assignSecondaryClass, setLoadout } from "./services/heroService.js";
+import { craftItem, reforgeItem } from "./services/craftingService.js";
+import { startDungeon, settleDungeon, stopDungeon } from "./services/dungeonService.js";
 import { settleExpedition, startExpedition, stopExpedition } from "./services/expeditionService.js";
 import { challengeBoss } from "./services/bossService.js";
 import { registerStaticClient } from "./http/staticClient.js";
@@ -144,10 +154,10 @@ export function buildServer(options: BuildServerOptions = {}): FastifyInstance {
     return { ok: true, data, revision: data.revision };
   });
 
-  app.patch("/party/order", async (request) => {
+  app.patch("/party/formation", async (request) => {
     const accountId = requireSession(request);
-    const body = PartyOrderRequestSchema.parse(request.body);
-    const { result, revision } = applyPartyOrder(db, accountId, body);
+    const body = PartyFormationRequestSchema.parse(request.body);
+    const { result, revision } = applyPartyFormation(db, accountId, body);
     return { ok: true, data: result, revision };
   });
 
@@ -165,9 +175,66 @@ export function buildServer(options: BuildServerOptions = {}): FastifyInstance {
     return { ok: true, data: result, revision };
   });
 
-  app.post("/hero/specialization", async (request) => {
+  // M2-25: roster, dual class and skill loadout.
+  app.post("/hero/recruit", async (request) => {
     const accountId = requireSession(request);
-    const { result, revision } = chooseSpecialization(db, accountId, SpecializationRequestSchema.parse(request.body));
+    const { result, revision } = recruitHero(db, accountId, HeroRecruitRequestSchema.parse(request.body));
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/hero/secondary-class", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = assignSecondaryClass(db, accountId, SecondaryClassRequestSchema.parse(request.body));
+    return { ok: true, data: result, revision };
+  });
+
+  app.patch("/hero/loadout", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = setLoadout(db, accountId, LoadoutRequestSchema.parse(request.body));
+    return { ok: true, data: result, revision };
+  });
+
+  // M2-25: crafting and reforging.
+  app.post("/craft", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = craftItem(db, accountId, CraftRequestSchema.parse(request.body));
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/reforge", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = reforgeItem(db, accountId, ReforgeRequestSchema.parse(request.body));
+    return { ok: true, data: result, revision };
+  });
+
+  // M2-01: area selection.
+  app.get("/areas", async (request) => {
+    const accountId = requireSession(request);
+    return { ok: true, data: { areas: listAreas(db, accountId) } };
+  });
+
+  app.post("/area/select", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = selectArea(db, accountId, AreaSelectRequestSchema.parse(request.body));
+    return { ok: true, data: result, revision };
+  });
+
+  // M2-25: dungeon runs.
+  app.post("/dungeon/start", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = startDungeon(db, accountId, DungeonStartRequestSchema.parse(request.body), clock);
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/dungeon/settle", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = settleDungeon(db, accountId, NoPayloadMutationRequestSchema.parse(request.body), clock);
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/dungeon/stop", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = stopDungeon(db, accountId, NoPayloadMutationRequestSchema.parse(request.body), clock);
     return { ok: true, data: result, revision };
   });
 

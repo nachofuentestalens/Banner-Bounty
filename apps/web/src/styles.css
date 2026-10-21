@@ -431,3 +431,21 @@ select {
 @media (prefers-reduced-motion: reduce) {
   .battle-result-panel * { animation: none !important; transition: none !important; }
 }
+
+/* M2-27: status badges, unit class labels, and the new roster/formation/
+   crafting/dungeon screens. Reuses the existing brass/teal/red token set. */
+.unit-class { color: var(--color-text-muted); font-size: .8rem; }
+.status-badges { display: flex; flex-wrap: wrap; gap: .3rem; margin: .3rem 0 0; padding: 0; list-style: none; }
+.status-badge { font-size: .7rem; padding: .1rem .4rem; border-radius: 10px; background: #3a3225; border: 1px solid var(--color-brass); color: var(--color-text); }
+.rarity-tag { color: var(--color-text-muted); font-size: .85em; }
+.reforge-row { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .3rem; }
+.reforge-row button { font-size: .75rem; padding: .3rem .5rem; }
+
+.recruit-panel, .formation-editor, .crafting-panel { background: var(--color-bg-panel); border: 1px solid var(--color-border); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+.formation-rows { display: flex; gap: 2rem; flex-wrap: wrap; margin: .75rem 0; }
+.formation-row { display: flex; flex-direction: column; gap: .4rem; }
+.secondary-class-picker, .loadout-editor { margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--color-border); }
+.loadout-editor label { margin-right: .3rem; }
+.loadout-editor select { margin-right: .75rem; margin-bottom: .4rem; }
+.hero-gear-summary, .hero-stats { font-size: .85rem; color: var(--color-text-muted); }
+.area-select-list { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; padding: 0; margin: .5rem 0; }

@@ -31,6 +31,7 @@ export const COPY = {
   affix_of_power: { name: "of Power", desc: "Adds attack." },
   affix_of_warding: { name: "of Warding", desc: "Adds defense." },
   affix_of_vigor: { name: "of Vigor", desc: "Adds HP." },
+  affix_of_haste: { name: "of Haste", desc: "Adds speed." },
 
   area_old_road: { name: "The Old Road", desc: "A short expedition: three foes guarding the road, run on a timer." },
   enemy_road_brigand: { name: "Road Brigand", desc: "Slow, heavy, and hard to put down." },
@@ -106,6 +107,79 @@ export const COPY = {
   disabled_equip_locked_expedition: "Gear is frozen while this hero is on expedition.",
   disabled_party_incomplete: "Choose exactly 3 heroes before starting an expedition or publishing.",
   disabled_item_wrong_slot: "This item doesn't fit that slot.",
+
+  // M2-24 additions (design/game/narrative/copy.md section 8). The 3 new
+  // classes; the 3 M1 classes keep their section-1 entries above unchanged.
+  class_cleric: { name: "Cleric", desc: "Keeps the party standing with steady heals and a timely ward." },
+  class_rogue: { name: "Rogue", desc: "Slips past the front line to cut down whoever is exposed." },
+  class_herald: { name: "Herald", desc: "Chants the company into a faster, steadier rhythm." },
+
+  // Skills (section 8.2), keyed by bare engine skillId (see skillCopy below for the skill_<class>_<slug> binding convention copy.md proposed).
+  strike: { name: "Strike", desc: "A plain, disciplined cut — no flourish, just steel." },
+  bulwark_call: { name: "Bulwark Call", desc: "Plants a shield wall, drawing every enemy strike and bracing against the hits." },
+  shield_bash: { name: "Shield Bash", desc: "Slams a foe with the shield's edge, rattling their guard and their swing." },
+  thick_hide: { name: "Thick Hide", desc: "Years of taking hits have left this Vanguard harder to hurt." },
+  last_stand: { name: "Last Stand", desc: "Refuses to go down easy once the fight turns desperate." },
+  smite: { name: "Smite", desc: "A sharp strike backed by conviction rather than muscle." },
+  mending_light: { name: "Mending Light", desc: "Closes a wound on whichever ally needs it most right now." },
+  sanctuary: { name: "Sanctuary", desc: "Wraps the whole company in a ward that knits wounds over time." },
+  devotion: { name: "Devotion", desc: "Answers the gravest wounds with the strongest healing." },
+  vital_surge: { name: "Vital Surge", desc: "A last reserve of faith that refuses to let this Cleric fall, once per fight." },
+  quick_shot: { name: "Quick Shot", desc: "A fast, practiced loose from the bow." },
+  aimed_shot: { name: "Aimed Shot", desc: "A steadied shot aimed to finish whoever is already on the brink." },
+  volley: { name: "Volley", desc: "Looses several arrows at once, spreading damage across the enemy line." },
+  hunters_focus: { name: "Hunter's Focus", desc: "A trained eye that finds the gap in an enemy's guard more often than most." },
+  momentum: { name: "Momentum", desc: "Moves faster and faster as the enemy line thins out." },
+  puncture: { name: "Puncture", desc: "A quick stab aimed at the gaps in armor." },
+  backstab: { name: "Backstab", desc: "Slips behind the enemy line for a strike no guard can stop." },
+  flurry: { name: "Flurry", desc: "Two fast cuts before the target can even brace for the first." },
+  opportunist: { name: "Opportunist", desc: "Presses harder the moment a target is already reeling." },
+  evasion: { name: "Evasion", desc: "Rarely where the enemy's blade expects to find them." },
+  arcane_bolt: { name: "Arcane Bolt", desc: "A compact bolt of raw force." },
+  firebolt: { name: "Firebolt", desc: "A searing bolt that leaves the target burning after it lands." },
+  meteor: { name: "Meteor", desc: "Calls down fire across the entire enemy line at once." },
+  overload: { name: "Overload", desc: "Pushes extra force into every Firebolt cast." },
+  arcane_reserve: { name: "Arcane Reserve", desc: "Draws extra power from flames already burning on the enemy." },
+  rally_strike: { name: "Rally Strike", desc: "A strike thrown to keep morale up as much as deal damage." },
+  war_hymn: { name: "War Hymn", desc: "A marching hymn that quickens the whole company's step." },
+  discordant_verse: { name: "Discordant Verse", desc: "A jarring verse that saps an enemy's strength to swing true." },
+  encore: { name: "Encore", desc: "Keeps the song going, bringing this Herald's own calls back around sooner." },
+  battle_hymn: { name: "Battle Hymn", desc: "Fights harder in step with the hymn's own quickened rhythm." },
+
+  status_burn: { name: "Burning", desc: "Takes damage each round until it fades." },
+  status_weaken: { name: "Weakened", desc: "Deals less damage until it fades." },
+  status_fortify: { name: "Fortified", desc: "Takes less damage until it fades." },
+  status_haste: { name: "Hastened", desc: "Acts faster until it fades." },
+  status_regen: { name: "Warded", desc: "Heals each round until it fades." },
+  status_taunt: { name: "Taunting", desc: "Draws single-target attacks away from the rest of the company." },
+
+  area_sunken_aqueduct: { name: "The Sunken Aqueduct", desc: "A flooded channel under the old road, left to rot. Opens once the Tollkeeper stops collecting." },
+  enemy_aqueduct_drowned: { name: "Drowned Warden-Thrall", desc: "Bound to guard the water long after drowning in it." },
+  enemy_aqueduct_current: { name: "Riptide Current", desc: "A living pull of water that drags down whoever it reaches." },
+  enemy_aqueduct_husk: { name: "Aqueduct Husk", desc: "Hollowed out by the damp, but still swinging." },
+
+  dungeon_aqueduct_depths: { name: "Sunken Aqueduct Depths", desc: "A four-floor descent beneath the aqueduct, ending in its warden. Clear a floor to move to the next." },
+  enemy_depths_broodling: { name: "Depths Broodling", desc: "Hatched in the dark, and quick to swarm anything that enters." },
+
+  boss_drowned_warden: {
+    name: "The Drowned Warden",
+    desc: "A towering, waterlogged guardian. Strikes the weak, then the whole line, on a steady cycle.",
+  },
+
+  nav_roster: "Roster",
+  nav_dungeon: "Dungeon",
+  nav_crafting: "Crafting",
+
+  action_recruit: "Recruit",
+  action_assign_secondary: "Assign",
+  action_save_loadout: "Save loadout",
+  action_save_formation: "Save formation",
+  action_select_area: "Select",
+  action_start_dungeon: "Enter dungeon",
+  action_settle_dungeon: "Check progress",
+  action_stop_dungeon: "Stop and collect",
+  action_craft: "Craft",
+  action_reforge: "Reforge",
 } as const;
 
 type NameDesc = { name: string; desc: string };
@@ -127,10 +201,80 @@ const CLASS_COPY: Record<string, NameDesc> = {
   class_vanguard: COPY.class_vanguard,
   class_ranger: COPY.class_ranger,
   class_arcanist: COPY.class_arcanist,
+  class_cleric: COPY.class_cleric,
+  class_rogue: COPY.class_rogue,
+  class_herald: COPY.class_herald,
 };
 
 export function classCopy(classId: string): NameDesc {
   return CLASS_COPY[classId] ?? { name: classId, desc: "" };
+}
+
+const SKILL_COPY: Record<string, NameDesc> = {
+  strike: COPY.strike, bulwark_call: COPY.bulwark_call, shield_bash: COPY.shield_bash, thick_hide: COPY.thick_hide, last_stand: COPY.last_stand,
+  smite: COPY.smite, mending_light: COPY.mending_light, sanctuary: COPY.sanctuary, devotion: COPY.devotion, vital_surge: COPY.vital_surge,
+  quick_shot: COPY.quick_shot, aimed_shot: COPY.aimed_shot, volley: COPY.volley, hunters_focus: COPY.hunters_focus, momentum: COPY.momentum,
+  puncture: COPY.puncture, backstab: COPY.backstab, flurry: COPY.flurry, opportunist: COPY.opportunist, evasion: COPY.evasion,
+  arcane_bolt: COPY.arcane_bolt, firebolt: COPY.firebolt, meteor: COPY.meteor, overload: COPY.overload, arcane_reserve: COPY.arcane_reserve,
+  rally_strike: COPY.rally_strike, war_hymn: COPY.war_hymn, discordant_verse: COPY.discordant_verse, encore: COPY.encore, battle_hymn: COPY.battle_hymn,
+};
+
+/** copy.md section 8.2's skillId copy binding — the engine's bare skillId (e.g. "strike") is the lookup key. */
+export function skillCopy(skillId: string): NameDesc {
+  return SKILL_COPY[skillId] ?? { name: skillId, desc: "" };
+}
+
+const STATUS_COPY: Record<string, NameDesc> = {
+  status_burn: COPY.status_burn,
+  status_weaken: COPY.status_weaken,
+  status_fortify: COPY.status_fortify,
+  status_haste: COPY.status_haste,
+  status_regen: COPY.status_regen,
+  status_taunt: COPY.status_taunt,
+};
+
+export function statusCopy(statusId: string): NameDesc {
+  return STATUS_COPY[statusId] ?? { name: statusId, desc: "" };
+}
+
+const ENEMY_COPY: Record<string, NameDesc> = {
+  enemy_road_brigand: COPY.enemy_road_brigand,
+  enemy_road_wolf: COPY.enemy_road_wolf,
+  enemy_road_cutpurse: COPY.enemy_road_cutpurse,
+  boss_tollkeeper: COPY.boss_tollkeeper,
+  enemy_aqueduct_drowned: COPY.enemy_aqueduct_drowned,
+  enemy_aqueduct_current: COPY.enemy_aqueduct_current,
+  enemy_aqueduct_husk: COPY.enemy_aqueduct_husk,
+  enemy_depths_broodling: COPY.enemy_depths_broodling,
+  boss_drowned_warden: COPY.boss_drowned_warden,
+};
+
+/** Falls back to the raw enemyId (stripped of combat2.ts's `#slotIndex` suffix) for an unrecognized ID. */
+export function enemyCopy(enemyId: string): NameDesc {
+  const base = enemyId.split("#")[0]!;
+  return ENEMY_COPY[base] ?? { name: base, desc: "" };
+}
+
+const AREA_COPY: Record<string, NameDesc> = {
+  area_old_road: COPY.area_old_road,
+  area_sunken_aqueduct: COPY.area_sunken_aqueduct,
+};
+
+export function areaCopy(areaId: string): NameDesc {
+  return AREA_COPY[areaId] ?? { name: areaId, desc: "" };
+}
+
+const DUNGEON_COPY: Record<string, NameDesc> = {
+  dungeon_aqueduct_depths: COPY.dungeon_aqueduct_depths,
+};
+
+export function dungeonCopy(dungeonId: string): NameDesc {
+  return DUNGEON_COPY[dungeonId] ?? { name: dungeonId, desc: "" };
+}
+
+const RARITY_LABEL: Record<string, string> = { common: "Common", uncommon: "Uncommon", rare: "Rare", epic: "Epic" };
+export function rarityLabel(rarityId: string): string {
+  return RARITY_LABEL[rarityId] ?? rarityId;
 }
 
 const ITEM_COPY: Record<string, NameDesc> = {
@@ -153,15 +297,16 @@ const AFFIX_COPY: Record<string, NameDesc> = {
   affix_of_power: COPY.affix_of_power,
   affix_of_warding: COPY.affix_of_warding,
   affix_of_vigor: COPY.affix_of_vigor,
+  affix_of_haste: COPY.affix_of_haste,
 };
 
 export function affixCopy(affixId: string): NameDesc {
   return AFFIX_COPY[affixId] ?? { name: affixId, desc: "" };
 }
 
-/** copy.md implementation note: "{base item name} {affix name}", e.g. "Shortsword of Power". */
-export function composeItemName(definitionId: string, affixId: string | null): string {
+/** copy.md implementation note: "{base item name} {affix name}", extended for M2's multi-affix items: every rolled affix's name is appended in rolled order. */
+export function composeItemName(definitionId: string, affixes: readonly { affixId: string; value?: number }[]): string {
   const base = itemCopy(definitionId).name;
-  if (!affixId) return base;
-  return `${base} ${affixCopy(affixId).name}`;
+  if (affixes.length === 0) return base;
+  return `${base} ${affixes.map((a) => affixCopy(a.affixId).name).join(" ")}`;
 }

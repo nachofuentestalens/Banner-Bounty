@@ -3,16 +3,18 @@ import { patch, post, mutationPayload } from "../api.js";
 import { runMutation } from "../runMutation.js";
 import type { AccountStateController } from "../useAccountState.js";
 import type { AccountState, Hero } from "../types.js";
-import { COPY, classCopy, composeItemName, specializationCopy } from "../copy.js";
-import { canChooseSpecialization, isExpeditionActive, isSpecUnlocked } from "../rules.js";
-import { CLASS_SPECIALIZATIONS } from "../frozenIds.js";
+import { COPY, classCopy, composeItemName, skillCopy } from "../copy.js";
+import { isActivityActive, isSecondaryClassUnlocked, canAssignSecondaryClass } from "../rules.js";
+import { BASE_CLASS_IDS, unlockedSkillPool } from "../frozenIds.js";
 
 function PrimaryActionBanner({ state, onGoExpedition }: { state: AccountState; onGoExpedition: () => void }) {
   let message: string;
-  if (state.expedition.status === "none") {
+  if (state.expedition.status === "none" && state.dungeon.status === "none") {
     message = "Start your first expedition";
   } else if (state.expedition.status === "active") {
     message = `Expedition running — ${state.expedition.cyclesCompletedSinceStart} cycles so far`;
+  } else if (state.dungeon.status === "active") {
+    message = `Dungeon run active — floor ${state.dungeon.currentFloor}`;
   } else {
     message = "Rewards ready to collect";
   }
@@ -25,119 +27,202 @@ function PrimaryActionBanner({ state, onGoExpedition }: { state: AccountState; o
   );
 }
 
-function GearSlot({ hero, slot, inventory }: { hero: Hero; slot: "weapon" | "armor" | "trinket"; inventory: AccountState["inventory"] }) {
-  const itemId = hero.equipment[slot];
-  const item = itemId ? inventory.find((i) => i.itemInstanceId === itemId) : null;
-  return (
-    <li>
-      <span className="slot-label">{slot[0]!.toUpperCase() + slot.slice(1)}:</span> {item ? composeItemName(item.definitionId, item.affixId) : "Empty"}
-    </li>
-  );
-}
-
-function SpecializationPicker({ hero, expeditionActive, accountRevision, controller, refetch }: { hero: Hero; expeditionActive: boolean; accountRevision: number; controller: AccountStateController; refetch: () => void }) {
-  const specializations = CLASS_SPECIALIZATIONS[hero.classId];
+function RecruitPanel({ state, controller }: { state: AccountState; controller: AccountStateController }) {
+  const [classId, setClassId] = useState(BASE_CLASS_IDS[0]!);
   const [pending, setPending] = useState(false);
+  const cost = 150 * state.heroes.length;
 
-  if (!isSpecUnlocked(hero)) {
-    return <p className="disabled-note">{COPY.disabled_spec_locked_level}</p>;
-  }
-  if (hero.specializationId !== null) return null;
-  if (!canChooseSpecialization(hero, expeditionActive)) {
-    return <p className="disabled-note">{COPY.disabled_spec_locked_expedition}</p>;
-  }
-  if (!specializations) return null;
-
-  async function choose(specializationId: string) {
+  async function recruit() {
     setPending(true);
     await runMutation(async () => {
-      await post(`/hero/specialization`, mutationPayload(accountRevision, { heroId: hero.heroId, specializationId }));
-      refetch();
+      await post("/hero/recruit", mutationPayload(state.revision, { primaryClassId: classId }));
+      await controller.refetch();
     }, controller);
     setPending(false);
   }
 
   return (
-    <div className="spec-picker" role="group" aria-label="Choose specialization">
-      {specializations.map((specId) => {
-        const copy = specializationCopy(specId);
-        return (
-          <button type="button" key={specId} disabled={pending} onClick={() => choose(specId)}>
-            {copy.name}
-            <span className="spec-desc">{copy.desc}</span>
-          </button>
-        );
-      })}
-    </div>
+    <section className="recruit-panel" aria-labelledby="recruit-heading">
+      <h2 id="recruit-heading">Recruit</h2>
+      <p>
+        Roster: {state.heroes.length} / 20 heroes. Gold: {state.gold}. Next recruit costs {cost} gold.
+      </p>
+      <label htmlFor="recruit-class">Class</label>
+      <select id="recruit-class" value={classId} onChange={(e) => setClassId(e.target.value)}>
+        {BASE_CLASS_IDS.map((id) => (
+          <option key={id} value={id}>
+            {classCopy(id).name}
+          </option>
+        ))}
+      </select>
+      <button type="button" onClick={recruit} disabled={pending || state.heroes.length >= 20 || state.gold < cost}>
+        {pending ? COPY.state_action_pending.label : COPY.action_recruit}
+      </button>
+    </section>
   );
 }
 
-function HeroCard({
-  hero,
-  inventory,
-  slotIndex,
-  partyOrder,
-  expeditionActive,
-  accountRevision,
-  controller,
-  refetch,
-}: {
-  hero: Hero;
-  inventory: AccountState["inventory"];
-  slotIndex: number;
-  partyOrder: [string, string, string];
-  expeditionActive: boolean;
-  accountRevision: number;
-  controller: AccountStateController;
-  refetch: () => void;
-}) {
-  const classCopyEntry = classCopy(hero.classId);
-  const specCopy = hero.specializationId ? specializationCopy(hero.specializationId) : null;
-  const headingId = `hero-card-${hero.heroId}`;
-  const [moving, setMoving] = useState(false);
+function SkillSelect({ id, value, options, onChange, disabled }: { id: string; value: string; options: readonly string[]; onChange: (v: string) => void; disabled: boolean }) {
+  return (
+    <select id={id} value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled}>
+      <option value="">(empty)</option>
+      {options.map((skillId) => (
+        <option key={skillId} value={skillId}>
+          {skillCopy(skillId).name}
+        </option>
+      ))}
+    </select>
+  );
+}
 
-  async function move(direction: -1 | 1) {
-    const newOrder = [...partyOrder] as [string, string, string];
-    const target = slotIndex + direction;
-    if (target < 0 || target > 2) return;
-    [newOrder[slotIndex], newOrder[target]] = [newOrder[target]!, newOrder[slotIndex]!];
-    setMoving(true);
+function HeroCard({ hero, inventory, activityActive, accountRevision, controller, refetch }: { hero: Hero; inventory: AccountState["inventory"]; activityActive: boolean; accountRevision: number; controller: AccountStateController; refetch: () => void }) {
+  const headingId = `hero-card-${hero.heroId}`;
+  const [secondaryChoice, setSecondaryChoice] = useState(hero.secondaryClassId ?? BASE_CLASS_IDS.find((c) => c !== hero.primaryClassId)!);
+  const [active, setActive] = useState<[string, string]>(hero.skillLoadout.active);
+  const [passive, setPassive] = useState<[string, string]>(hero.skillLoadout.passive);
+  const [pending, setPending] = useState<"secondary" | "loadout" | null>(null);
+
+  const activeOptions = unlockedSkillPool(hero.primaryClassId, hero.secondaryClassId, hero.level, "active");
+  const passiveOptions = unlockedSkillPool(hero.primaryClassId, hero.secondaryClassId, hero.level, "passive");
+  const canDual = canAssignSecondaryClass(hero, activityActive);
+  const loadoutLocked = activityActive;
+
+  async function assignSecondary() {
+    setPending("secondary");
     await runMutation(async () => {
-      await patch(`/party/order`, mutationPayload(accountRevision, { order: newOrder }));
+      await post("/hero/secondary-class", mutationPayload(accountRevision, { heroId: hero.heroId, secondaryClassId: secondaryChoice }));
       refetch();
     }, controller);
-    setMoving(false);
+    setPending(null);
   }
+
+  async function saveLoadout() {
+    setPending("loadout");
+    await runMutation(async () => {
+      await patch("/hero/loadout", mutationPayload(accountRevision, { heroId: hero.heroId, active, passive }));
+      refetch();
+    }, controller);
+    setPending(null);
+  }
+
+  const equipped = (["weapon", "armor", "trinket"] as const).map((slot) => {
+    const id = hero.equipment[slot];
+    const item = id ? inventory.find((i) => i.itemInstanceId === id) : null;
+    return item ? composeItemName(item.definitionId, item.affixes) : "Empty";
+  });
 
   return (
     <section className="hero-card" aria-labelledby={headingId}>
       <h2 id={headingId}>
-        {classCopyEntry.name} <span className="hero-level">Lv {hero.level}</span>
+        {classCopy(hero.primaryClassId).name}
+        {hero.secondaryClassId ? ` / ${classCopy(hero.secondaryClassId).name}` : ""} <span className="hero-level">Lv {hero.level}</span>
       </h2>
-      <p className="hero-spec">
-        {specCopy ? `${specCopy.name} — ${specCopy.desc}` : isSpecUnlocked(hero) ? "Unspecialized — specialization available" : "Unspecialized until level 3"}
-      </p>
-      {/* Raw XP only: the next-level threshold is a server-owned formula
-          (packages/game's xpToNext). Per architecture.md ("apps/web: ...
-          No client-authoritative loot, XP, time, stats or victory") this
-          screen shows only what the server reported, not a recomputed
-          target — see reports/engineering/M1-10.md for the contracts.md
-          proposal to add a server-supplied value here. */}
       <p className="hero-xp">XP {hero.xp}</p>
-      <ul className="hero-gear">
-        <GearSlot hero={hero} slot="weapon" inventory={inventory} />
-        <GearSlot hero={hero} slot="armor" inventory={inventory} />
-        <GearSlot hero={hero} slot="trinket" inventory={inventory} />
-      </ul>
-      <SpecializationPicker hero={hero} expeditionActive={expeditionActive} accountRevision={accountRevision} controller={controller} refetch={refetch} />
-      <div className="party-order-control">
-        <button type="button" onClick={() => move(-1)} disabled={slotIndex === 0 || moving} aria-disabled={slotIndex === 0}>
-          Move up
+      <p className="hero-gear-summary">Gear: {equipped.join(", ")}</p>
+      {hero.effectiveStats ? (
+        <p className="hero-stats">
+          HP {hero.effectiveStats.maxHp} / ATK {hero.effectiveStats.atk} / DEF {hero.effectiveStats.def} / SPD {hero.effectiveStats.spd}
+        </p>
+      ) : null}
+
+      {!isSecondaryClassUnlocked(hero) ? (
+        <p className="disabled-note">Reach level 3 to assign a secondary class.</p>
+      ) : (
+        <div className="secondary-class-picker">
+          <label htmlFor={`${headingId}-secondary`}>Secondary class</label>
+          <select id={`${headingId}-secondary`} value={secondaryChoice} onChange={(e) => setSecondaryChoice(e.target.value)} disabled={!canDual}>
+            {BASE_CLASS_IDS.filter((c) => c !== hero.primaryClassId).map((c) => (
+              <option key={c} value={c}>
+                {classCopy(c).name}
+              </option>
+            ))}
+          </select>
+          <button type="button" onClick={assignSecondary} disabled={!canDual || pending !== null}>
+            {pending === "secondary" ? COPY.state_action_pending.label : COPY.action_assign_secondary}
+          </button>
+          {!canDual && activityActive ? <span className="disabled-note">Locked during an active expedition/dungeon.</span> : null}
+        </div>
+      )}
+
+      <div className="loadout-editor">
+        <h3>Skill loadout</h3>
+        <label htmlFor={`${headingId}-active0`}>Active 1</label>
+        <SkillSelect id={`${headingId}-active0`} value={active[0]} options={activeOptions} onChange={(v) => setActive([v, active[1]])} disabled={loadoutLocked} />
+        <label htmlFor={`${headingId}-active1`}>Active 2</label>
+        <SkillSelect id={`${headingId}-active1`} value={active[1]} options={activeOptions} onChange={(v) => setActive([active[0], v])} disabled={loadoutLocked} />
+        <label htmlFor={`${headingId}-passive0`}>Passive 1</label>
+        <SkillSelect id={`${headingId}-passive0`} value={passive[0]} options={passiveOptions} onChange={(v) => setPassive([v, passive[1]])} disabled={loadoutLocked} />
+        <label htmlFor={`${headingId}-passive1`}>Passive 2</label>
+        <SkillSelect id={`${headingId}-passive1`} value={passive[1]} options={passiveOptions} onChange={(v) => setPassive([passive[0], v])} disabled={loadoutLocked} />
+        <button type="button" onClick={saveLoadout} disabled={loadoutLocked || pending !== null}>
+          {pending === "loadout" ? COPY.state_action_pending.label : COPY.action_save_loadout}
         </button>
-        <button type="button" onClick={() => move(1)} disabled={slotIndex === 2 || moving} aria-disabled={slotIndex === 2}>
-          Move down
-        </button>
+        {loadoutLocked ? <p className="disabled-note">{COPY.expedition_loadout_locked.body}</p> : null}
       </div>
+    </section>
+  );
+}
+
+function FormationEditor({ state, controller }: { state: AccountState; controller: AccountStateController }) {
+  const current = state.formation?.slots ?? [null, null, null, null, null];
+  const [slots, setSlots] = useState<[string | null, string | null, string | null, string | null, string | null]>(current);
+  const [pending, setPending] = useState(false);
+
+  function setSlot(index: number, heroId: string | null) {
+    const next = [...slots] as typeof slots;
+    next[index] = heroId;
+    setSlots(next);
+  }
+
+  async function save() {
+    setPending(true);
+    await runMutation(async () => {
+      await patch("/party/formation", mutationPayload(state.revision, { slots }));
+      await controller.refetch();
+    }, controller);
+    setPending(false);
+  }
+
+  const heroName = (heroId: string) => {
+    const hero = state.heroes.find((h) => h.heroId === heroId);
+    return hero ? classCopy(hero.primaryClassId).name : heroId;
+  };
+
+  return (
+    <section className="formation-editor" aria-labelledby="formation-heading">
+      <h2 id="formation-heading">Formation</h2>
+      <p>Front row (slots 1-3) takes hits first unless an enemy ignores row protection; back row (slots 4-5) is protected until the front row falls.</p>
+      <div className="formation-rows">
+        <div className="formation-row">
+          <h3>Front row</h3>
+          {[0, 1, 2].map((i) => (
+            <select key={i} aria-label={`Front row slot ${i + 1}`} value={slots[i] ?? ""} onChange={(e) => setSlot(i, e.target.value || null)}>
+              <option value="">(empty)</option>
+              {state.heroes.map((h) => (
+                <option key={h.heroId} value={h.heroId} disabled={slots.includes(h.heroId) && slots[i] !== h.heroId}>
+                  {heroName(h.heroId)}
+                </option>
+              ))}
+            </select>
+          ))}
+        </div>
+        <div className="formation-row">
+          <h3>Back row</h3>
+          {[3, 4].map((i) => (
+            <select key={i} aria-label={`Back row slot ${i - 2}`} value={slots[i] ?? ""} onChange={(e) => setSlot(i, e.target.value || null)}>
+              <option value="">(empty)</option>
+              {state.heroes.map((h) => (
+                <option key={h.heroId} value={h.heroId} disabled={slots.includes(h.heroId) && slots[i] !== h.heroId}>
+                  {heroName(h.heroId)}
+                </option>
+              ))}
+            </select>
+          ))}
+        </div>
+      </div>
+      <button type="button" onClick={save} disabled={pending || slots.every((s) => s === null)}>
+        {pending ? COPY.state_action_pending.label : COPY.action_save_formation}
+      </button>
     </section>
   );
 }
@@ -148,19 +233,7 @@ export function CompanyScreen({ state, controller, onGoExpedition }: { state: Ac
     headingRef.current?.focus();
   }, []);
 
-  if (!state.partyOrder) {
-    return (
-      <main className="screen">
-        <h1 ref={headingRef} tabIndex={-1}>
-          Company
-        </h1>
-        <p>{COPY.disabled_party_incomplete}</p>
-      </main>
-    );
-  }
-
-  const order = state.partyOrder.order;
-  const expeditionActive = isExpeditionActive(state);
+  const activityActive = isActivityActive(state);
   const refetch = () => controller.refetch();
 
   return (
@@ -169,29 +242,18 @@ export function CompanyScreen({ state, controller, onGoExpedition }: { state: Ac
         Company
       </h1>
       <PrimaryActionBanner state={state} onGoExpedition={onGoExpedition} />
-      {expeditionActive ? (
+      {activityActive ? (
         <p className="inline-note">
           {COPY.expedition_loadout_locked.title}: {COPY.expedition_loadout_locked.body}
         </p>
       ) : null}
+      <RecruitPanel state={state} controller={controller} />
+      <FormationEditor state={state} controller={controller} />
+      <h2>Roster</h2>
       <div className="hero-card-grid">
-        {order.map((heroId, index) => {
-          const hero = state.heroes.find((h) => h.heroId === heroId);
-          if (!hero) return null;
-          return (
-            <HeroCard
-              key={heroId}
-              hero={hero}
-              inventory={state.inventory}
-              slotIndex={index}
-              partyOrder={order}
-              expeditionActive={expeditionActive}
-              accountRevision={state.revision}
-              controller={controller}
-              refetch={refetch}
-            />
-          );
-        })}
+        {state.heroes.map((hero) => (
+          <HeroCard key={hero.heroId} hero={hero} inventory={state.inventory} activityActive={activityActive} accountRevision={state.revision} controller={controller} refetch={refetch} />
+        ))}
       </div>
     </main>
   );

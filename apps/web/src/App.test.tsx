@@ -9,9 +9,13 @@ function jsonResponse(body: unknown, status = 200): Response {
 const EMPTY_STATE = {
   heroes: [],
   inventory: [],
-  partyOrder: null,
-  expedition: { status: "none", checkpointAt: null, cyclesCompletedSinceStart: 0 },
+  formation: null,
+  areas: [{ areaId: "area_old_road", unlocked: true, isSelected: true }],
+  selectedAreaId: "area_old_road",
+  expedition: { status: "none", areaId: null, checkpointAt: null, cyclesCompletedSinceStart: 0 },
+  dungeon: { status: "none", dungeonId: null, startedAt: null, checkpointAt: null, currentFloor: 1, floorsCleared: 0, rulesVersion: null, outcome: "none" },
   gold: 0,
+  materials: { scrap: 0, sigil: 0, core: 0 },
   bossClaims: [],
   revision: 0,
 };
