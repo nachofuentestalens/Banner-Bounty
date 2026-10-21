@@ -1,8 +1,8 @@
 import type { DatabaseSync } from "node:sqlite";
-import { STARTER_HEROES } from "@banner-and-bounty/content";
+import { STARTER_HEROES, autoFillLoadout } from "@banner-and-bounty/content";
 import { AccountRepository } from "../repositories/accountRepository.js";
 import { HeroRepository } from "../repositories/heroRepository.js";
-import { PartyOrderRepository } from "../repositories/partyOrderRepository.js";
+import { PartyFormationRepository } from "../repositories/partyFormationRepository.js";
 import type { Clock } from "../clock.js";
 
 // design/studio/architecture.md: "Seed two local accounts." Fixed accountIds
@@ -25,7 +25,7 @@ export function starterHeroIds(accountId: string): [string, string, string] {
 export function seedAccounts(db: DatabaseSync, clock: Clock): void {
   const accounts = new AccountRepository(db);
   const heroes = new HeroRepository(db);
-  const partyOrders = new PartyOrderRepository(db);
+  const formations = new PartyFormationRepository(db);
   const now = clock.now().toISOString();
   accounts.insertSeed(SEED_ACCOUNT_A_ID, "Company A", "A", now);
   accounts.insertSeed(SEED_ACCOUNT_B_ID, "Company B", "B", now);
@@ -33,8 +33,13 @@ export function seedAccounts(db: DatabaseSync, clock: Clock): void {
   for (const accountId of [SEED_ACCOUNT_A_ID, SEED_ACCOUNT_B_ID]) {
     const ids = starterHeroIds(accountId);
     STARTER_HEROES.forEach((starter, i) => {
-      heroes.insertIfMissing({ heroId: ids[i]!, accountId, classId: starter.classId });
+      heroes.insert({
+        heroId: ids[i]!,
+        accountId,
+        primaryClassId: starter.classId,
+        skillLoadout: autoFillLoadout(starter.classId, 1),
+      });
     });
-    partyOrders.insertIfMissing(accountId, ids);
+    formations.insertIfMissing(accountId, [ids[0]!, ids[1]!, ids[2]!, null, null]);
   }
 }

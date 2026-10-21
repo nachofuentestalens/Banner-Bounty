@@ -1,15 +1,19 @@
 import type { DatabaseSync } from "node:sqlite";
-import type { ExpeditionStatus } from "@banner-and-bounty/contracts";
-import type { PartyMemberInput } from "@banner-and-bounty/game";
+import type { AffixInstance, ExpeditionStatus, RarityId } from "@banner-and-bounty/contracts";
+import type { PartyMemberInputV2 } from "@banner-and-bounty/game";
 
-/** A frozen party member also remembers which instances fed its stats. */
-export interface FrozenPartyMember extends PartyMemberInput {
+type EquippedPresentation = { definitionId: string; rarityId: RarityId; affixes: AffixInstance[] } | null;
+
+/** A frozen party member also remembers which instances fed its stats, for display (FrozenPartyMemberDTO). */
+export interface FrozenPartyMember extends PartyMemberInputV2 {
   readonly equippedInstanceIds: { weapon: string | null; armor: string | null; trinket: string | null };
+  readonly presentation: { weapon: EquippedPresentation; armor: EquippedPresentation; trinket: EquippedPresentation };
 }
 
 export interface ExpeditionRow {
   accountId: string;
   status: ExpeditionStatus;
+  areaId: string | null;
   startedAt: string | null;
   checkpointAt: string | null;
   subCycleRemainderMs: number;
@@ -51,15 +55,16 @@ export class ExpeditionRepository {
     this.db
       .prepare(
         `INSERT INTO expeditions
-          (accountId, status, startedAt, checkpointAt, subCycleRemainderMs, frozenLoadout, rulesVersion, seed, rngState, cyclesCompleted, wins, losses)
-         VALUES (?, 'active', ?, ?, 0, ?, ?, ?, ?, 0, 0, 0)
+          (accountId, status, areaId, startedAt, checkpointAt, subCycleRemainderMs, frozenLoadout, rulesVersion, seed, rngState, cyclesCompleted, wins, losses)
+         VALUES (?, 'active', ?, ?, ?, 0, ?, ?, ?, ?, 0, 0, 0)
          ON CONFLICT(accountId) DO UPDATE SET
-           status = 'active', startedAt = excluded.startedAt, checkpointAt = excluded.checkpointAt,
+           status = 'active', areaId = excluded.areaId, startedAt = excluded.startedAt, checkpointAt = excluded.checkpointAt,
            subCycleRemainderMs = 0, frozenLoadout = excluded.frozenLoadout, rulesVersion = excluded.rulesVersion,
            seed = excluded.seed, rngState = excluded.rngState, cyclesCompleted = 0, wins = 0, losses = 0`,
       )
       .run(
         row.accountId,
+        row.areaId,
         row.startedAt,
         row.checkpointAt,
         JSON.stringify(row.frozenLoadout),

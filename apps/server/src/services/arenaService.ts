@@ -1,17 +1,10 @@
-import { replayUnits } from "./battlePresentation.js";
 import crypto from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
-import type { ArenaChallengeRequest, Hero, NoPayloadMutationRequest } from "@banner-and-bounty/contracts";
-import type { ClassId, SpecializationId } from "@banner-and-bounty/content";
-import {
-  computePartyEffectiveStats,
-  effectiveSpecialization,
-  simulateArenaBattle,
-  toHeroCombatants,
-  type HeroCombatantInput,
-} from "@banner-and-bounty/game";
+import type { ArenaChallengeRequest, NoPayloadMutationRequest } from "@banner-and-bounty/contracts";
+import { type CombatantInputV2, computeBattleStartStats, simulateBattleV2, toHeroCombatantsV2 } from "@banner-and-bounty/game";
 import { AppError } from "../errors.js";
 import type { Clock } from "../clock.js";
+import { presentBattle } from "./battlePresentation.js";
 import { loadLiveParty, toFrozenMembers } from "./partyLoadout.js";
 import {
   SnapshotRepository,
@@ -23,23 +16,17 @@ import { BattleReportRepository } from "../repositories/battleReportRepository.j
 import { runMutation } from "../mutation.js";
 import { CURRENT_RULES_VERSION } from "../rulesVersion.js";
 
-// Live party stats include equipped items (M1-08 added item instances);
-// loadLiveParty/toFrozenMembers are shared with expedition start and boss.
-function toCombatants(db: DatabaseSync, heroesOrdered: readonly Hero[]): HeroCombatantInput[] {
-  return toHeroCombatants(toFrozenMembers(db, heroesOrdered));
-}
-
-function snapshotToCombatants(snapshot: SnapshotRow): HeroCombatantInput[] {
+/** The opponent side of an arena challenge simulates as plain stat blocks (gear already folded into frozenStats at publish time), same precedent M1 used. */
+function snapshotToCombatants(snapshot: SnapshotRow): CombatantInputV2[] {
   const statsById = new Map(snapshot.frozenStats.map((s) => [s.heroId, s]));
   return snapshot.frozenParty.map((entry) => {
     const stats = statsById.get(entry.heroId);
     if (!stats) throw new AppError("internal", `snapshot ${snapshot.snapshotId} missing stats for ${entry.heroId}`);
     return {
+      kind: "enemy" as const,
       id: entry.heroId,
-      side: "hero" as const,
-      position: entry.position,
-      classId: entry.classId as ClassId,
-      specializationId: entry.specializationId as SpecializationId | null,
+      slotIndex: entry.slotIndex,
+      enemyId: `arena_${entry.primaryClassId}`,
       stats: { maxHp: stats.maxHp, atk: stats.atk, def: stats.def, spd: stats.spd },
     };
   });
@@ -58,7 +45,7 @@ export interface PublishSnapshotResult {
 
 // POST /arena/publish (contracts.md): copies current hero stats/party by
 // value into an insert-only row. Never updates an existing snapshot, and
-// never touches partyOrder or any live hero.
+// never touches the live formation or any live hero.
 export function publishSnapshot(
   db: DatabaseSync,
   accountId: string,
@@ -81,28 +68,29 @@ export function publishSnapshot(
         loadLiveParty(db, accountId);
       },
       apply: () => {
-        const ordered = loadLiveParty(db, accountId);
-        const stats = computePartyEffectiveStats(toFrozenMembers(db, ordered));
+        const members = loadLiveParty(db, accountId);
+        const frozen = toFrozenMembers(db, members);
 
         const snapshotId = crypto.randomUUID();
         const publishedAt = clock.now().toISOString();
-        const frozenParty: SnapshotPartyEntry[] = ordered.map((hero, i) => ({
-          heroId: hero.heroId,
-          position: i,
-          classId: hero.classId,
-          level: hero.level,
-          specializationId: effectiveSpecialization({
-            level: hero.level,
-            specializationId: hero.specializationId as SpecializationId | null,
-          }),
+        const frozenParty: SnapshotPartyEntry[] = frozen.map((m) => ({
+          heroId: m.heroId,
+          slotIndex: m.slotIndex,
+          primaryClassId: m.primaryClassId,
+          secondaryClassId: m.secondaryClassId,
+          level: m.level,
+          skillLoadout: m.skillLoadout,
         }));
-        const frozenStats: SnapshotStatsEntry[] = ordered.map((hero, i) => ({
-          heroId: hero.heroId,
-          maxHp: stats[i]!.maxHp,
-          atk: stats[i]!.atk,
-          def: stats[i]!.def,
-          spd: stats[i]!.spd,
-        }));
+        const frozenStats: SnapshotStatsEntry[] = frozen.map((m) => {
+          const baseline = computeBattleStartStats({
+            primaryClassId: m.primaryClassId,
+            secondaryClassId: m.secondaryClassId,
+            level: m.level,
+            equipment: m.equipment,
+            hasThickHide: m.skillLoadout.passive.includes("thick_hide"),
+          });
+          return { heroId: m.heroId, maxHp: baseline.maxHp, atk: baseline.atk, def: baseline.def, spd: baseline.spd };
+        });
 
         snapshots.insert({
           snapshotId,
@@ -117,9 +105,6 @@ export function publishSnapshot(
           result: {
             snapshot: { snapshotId, accountId, publishedAt, rulesVersion: CURRENT_RULES_VERSION, frozenParty, frozenStats },
           },
-          // Every publish call creates a brand-new immutable row; there is
-          // no toggle/no-op case (unlike settle's zero-credit case), so this
-          // is always a persisted change.
           changed: true,
         };
       },
@@ -149,7 +134,7 @@ export function listSnapshotSummaries(
     accountId: row.accountId,
     publishedAt: row.publishedAt,
     rulesVersion: row.rulesVersion,
-    heroClasses: row.frozenParty.map((p) => p.classId),
+    heroClasses: row.frozenParty.map((p) => p.primaryClassId),
   }));
 }
 
@@ -177,8 +162,8 @@ export interface ChallengeResult {
 
 // POST /arena/challenge: loads the challenger's current live party and the
 // target snapshot (read-only, may belong to any account), simulates with
-// packages/game's arena engine, and writes the report under the
-// challenger's account only. Never writes to the opponent's account.
+// combat v2's uniform "team A vs team B, both hero rules" (combat.md 8.1),
+// and writes the report under the challenger's account only.
 export function challenge(
   db: DatabaseSync,
   accountId: string,
@@ -205,74 +190,32 @@ export function challenge(
         }
       },
       apply: () => {
-        const ordered = loadLiveParty(db, accountId);
+        const members = loadLiveParty(db, accountId);
         const snapshot = snapshots.findById(request.snapshotId);
         if (!snapshot) throw new AppError("not_found", `snapshot ${request.snapshotId} not found`);
 
-        const challengerCombatants = toCombatants(db, ordered);
+        const challengerCombatants = toHeroCombatantsV2(toFrozenMembers(db, members));
         const opponentCombatants = snapshotToCombatants(snapshot);
-        const battle = simulateArenaBattle(challengerCombatants, opponentCombatants);
+
+        const seedBytes = crypto.createHash("sha256").update(`arena/challenge:${accountId}:${request.requestId}`).digest();
+        const rngSeed = seedBytes.readUInt32BE(0);
+        const battle = simulateBattleV2(challengerCombatants, opponentCombatants, "arena", rngSeed);
 
         const reportId = crypto.randomUUID();
         const createdAt = clock.now().toISOString();
-        // Combat in M1 is fully deterministic (combat.md section 7: rngSeed
-        // is accepted for interface consistency but unused by any formula),
-        // so this seed only has to be unique/reproducible for the report
-        // record, not fed into the simulation.
-        const seed = crypto
-          .createHash("sha256")
-          .update(`arena/challenge:${accountId}:${request.requestId}`)
-          .digest("hex")
-          .slice(0, 16);
+        const seed = seedBytes.toString("hex").slice(0, 16);
 
-        const participantsSnapshot = {
-          units: replayUnits(challengerCombatants, opponentCombatants),
-          challenger: {
-            accountId,
-            party: challengerCombatants.map((c) => ({
-              heroId: c.id,
-              position: c.position,
-              classId: c.classId,
-              specializationId: c.specializationId,
-              stats: c.stats,
-            })),
-          },
-          opponent: {
-            snapshotId: snapshot.snapshotId,
-            accountId: snapshot.accountId,
-            party: snapshot.frozenParty,
-            stats: snapshot.frozenStats,
-          },
-        };
-        const resultDto = { outcome: battle.result, rounds: battle.rounds, finalHp: battle.finalHp };
-
-        reports.insert({
+        const report = {
           reportId,
-          accountId,
-          kind: "arena",
-          participantsSnapshot,
+          kind: "arena" as const,
           seed,
           rulesVersion: CURRENT_RULES_VERSION,
-          events: battle.events as unknown[],
-          result: resultDto,
           createdAt,
-        });
-
-        return {
-          result: {
-            report: {
-              reportId,
-              kind: "arena",
-              participantsSnapshot,
-              seed,
-              rulesVersion: CURRENT_RULES_VERSION,
-              events: battle.events as unknown[],
-              result: resultDto,
-              createdAt,
-            },
-          },
-          changed: true,
+          ...presentBattle(battle),
         };
+        reports.insert({ ...report, accountId });
+
+        return { result: { report }, changed: true };
       },
     },
   );

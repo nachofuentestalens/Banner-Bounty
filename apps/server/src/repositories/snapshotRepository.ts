@@ -1,14 +1,16 @@
 import type { DatabaseSync } from "node:sqlite";
+import type { SkillLoadout } from "@banner-and-bounty/contracts";
 
 // Frozen at publish time (design/game/combat.md "effective stat computation
 // order"), copied by value — never recomputed from the owning account's
 // live heroes again. See services/arenaService.ts for the exact shape.
 export interface SnapshotPartyEntry {
   heroId: string;
-  position: number;
-  classId: string;
+  slotIndex: number;
+  primaryClassId: string;
+  secondaryClassId: string | null;
   level: number;
-  specializationId: string | null;
+  skillLoadout: SkillLoadout;
 }
 
 export interface SnapshotStatsEntry {

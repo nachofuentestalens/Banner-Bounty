@@ -3,6 +3,7 @@ import { ApiError, NetworkError, get, post } from "./api.js";
 import { AccountSelector } from "./screens/AccountSelector.js";
 import { CompanyScreen } from "./screens/Company.js";
 import { ExpeditionScreen } from "./screens/Expedition.js";
+import { DungeonScreen } from "./screens/Dungeon.js";
 import { InventoryScreen } from "./screens/Inventory.js";
 import { BossScreen } from "./screens/Boss.js";
 import { ArenaScreen } from "./screens/Arena.js";
@@ -12,7 +13,7 @@ import { OfflineBanner } from "./components/Toasts.js";
 import { ToastList } from "./components/Toasts.js";
 import { useAccountState } from "./useAccountState.js";
 
-export type Screen = "company" | "expedition" | "inventory" | "boss" | "arena";
+export type Screen = "company" | "expedition" | "dungeon" | "inventory" | "boss" | "arena";
 
 type SessionState = { kind: "checking" } | { kind: "unauthenticated" } | { kind: "offline" } | { kind: "authenticated"; displayName: string };
 
@@ -82,6 +83,8 @@ export function App() {
         <CompanyScreen state={controller.state} controller={controller} onGoExpedition={() => setScreen("expedition")} />
       ) : screen === "expedition" ? (
         <ExpeditionScreen state={controller.state} controller={controller} />
+      ) : screen === "dungeon" ? (
+        <DungeonScreen state={controller.state} controller={controller} />
       ) : screen === "inventory" ? (
         <InventoryScreen state={controller.state} controller={controller} />
       ) : screen === "boss" ? (

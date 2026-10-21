@@ -57,6 +57,42 @@ export class AccountRepository {
     this.db.prepare("UPDATE accounts SET gold = gold + ? WHERE accountId = ?").run(amount, accountId);
   }
 
+  spendGold(accountId: string, amount: number): void {
+    this.db.prepare("UPDATE accounts SET gold = gold - ? WHERE accountId = ?").run(amount, accountId);
+  }
+
+  getSelectedAreaId(accountId: string): string {
+    const row = this.db.prepare("SELECT selectedAreaId FROM accounts WHERE accountId = ?").get(accountId) as
+      | { selectedAreaId: string }
+      | undefined;
+    if (!row) throw new Error(`unknown accountId ${accountId}`);
+    return row.selectedAreaId;
+  }
+
+  setSelectedAreaId(accountId: string, areaId: string): void {
+    this.db.prepare("UPDATE accounts SET selectedAreaId = ? WHERE accountId = ?").run(areaId, accountId);
+  }
+
+  getMaterials(accountId: string): { scrap: number; sigil: number; core: number } {
+    const row = this.db
+      .prepare("SELECT materialScrap AS scrap, materialSigil AS sigil, materialCore AS core FROM accounts WHERE accountId = ?")
+      .get(accountId) as { scrap: number; sigil: number; core: number } | undefined;
+    if (!row) throw new Error(`unknown accountId ${accountId}`);
+    return row;
+  }
+
+  addMaterials(accountId: string, delta: { scrap: number; sigil: number; core: number }): void {
+    this.db
+      .prepare("UPDATE accounts SET materialScrap = materialScrap + ?, materialSigil = materialSigil + ?, materialCore = materialCore + ? WHERE accountId = ?")
+      .run(delta.scrap, delta.sigil, delta.core, accountId);
+  }
+
+  spendMaterials(accountId: string, cost: { scrap: number; sigil: number; core: number }): void {
+    this.db
+      .prepare("UPDATE accounts SET materialScrap = materialScrap - ?, materialSigil = materialSigil - ?, materialCore = materialCore - ? WHERE accountId = ?")
+      .run(cost.scrap, cost.sigil, cost.core, accountId);
+  }
+
   insertSeed(accountId: string, displayName: string, slot: AccountSlot, createdAt: string): void {
     this.db
       .prepare(

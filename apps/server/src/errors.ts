@@ -30,5 +30,6 @@ export const ERROR_STATUS: Record<ErrorCode, number> = {
   not_found: 404,
   conflict: 409,
   active_expedition: 409,
+  active_dungeon: 409,
   internal: 500,
 };

@@ -8,7 +8,6 @@ import { buildServer } from "./app.js";
 import { FixedClock } from "./clock.js";
 import { openDatabase } from "./db/connection.js";
 import { SEED_ACCOUNT_A_ID, SEED_ACCOUNT_B_ID, starterHeroIds } from "./db/seed.js";
-import { HeroRepository } from "./repositories/heroRepository.js";
 import { ItemRepository } from "./repositories/itemRepository.js";
 
 // M1-08 acceptance fixtures: injected FixedClock, isolated in-memory or
@@ -62,7 +61,7 @@ async function mutate(
 ) {
   const expectedRevision = options.expectedRevision ?? (await getState(app, cookie)).revision;
   const response = await app.inject({
-    method: url === "/party/order" ? "PATCH" : "POST",
+    method: url === "/party/formation" || url === "/hero/loadout" ? "PATCH" : "POST",
     url,
     headers: { cookie },
     payload: { requestId: options.requestId ?? crypto.randomUUID(), expectedRevision, ...payload },
@@ -70,12 +69,13 @@ async function mutate(
   return { status: response.statusCode, body: response.json() };
 }
 
-function addItems(db: DatabaseSync, accountId: string, count: number, definitionId = "item_trinket_luckycoin", affixId: string | null = null) {
+function addItems(db: DatabaseSync, accountId: string, count: number, definitionId = "item_trinket_luckycoin", rarityId: "common" | "uncommon" = "common") {
   const items = new ItemRepository(db);
   const ids: string[] = [];
   for (let i = 0; i < count; i++) {
     const itemInstanceId = crypto.randomUUID();
-    items.insert({ itemInstanceId, accountId, definitionId, affixId, equippedBy: null }, new Date(T0).toISOString());
+    const affixes = rarityId === "uncommon" ? [{ affixId: "affix_of_power", value: 2 }] : [];
+    items.insert({ itemInstanceId, accountId, definitionId, rarityId, affixes, equippedBy: null }, new Date(T0).toISOString());
     ids.push(itemInstanceId);
   }
   return ids;
@@ -85,7 +85,7 @@ function rewardSummary(state: any) {
   return {
     gold: state.gold,
     heroes: state.heroes.map((h: any) => ({ heroId: h.heroId, level: h.level, xp: h.xp })),
-    items: state.inventory.map((i: any) => [i.definitionId, i.affixId]),
+    items: state.inventory.map((i: any) => [i.definitionId, i.rarityId]),
     checkpointAt: state.expedition.checkpointAt,
     cycles: state.expedition.cyclesCompletedSinceStart,
   };
@@ -129,7 +129,7 @@ describe("expedition start", () => {
       expect(r.status).toBe(400);
       expect(r.body.error.details.reason).toBe("no_active_expedition");
     }
-    db.prepare("DELETE FROM party_orders WHERE accountId = ?").run(SEED_ACCOUNT_A_ID);
+    db.prepare("DELETE FROM party_formations WHERE accountId = ?").run(SEED_ACCOUNT_A_ID);
     const start = await mutate(app, cookie, "/expedition/start");
     expect(start.status).toBe(400);
     expect(start.body.error.code).toBe("validation");
@@ -395,13 +395,14 @@ describe("inventory overflow conversion", () => {
     // Note: fixtures are inserted after start, so all three runs share the same seed/drop stream.
     const empty = await settleWithInventory(0, 60);
     const full = await settleWithInventory(100, 60);
-    const dropped = empty.data.rewards.items as Array<{ affixId: string | null }>;
+    const dropped = empty.data.rewards.items as Array<{ rarityId: string }>;
     expect(dropped.length).toBeGreaterThan(1);
 
     expect(full.data.rewards.items).toEqual([]);
     expect(full.state.inventory.filter((i: any) => i.equippedBy === null)).toHaveLength(100);
     expect(full.data.overflow.convertedCount).toBe(dropped.length);
-    const conversionGold = dropped.reduce((sum, d) => sum + (d.affixId ? 9 : 5), 0);
+    const overflowGoldByRarity: Record<string, number> = { common: 5, uncommon: 9, rare: 18, epic: 36 };
+    const conversionGold = dropped.reduce((sum, d) => sum + overflowGoldByRarity[d.rarityId]!, 0);
     expect(full.data.overflow.convertedGold).toBe(conversionGold);
     expect(full.state.gold).toBe(empty.state.gold + conversionGold);
     expect(full.data.recentCycles.length).toBeLessThanOrEqual(10);
@@ -474,30 +475,38 @@ describe("party, equipment and specialization rules (A05)", () => {
     await app.close();
   });
 
-  it("specialization requires level 3, the hero's own class and ownership", async () => {
+  it("dual-class assignment requires level 3, a distinct base class and ownership; loadout requires unlocked skills", async () => {
     const { app, db } = harness();
     const cookie = await login(app);
-    const early = await mutate(app, cookie, "/hero/specialization", { heroId: VANGUARD, specializationId: "spec_guardian" });
+    const early = await mutate(app, cookie, "/hero/secondary-class", { heroId: VANGUARD, secondaryClassId: "class_cleric" });
     expect([early.status, early.body.error.details.reason]).toEqual([400, "level_too_low"]);
 
     db.prepare("UPDATE heroes SET level = 3 WHERE heroId = ?").run(VANGUARD);
-    for (const specializationId of ["spec_pathfinder", "spec_unknown"]) {
-      const r = await mutate(app, cookie, "/hero/specialization", { heroId: VANGUARD, specializationId });
-      expect([r.status, r.body.error.details.reason]).toEqual([400, "wrong_specialization"]);
-    }
-    const foreign = await mutate(app, cookie, "/hero/specialization", {
+    const selfDual = await mutate(app, cookie, "/hero/secondary-class", { heroId: VANGUARD, secondaryClassId: "class_vanguard" });
+    expect(selfDual.status).toBe(400);
+    const unknown = await mutate(app, cookie, "/hero/secondary-class", { heroId: VANGUARD, secondaryClassId: "class_unknown" });
+    expect(unknown.status).toBe(400);
+
+    const foreign = await mutate(app, cookie, "/hero/secondary-class", {
       heroId: starterHeroIds(SEED_ACCOUNT_B_ID)[0],
-      specializationId: "spec_guardian",
+      secondaryClassId: "class_cleric",
     });
     expect(foreign.status).toBe(403);
 
-    const ok = await mutate(app, cookie, "/hero/specialization", { heroId: VANGUARD, specializationId: "spec_guardian" });
+    const ok = await mutate(app, cookie, "/hero/secondary-class", { heroId: VANGUARD, secondaryClassId: "class_cleric" });
     expect(ok.status).toBe(200);
-    expect(ok.body.data.hero.specializationId).toBe("spec_guardian");
+    expect(ok.body.data.hero.secondaryClassId).toBe("class_cleric");
+
+    // Loadout: a skill not unlocked for this hero's classes is rejected; an unlocked one from the new secondary is accepted.
+    const badSkill = await mutate(app, cookie, "/hero/loadout", { heroId: VANGUARD, active: ["backstab", ""], passive: ["", ""] });
+    expect(badSkill.status).toBe(400);
+    const okLoadout = await mutate(app, cookie, "/hero/loadout", { heroId: VANGUARD, active: ["mending_light", ""], passive: ["thick_hide", ""] });
+    expect(okLoadout.status).toBe(200);
+    expect(okLoadout.body.data.hero.skillLoadout).toEqual({ active: ["mending_light", ""], passive: ["thick_hide", ""] });
     await app.close();
   });
 
-  it("an active expedition freezes loadout/spec (checked before revision) but not party order or retried receipts", async () => {
+  it("an active expedition freezes loadout/dual-class (checked before revision) but not formation or retried receipts", async () => {
     const { app, db, at } = harness();
     const cookie = await login(app);
     const [sword, sword2] = addItems(db, SEED_ACCOUNT_A_ID, 2, "item_weapon_shortsword");
@@ -518,7 +527,7 @@ describe("party, equipment and specialization rules (A05)", () => {
     const locked: Array<[string, Record<string, unknown>]> = [
       ["/equipment/equip", { heroId: VANGUARD, itemInstanceId: sword2, slot: "weapon" }],
       ["/equipment/unequip", { heroId: VANGUARD, slot: "weapon" }],
-      ["/hero/specialization", { heroId: VANGUARD, specializationId: "spec_guardian" }],
+      ["/hero/secondary-class", { heroId: VANGUARD, secondaryClassId: "class_cleric" }],
     ];
     for (const [url, payload] of locked) {
       const stale = await mutate(app, cookie, url, payload, { expectedRevision: 0 });
@@ -536,7 +545,7 @@ describe("party, equipment and specialization rules (A05)", () => {
     expect(replay.body).toEqual(preStart.body);
 
     // Reordering is allowed and does not touch the frozen loadout.
-    const reorder = await mutate(app, cookie, "/party/order", { order: [ARCANIST, RANGER, VANGUARD] });
+    const reorder = await mutate(app, cookie, "/party/formation", { slots: [ARCANIST, RANGER, VANGUARD, null, null] });
     expect(reorder.status).toBe(200);
 
     // Mid-run level-ups change live level/xp only; the frozen loadout keeps start levels.
@@ -552,9 +561,9 @@ describe("party, equipment and specialization rules (A05)", () => {
     expect(stop.status).toBe(200);
     expect(stop.body.data.finalSettlement.creditedCycles).toBe(0);
     expect(stop.body.data.expedition.status).toBe("none");
-    expect((await getState(app, cookie)).expedition).toEqual({ status: "none", checkpointAt: null, cyclesCompletedSinceStart: 0 });
+    expect((await getState(app, cookie)).expedition).toEqual({ status: "none", areaId: null, checkpointAt: null, cyclesCompletedSinceStart: 0 });
 
-    const afterStop = await mutate(app, cookie, "/hero/specialization", { heroId: VANGUARD, specializationId: "spec_guardian" });
+    const afterStop = await mutate(app, cookie, "/hero/secondary-class", { heroId: VANGUARD, secondaryClassId: "class_cleric" });
     expect(afterStop.status).toBe(200);
     await app.close();
   });
@@ -578,12 +587,13 @@ describe("server-computed effectiveStats (M1-10 contract decision)", () => {
     return state.heroes.find((h: any) => h.heroId === heroId).effectiveStats;
   }
 
-  it("account/state and equip/unequip responses reflect gear and specialization bonuses", async () => {
+  it("account/state and equip/unequip responses reflect gear and dual-class bonuses", async () => {
     const { app, db } = harness();
     const cookie = await login(app);
     const [sword] = addItems(db, SEED_ACCOUNT_A_ID, 1, "item_weapon_shortsword");
 
-    // Vanguard level 1, no gear/spec/party bonus: leveled stats only (content.md class_vanguard).
+    // Vanguard level 1, no gear/dual-class: leveled stats + Thick Hide (classes.md 2.1; every
+    // starter's auto-filled loadout already includes its level-1 passive).
     const base = heroStats(await getState(app, cookie), VANGUARD);
     expect(base).toEqual({ maxHp: 40, atk: 7, def: 6, spd: 8 });
 
@@ -592,53 +602,15 @@ describe("server-computed effectiveStats (M1-10 contract decision)", () => {
     expect(equipped.body.data.hero.effectiveStats).toEqual({ maxHp: 40, atk: 10, def: 6, spd: 8 });
     expect(heroStats(await getState(app, cookie), VANGUARD)).toEqual({ maxHp: 40, atk: 10, def: 6, spd: 8 });
 
-    // Leveling to 3 and taking Guardian adds the combat.md 1.2 +2 DEF modifier on top of leveled growth.
+    // Leveling to 3 and taking Cleric as a secondary adds floor(secondaryLeveled/4) to every stat (classes.md 2.1 steps 1-3).
     db.prepare("UPDATE heroes SET level = 3 WHERE heroId = ?").run(VANGUARD);
-    const specialized = await mutate(app, cookie, "/hero/specialization", { heroId: VANGUARD, specializationId: "spec_guardian" });
-    expect(specialized.body.data.hero.effectiveStats).toEqual({ maxHp: 50, atk: 12, def: 10, spd: 8 });
+    const dualClassed = await mutate(app, cookie, "/hero/secondary-class", { heroId: VANGUARD, secondaryClassId: "class_cleric" });
+    expect(dualClassed.status).toBe(200);
+    const afterDual = (await getState(app, cookie)).heroes.find((h: any) => h.heroId === VANGUARD).effectiveStats;
 
-    // Unequipping drops the weapon bonus but keeps the level/spec contribution.
+    // Unequipping drops the weapon bonus but keeps the level/dual-class contribution.
     const unequipped = await mutate(app, cookie, "/equipment/unequip", { heroId: VANGUARD, slot: "weapon" });
-    expect(unequipped.body.data.hero.effectiveStats).toEqual({ maxHp: 50, atk: 9, def: 10, spd: 8 });
-    await app.close();
-  });
-
-  it("the party Pathfinder SPD bonus applies to every party member but not a benched hero", async () => {
-    const { app, db } = harness();
-    const cookie = await login(app);
-    const heroes = new HeroRepository(db);
-
-    // A 4th, benched hero: owned but never placed in the party order.
-    const benched = crypto.randomUUID();
-    heroes.insertForFixture({
-      heroId: benched,
-      accountId: SEED_ACCOUNT_A_ID,
-      classId: "class_ranger",
-      level: 3,
-      xp: 0,
-      specializationId: "spec_pathfinder",
-      equipment: { weapon: null, armor: null, trinket: null },
-    });
-
-    // No party Pathfinder yet: base SPD for every starter.
-    let state = await getState(app, cookie);
-    expect(heroStats(state, VANGUARD).spd).toBe(8);
-    expect(heroStats(state, RANGER).spd).toBe(12);
-    expect(heroStats(state, ARCANIST).spd).toBe(9);
-    // The benched Pathfinder's own stats are unaffected by not being in the party.
-    expect(heroStats(state, benched).spd).toBe(12);
-
-    // Promoting the in-party Ranger to Pathfinder (level 3) grants the whole party +2 SPD.
-    db.prepare("UPDATE heroes SET level = 3 WHERE heroId = ?").run(RANGER);
-    const specialized = await mutate(app, cookie, "/hero/specialization", { heroId: RANGER, specializationId: "spec_pathfinder" });
-    expect(specialized.body.data.hero.effectiveStats.spd).toBe(14);
-
-    state = await getState(app, cookie);
-    expect(heroStats(state, VANGUARD).spd).toBe(10);
-    expect(heroStats(state, RANGER).spd).toBe(14);
-    expect(heroStats(state, ARCANIST).spd).toBe(11);
-    // The benched hero is not in the party, so it never receives the party's SPD bonus.
-    expect(heroStats(state, benched).spd).toBe(12);
+    expect(unequipped.body.data.hero.effectiveStats).toEqual({ ...afterDual, atk: afterDual.atk - 3 });
     await app.close();
   });
 });
@@ -668,7 +640,7 @@ describe("boss first-clear reward (A09)", () => {
     expect(win.body.data.rewardGranted).toBe(true);
     expect(win.body.data.reward.gold).toBe(150);
     expect(win.body.data.reward.items).toHaveLength(1);
-    expect(win.body.data.reward.items[0].affixId).not.toBeNull();
+    expect(win.body.data.reward.items[0].rarityId).toBe("uncommon");
     state = await getState(app, cookie);
     expect(state.gold).toBe(150);
     expect(state.inventory).toHaveLength(1);
@@ -745,7 +717,7 @@ describe("endpoint authentication and validation", () => {
     for (const url of [
       "/equipment/equip",
       "/equipment/unequip",
-      "/hero/specialization",
+      "/hero/secondary-class",
       "/expedition/start",
       "/expedition/settle",
       "/expedition/stop",
@@ -773,7 +745,7 @@ describe("battle presentation snapshots", () => {
       expect(result.body.data.creditedCycles).toBe(3);
       expect(report.kind).toBe("pve");
       expect(report.participantsSnapshot.units).toHaveLength(6);
-      const hp = Object.fromEntries(report.participantsSnapshot.units.map((u: any) => [u.id, u.maxHp]));
+      const hp = Object.fromEntries(report.participantsSnapshot.units.map((u: any) => [u.unitId, u.maxHp]));
       for (const e of report.events) if (e.targetId && e.hpAfter !== null) hp[e.targetId] = e.hpAfter;
       expect(hp).toEqual(report.result.finalHp);
       const retry = await mutate(app, cookie, "/expedition/settle", {}, { requestId, expectedRevision });

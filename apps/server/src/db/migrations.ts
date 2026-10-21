@@ -1,4 +1,5 @@
 import type { DatabaseSync } from "node:sqlite";
+import { autoFillLoadout } from "@banner-and-bounty/content";
 
 // Each migration is applied exactly once, in order, tracked by schema_version.
 // Append new migrations here; never edit a migration already shipped to a
@@ -7,6 +8,27 @@ import type { DatabaseSync } from "node:sqlite";
 interface Migration {
   version: number;
   sql: string;
+  /** Optional JS backfill step, run after `sql`, inside the same transaction. */
+  migrate?: (db: DatabaseSync) => void;
+}
+
+interface LegacyHeroRow {
+  heroId: string;
+  primaryClassId: string;
+  level: number;
+}
+
+interface LegacyItemRow {
+  itemInstanceId: string;
+  affixId: string | null;
+}
+
+/** gear.md section 6's exact legacy affixId -> rarityId/affixes table (contracts.md M2-25 migration step 6). */
+function migrateLegacyAffix(affixId: string | null): { rarityId: string; affixes: { affixId: string; value: number }[] } {
+  if (!affixId) return { rarityId: "common", affixes: [] };
+  if (affixId === "affix_of_vigor") return { rarityId: "uncommon", affixes: [{ affixId: "affix_of_vigor", value: 3 }] };
+  // legacy "power" or "warding"
+  return { rarityId: "uncommon", affixes: [{ affixId, value: 2 }] };
 }
 
 const MIGRATIONS: Migration[] = [
@@ -138,6 +160,89 @@ const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    // M2-25/M2-27: dual class/skill loadout, 5-slot formation, gear rarity/
+    // affixes, materials, dungeon runs, and area selection (M2-01). Formalizes
+    // contracts.md's M2-25 "Migration" 10-step procedure. Schema changes via
+    // SQL; the JS `migrate` step below backfills skillLoadout/affixes/
+    // formation/dungeon rows (step 3, step 6, step 5, step 8) since those
+    // derivations are not expressible in plain SQL.
+    version: 4,
+    sql: `
+      ALTER TABLE accounts ADD COLUMN selectedAreaId TEXT NOT NULL DEFAULT 'area_old_road';
+      ALTER TABLE accounts ADD COLUMN materialScrap INTEGER NOT NULL DEFAULT 0 CHECK (materialScrap >= 0);
+      ALTER TABLE accounts ADD COLUMN materialSigil INTEGER NOT NULL DEFAULT 0 CHECK (materialSigil >= 0);
+      ALTER TABLE accounts ADD COLUMN materialCore INTEGER NOT NULL DEFAULT 0 CHECK (materialCore >= 0);
+
+      ALTER TABLE heroes RENAME COLUMN classId TO primaryClassId;
+      ALTER TABLE heroes ADD COLUMN secondaryClassId TEXT;
+      ALTER TABLE heroes ADD COLUMN skillLoadout TEXT;
+
+      ALTER TABLE item_instances ADD COLUMN rarityId TEXT NOT NULL DEFAULT 'common';
+      ALTER TABLE item_instances ADD COLUMN affixes TEXT NOT NULL DEFAULT '[]';
+
+      CREATE TABLE party_formations (
+        accountId TEXT PRIMARY KEY REFERENCES accounts(accountId),
+        slot0 TEXT, slot1 TEXT, slot2 TEXT, slot3 TEXT, slot4 TEXT
+      );
+
+      CREATE TABLE dungeon_runs (
+        accountId TEXT PRIMARY KEY REFERENCES accounts(accountId),
+        status TEXT NOT NULL DEFAULT 'none' CHECK (status IN ('none', 'active')),
+        dungeonId TEXT,
+        startedAt TEXT,
+        checkpointAt TEXT,
+        currentFloor INTEGER NOT NULL DEFAULT 1,
+        floorsCleared INTEGER NOT NULL DEFAULT 0,
+        frozenLoadout TEXT,
+        rulesVersion INTEGER,
+        combatSeedBase INTEGER,
+        rngState TEXT,
+        outcome TEXT NOT NULL DEFAULT 'none' CHECK (outcome IN ('none', 'cleared', 'failed'))
+      );
+
+      ALTER TABLE expeditions ADD COLUMN areaId TEXT;
+    `,
+    migrate: (db) => {
+      // Step 3: skillLoadout derived (auto-filled from primary class), never
+      // copied from the dropped specializationId.
+      const heroes = db.prepare("SELECT heroId, primaryClassId, level FROM heroes").all() as unknown as LegacyHeroRow[];
+      const setLoadout = db.prepare("UPDATE heroes SET skillLoadout = ? WHERE heroId = ?");
+      for (const hero of heroes) {
+        setLoadout.run(JSON.stringify(autoFillLoadout(hero.primaryClassId, hero.level)), hero.heroId);
+      }
+      db.exec("ALTER TABLE heroes DROP COLUMN specializationId;");
+
+      // Step 6: affixId -> rarityId/affixes per gear.md's exact table.
+      const items = db.prepare("SELECT itemInstanceId, affixId FROM item_instances").all() as unknown as LegacyItemRow[];
+      const setAffixes = db.prepare("UPDATE item_instances SET rarityId = ?, affixes = ? WHERE itemInstanceId = ?");
+      for (const item of items) {
+        const migrated = migrateLegacyAffix(item.affixId);
+        setAffixes.run(migrated.rarityId, JSON.stringify(migrated.affixes), item.itemInstanceId);
+      }
+      db.exec("ALTER TABLE item_instances DROP COLUMN affixId;");
+
+      // Step 5: PartyOrder.order[0..2] -> PartyFormation.slots[0..2]; back row starts empty.
+      const partyOrders = db.prepare("SELECT accountId, hero1, hero2, hero3 FROM party_orders").all() as unknown as {
+        accountId: string;
+        hero1: string;
+        hero2: string;
+        hero3: string;
+      }[];
+      const insertFormation = db.prepare(
+        "INSERT OR IGNORE INTO party_formations (accountId, slot0, slot1, slot2, slot3, slot4) VALUES (?, ?, ?, ?, NULL, NULL)",
+      );
+      for (const order of partyOrders) {
+        insertFormation.run(order.accountId, order.hero1, order.hero2, order.hero3);
+      }
+      db.exec("DROP TABLE party_orders;");
+
+      // Step 8: every existing account gets a dormant DungeonRun row.
+      const accountIds = db.prepare("SELECT accountId FROM accounts").all() as unknown as { accountId: string }[];
+      const insertDungeonRun = db.prepare("INSERT OR IGNORE INTO dungeon_runs (accountId) VALUES (?)");
+      for (const row of accountIds) insertDungeonRun.run(row.accountId);
+    },
+  },
 ];
 
 function schemaVersionTableExists(db: DatabaseSync): boolean {
@@ -161,6 +266,7 @@ export function runMigrations(db: DatabaseSync, upToVersion = Number.POSITIVE_IN
     db.exec("BEGIN IMMEDIATE;");
     try {
       db.exec(migration.sql);
+      migration.migrate?.(db);
       db.prepare("INSERT INTO schema_version (version, appliedAt) VALUES (?, ?)").run(
         migration.version,
         new Date().toISOString(),
