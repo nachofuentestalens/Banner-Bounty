@@ -9,7 +9,13 @@ export class ContentValidationError extends Error {
   }
 }
 
-export type ClassId = "class_vanguard" | "class_ranger" | "class_arcanist";
+// M2-22 (design/game/classes.md section 1) adds class_cleric/class_rogue/
+// class_herald to the same ClassId space: the three starter IDs keep their
+// unchanged stat curves below (CLASS_DEFINITIONS, M1's specialization-era
+// shape), while all 6 classes' M2 base stats/skills/roster live in ./v2
+// (re-exported below) since M1's specialization-era shape has no room for a
+// class without exactly 2 specializations.
+export type ClassId = "class_vanguard" | "class_ranger" | "class_arcanist" | "class_cleric" | "class_rogue" | "class_herald";
 
 export type SpecializationId =
   | "spec_guardian"
@@ -258,5 +264,9 @@ export function validateContent(): void {
 }
 
 validateContent();
+
+export * from "./v2/index.js";
+import { validateContentV2 } from "./v2/index.js";
+validateContentV2();
 
 export const contentPackageVersion = "0.2.0" as const;

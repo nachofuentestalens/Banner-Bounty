@@ -35,6 +35,10 @@ const {
   MAX_CYCLES_PER_SETTLEMENT,
   RECENT_CYCLE_LOG_LIMIT,
   gamePackageVersion,
+  simulateBattleV2,
+  simulateDungeonFloorBatch,
+  resolveCraft,
+  resolveReforge,
 } = game;
 const {
   CLASS_DEFINITIONS,
@@ -420,6 +424,122 @@ function runCatchupBenchmark(opts) {
   };
 }
 
+// --------------------------------------------------------------- combat v2
+
+const V2_EMPTY_EQUIPMENT = { weapon: null, armor: null, trinket: null };
+
+function v2Hero(id, slotIndex, primaryClassId, secondaryClassId, level, active, passive) {
+  return {
+    kind: "hero",
+    id,
+    slotIndex,
+    primaryClassId,
+    secondaryClassId,
+    level,
+    equipment: V2_EMPTY_EQUIPMENT,
+    skillLoadout: { active, passive },
+  };
+}
+
+/** A deliberately well-rounded 3-hero party: tank (taunt+DEF), healer, DPS. */
+function v2BalancedParty(level) {
+  return [
+    v2Hero("tank", 0, "class_vanguard", "class_herald", level, ["bulwark_call", "shield_bash"], ["thick_hide", "last_stand"]),
+    v2Hero("cleric", 1, "class_cleric", "class_vanguard", level, ["mending_light", "sanctuary"], ["devotion", "vital_surge"]),
+    v2Hero("rogue", 2, "class_rogue", "class_arcanist", level, ["backstab", "flurry"], ["opportunist", "evasion"]),
+  ];
+}
+
+/** Same average level/class spread, no tank skills and no healer action, to measure the formation-choice contrast M2.md acceptance check 7 asks for. */
+function v2GlassCannonParty(level) {
+  return [
+    v2Hero("dps1", 0, "class_rogue", null, level, ["backstab", "flurry"], ["opportunist", "evasion"]),
+    v2Hero("dps2", 1, "class_ranger", null, level, ["aimed_shot", "volley"], ["hunters_focus", "momentum"]),
+    v2Hero("dps3", 2, "class_arcanist", null, level, ["firebolt", "meteor"], ["overload", "arcane_reserve"]),
+  ];
+}
+
+function v2OldRoadEnemies() {
+  return [
+    { kind: "enemy", id: "brigand", slotIndex: 0, enemyId: "enemy_road_brigand", stats: { maxHp: 50, atk: 9, def: 4, spd: 7 } },
+    { kind: "enemy", id: "wolf", slotIndex: 1, enemyId: "enemy_road_wolf", stats: { maxHp: 35, atk: 11, def: 2, spd: 11 } },
+    { kind: "enemy", id: "cutpurse", slotIndex: 2, enemyId: "enemy_road_cutpurse", stats: { maxHp: 30, atk: 8, def: 2, spd: 10 } },
+  ];
+}
+
+function v2Reproducibility(seed) {
+  const party = v2BalancedParty(5);
+  const first = simulateBattleV2(party, v2OldRoadEnemies(), "pve", seed);
+  const second = simulateBattleV2(party, v2OldRoadEnemies(), "pve", seed);
+  return { ok: JSON.stringify(first) === JSON.stringify(second), seed };
+}
+
+/** Runs the same Old Road v2 encounter with a balanced party vs. a same-average-power glass-cannon party, across many seeds, reporting win rate and rounds-to-clear per build — direct evidence for M2.md acceptance check 7. */
+function v2TeamBuildingContrast(opts) {
+  const level = 5;
+  const results = { balanced: { wins: 0, rounds: [] }, glassCannon: { wins: 0, rounds: [] } };
+  for (let i = 0; i < opts.runs; i++) {
+    const seed = opts.seed + i;
+    for (const [key, partyFn] of [["balanced", v2BalancedParty], ["glassCannon", v2GlassCannonParty]]) {
+      const battle = simulateBattleV2(partyFn(level), v2OldRoadEnemies(), "pve", seed);
+      if (battle.result === "win") {
+        results[key].wins += 1;
+        results[key].rounds.push(battle.rounds);
+      }
+    }
+  }
+  const summarize = (r) => ({ winRate: r.wins / opts.runs, avgRoundsToClear: r.rounds.length ? Math.round((r.rounds.reduce((a, b) => a + b, 0) / r.rounds.length) * 100) / 100 : null });
+  return { runs: opts.runs, balanced: summarize(results.balanced), glassCannon: summarize(results.glassCannon) };
+}
+
+/** Full-clear benchmark for the one shipped M2-31 dungeon, with the balanced party, across several seeds. */
+function v2DungeonBenchmark(opts) {
+  const party = v2BalancedParty(8).map((h, i) => ({ heroId: h.id, slotIndex: i, primaryClassId: h.primaryClassId, secondaryClassId: h.secondaryClassId, level: h.level, equipment: h.equipment, skillLoadout: h.skillLoadout }));
+  let cleared = 0;
+  let failed = 0;
+  const floorsProcessedSamples = [];
+  for (let i = 0; i < opts.runs; i++) {
+    const seed = opts.seed + i;
+    const result = simulateDungeonFloorBatch({
+      dungeonId: "dungeon_aqueduct_depths",
+      frozenParty: party,
+      currentFloor: 1,
+      combatSeedBase: seed,
+      rngState: createRngState(seed),
+      unequippedCount: 0,
+      eligibleFloors: 4,
+    });
+    if (result.outcome === "cleared") cleared += 1;
+    else failed += 1;
+    floorsProcessedSamples.push(result.floorsProcessed);
+  }
+  return {
+    runs: opts.runs,
+    clearRate: cleared / opts.runs,
+    failed,
+    avgFloorsProcessed: Math.round((floorsProcessedSamples.reduce((a, b) => a + b, 0) / floorsProcessedSamples.length) * 100) / 100,
+  };
+}
+
+function v2CraftingReproducibility(seed) {
+  const a = resolveCraft(createRngState(seed), "item_weapon_focus", "epic");
+  const b = resolveCraft(createRngState(seed), "item_weapon_focus", "epic");
+  const craftOk = JSON.stringify(a) === JSON.stringify(b);
+  const affixes = [{ affixId: "affix_of_power", value: 3 }, { affixId: "affix_of_warding", value: 3 }, { affixId: "affix_of_vigor", value: 10 }];
+  const r1 = resolveReforge(createRngState(seed), "weapon", "epic", affixes, 2);
+  const r2 = resolveReforge(createRngState(seed), "weapon", "epic", affixes, 2);
+  const reforgeOk = JSON.stringify(r1) === JSON.stringify(r2);
+  return { ok: craftOk && reforgeOk, seed };
+}
+
+function runV2Checks(opts) {
+  const repro = v2Reproducibility(opts.seed);
+  const craftRepro = v2CraftingReproducibility(opts.seed);
+  const contrast = v2TeamBuildingContrast(opts);
+  const dungeon = v2DungeonBenchmark(opts);
+  return { reproducibility: repro, craftingReproducibility: craftRepro, teamBuildingContrast: contrast, dungeonBenchmark: dungeon };
+}
+
 // --------------------------------------------------------------------- main
 
 async function main() {
@@ -456,6 +576,17 @@ async function main() {
     console.log(`  first drop (cycle, min/median/max): ${pacing.firstDrop.min}/${pacing.firstDrop.median}/${pacing.firstDrop.max} (~${pacing.firstDrop.minutes.min}/${pacing.firstDrop.minutes.median}/${pacing.firstDrop.minutes.max} min)`);
     console.log(`  level-3 unlock (cycle, min/median/max): ${pacing.level3Unlock.min}/${pacing.level3Unlock.median}/${pacing.level3Unlock.max} (~${pacing.level3Unlock.minutes.min}/${pacing.level3Unlock.minutes.median}/${pacing.level3Unlock.minutes.max} min)`);
     console.log(`  boss ready (cycle, min/median/max): ${pacing.bossReady.min}/${pacing.bossReady.median}/${pacing.bossReady.max} (~${pacing.bossReady.minutes.min}/${pacing.bossReady.minutes.median}/${pacing.bossReady.minutes.max} min); ${pacing.bossReady.missing} of ${pacing.runs} runs never reached boss-ready within ${opts.maxCycles} cycles`);
+  }
+
+  if (opts.mode === "v2" || opts.mode === "all") {
+    const v2 = runV2Checks(opts);
+    report.v2 = v2;
+    console.log(`[simulate] combat v2 reproducibility (seed ${v2.reproducibility.seed}): ${v2.reproducibility.ok ? "PASS" : "FAIL"}`);
+    if (!v2.reproducibility.ok) process.exitCode = 1;
+    console.log(`[simulate] crafting/reforge reproducibility (seed ${v2.craftingReproducibility.seed}): ${v2.craftingReproducibility.ok ? "PASS" : "FAIL"}`);
+    if (!v2.craftingReproducibility.ok) process.exitCode = 1;
+    console.log(`[simulate] team-building contrast (${v2.teamBuildingContrast.runs} runs, Old Road v2): balanced win rate ${v2.teamBuildingContrast.balanced.winRate}, avg rounds ${v2.teamBuildingContrast.balanced.avgRoundsToClear}; glass-cannon win rate ${v2.teamBuildingContrast.glassCannon.winRate}, avg rounds ${v2.teamBuildingContrast.glassCannon.avgRoundsToClear}`);
+    console.log(`[simulate] dungeon_aqueduct_depths full-clear benchmark (${v2.dungeonBenchmark.runs} runs, balanced level-8 party): clear rate ${v2.dungeonBenchmark.clearRate}, avg floors processed ${v2.dungeonBenchmark.avgFloorsProcessed}`);
   }
 
   if (opts.mode === "catchup" || opts.mode === "all") {
