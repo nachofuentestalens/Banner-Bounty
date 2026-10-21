@@ -51,3 +51,21 @@ export function belowThreshold(value: number, numerator: number, denominator: nu
 export function pickUniformIndex(value: number, count: number): number {
   return Math.floor((value * count) / TWO_32);
 }
+
+/**
+ * gear.md section 6's U(n): an exactly-unbiased integer in [0, n), via
+ * rejection sampling ("reject values at or above floor(2^32/n)*n, then take
+ * remainder modulo n") rather than pickUniformIndex's multiplicative scaling
+ * — gear.md is explicit that its draws "do not reuse combat's 0..99 roll as
+ * an unbiased general-purpose draw." Rejection draws still advance the
+ * persisted RNG state (gear.md: "rejection draws advance persisted state").
+ */
+export function drawUniformInt(state: RngState, n: number): RngDraw {
+  const limit = Math.floor(TWO_32 / n) * n;
+  let current = state;
+  for (;;) {
+    const draw = drawUint32(current);
+    if (draw.value < limit) return { value: draw.value % n, nextState: draw.nextState };
+    current = draw.nextState;
+  }
+}

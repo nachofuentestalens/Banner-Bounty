@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { belowThreshold, createRngState, drawUint32, pickUniformIndex } from "./rng.js";
+import { belowThreshold, createRngState, drawUint32, drawUniformInt, pickUniformIndex } from "./rng.js";
 
 describe("rng", () => {
   it("is deterministic: same seed produces the same draw sequence", () => {
@@ -38,5 +38,29 @@ describe("rng", () => {
       expect(idx).toBeGreaterThanOrEqual(0);
       expect(idx).toBeLessThan(9);
     }
+  });
+
+  it("drawUniformInt (gear.md section 6) stays within [0, n) and is deterministic", () => {
+    let state = createRngState(777);
+    for (let i = 0; i < 200; i++) {
+      const draw = drawUniformInt(state, 9);
+      expect(draw.value).toBeGreaterThanOrEqual(0);
+      expect(draw.value).toBeLessThan(9);
+      state = draw.nextState;
+    }
+    const a = drawUniformInt(createRngState(42), 3);
+    const b = drawUniformInt(createRngState(42), 3);
+    expect(a).toEqual(b);
+  });
+
+  it("drawUniformInt distributes roughly evenly over many draws (sanity, not a strict statistical test)", () => {
+    let state = createRngState(9001);
+    const counts = [0, 0, 0];
+    for (let i = 0; i < 3000; i++) {
+      const draw = drawUniformInt(state, 3);
+      counts[draw.value]! += 1;
+      state = draw.nextState;
+    }
+    for (const c of counts) expect(c).toBeGreaterThan(700); // expected ~1000 each
   });
 });
