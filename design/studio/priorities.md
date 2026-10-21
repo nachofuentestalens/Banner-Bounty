@@ -53,3 +53,24 @@ successful run is not the same as a passing review, and invalidated evidence mus
 behind a green status. A P0/P1 defect specific to M2 also includes: a battle view that cannot show
 what happened in a fight, or combat state that desyncs from a playback control (pause/step/speed/
 skip).
+
+## M3 candidate backlog (from 2026-10-22 owner feedback triage)
+
+Not scoped into M2; tracked here so M2-30's verdict/M3 plan picks them up. Two owner-reported gaps
+go deeper than UI polish and would rework pacing fundamentals the M1-04/M1-13 freezes and M2-22's
+"no real-time input" decision rely on:
+
+- **Cycle duration tied to actual fight length, watched close to real time.** Today a cycle is a
+  fixed ~1-minute abstract time unit (`economy/baseline.md`, `economy/tuning.md`) decoupled from
+  how long a fight actually takes to resolve, and nothing guarantees a fight is on-screen while it
+  runs. Binding cycle length to fight length touches the offline-progress cap math, the
+  reward-per-cycle tuning tables, and the simulation tooling that all assume a fixed cycle unit —
+  this is an architecture/economy rework, not a battle-view tweak, and should be spec'd against a
+  post-M2 baseline, not patched into the in-flight M2-26/M2-27 implementation.
+- **Mid-expedition skill loadout changes (effective next fight, not immediately).** Not in M2's
+  scope (`milestones/M2.md` scope item 3 is build-time loadout only). Needs a contract amendment
+  (how/where the deferred change is recorded against a running, deterministic expedition) before
+  any engine work, so it should follow M2-25/M2-26, not run alongside them.
+
+Both remain real owner priorities, not rejected; see the Game Director's 2026-10-22 triage report
+for the full reasoning and the tasks opened to spec them.
