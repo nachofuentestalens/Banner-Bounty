@@ -66,11 +66,20 @@ go deeper than UI polish and would rework pacing fundamentals the M1-04/M1-13 fr
   runs. Binding cycle length to fight length touches the offline-progress cap math, the
   reward-per-cycle tuning tables, and the simulation tooling that all assume a fixed cycle unit —
   this is an architecture/economy rework, not a battle-view tweak, and should be spec'd against a
-  post-M2 baseline, not patched into the in-flight M2-26/M2-27 implementation.
+  post-M2 baseline, not patched into the in-flight M2-26/M2-27 implementation. Feasibility spec
+  delivered (CTO, task `9fa4109a-92c5-4c03-85d7-406189c0f218`): `design/studio/reports/cycle-duration-feasibility.md`,
+  committed on that task's branch (commit `8391e56`), not yet merged to `main`.
 - **Mid-expedition skill loadout changes (effective next fight, not immediately).** Not in M2's
   scope (`milestones/M2.md` scope item 3 is build-time loadout only). Needs a contract amendment
   (how/where the deferred change is recorded against a running, deterministic expedition) before
-  any engine work, so it should follow M2-25/M2-26, not run alongside them.
+  any engine work, so it should follow M2-25/M2-26, not run alongside them. Spec delivered
+  (Systems Designer, task `f4491607-20b6-413e-b20c-bc0f026479fb`): `design/game/m3-mid-expedition-loadout-change.md`
+  and its report, committed on that task's branch (commit `d240ee4`), not yet merged to `main`.
+
+Both specs were produced on sibling branches off the same base commit as this document's edit and
+do not depend on this "M3 candidate backlog" section existing — any task that reads this section as
+a committed input must first confirm this task (`7a015776-cebb-4909-b98b-efe2461d8ed6`) is merged
+to `main`; as of this note it is not.
 
 Both remain real owner priorities, not rejected; see the Game Director's 2026-10-22 triage report
 for the full reasoning and the tasks opened to spec them.
