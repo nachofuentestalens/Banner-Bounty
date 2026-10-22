@@ -68,7 +68,7 @@ it("starts paused for reduced motion and falls back to a plain log for a legacy 
   const view = render(<BattleView report={report} />);
   expect(screen.getByText("Play")).toBeTruthy();
   view.rerender(<BattleView report={{ ...report, reportId: "old", participantsSnapshot: {} }} />);
-  expect(screen.getByText(/older report/)).toBeTruthy();
+  expect(screen.getByText(/older report has no unit snapshots/)).toBeTruthy();
   expect(screen.getByText(/Full combat log/)).toBeTruthy();
 });
 

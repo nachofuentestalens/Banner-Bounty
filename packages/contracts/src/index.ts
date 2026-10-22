@@ -240,7 +240,21 @@ export interface StatusAppliedDTO {
   stacks?: number;
 }
 
+/** Server-recorded arithmetic, in evaluation order. Optional on older reports. */
+export interface DamageStep {
+  readonly kind: string;
+  readonly inputs: readonly number[];
+  readonly value: number;
+}
+export interface DamageBreakdown {
+  readonly steps: readonly DamageStep[];
+  readonly damage: number;
+  readonly hpBefore: number;
+  readonly hpLoss: number;
+}
+
 export interface BattleEventDTO {
+  readonly damageBreakdown?: DamageBreakdown;
   round: number;
   type: string;
   sourceId: string | null;

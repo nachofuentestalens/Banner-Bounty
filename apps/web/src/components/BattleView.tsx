@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { BattleEvent, BattleReportView, BattleUnit } from "../types.js";
 import { classCopy, skillCopy, statusCopy } from "../copy.js";
 import { SkillLabel } from "./SkillLabel.js";
+import { DamageDetails } from "./DamageDetails.js";
 
 const OUTCOME_LABEL = { win: "Victory", loss: "Defeated", draw: "Draw" } as const;
 
@@ -115,8 +116,8 @@ function EventDescription({ event, units }: { event: BattleEvent; units: readonl
   const description = describeEvent(event, units);
   const name = event.skillId ? skillCopy(event.skillId).name : "";
   const index = name ? description.indexOf(name) : -1;
-  if (index < 0 || !event.skillId) return <>{description}</>;
-  return <>{description.slice(0, index)}<SkillLabel skillId={event.skillId} />{description.slice(index + name.length)}</>;
+  if (index < 0 || !event.skillId) return <>{description}<DamageDetails event={event} /></>;
+  return <>{description.slice(0, index)}<SkillLabel skillId={event.skillId} />{description.slice(index + name.length)}<DamageDetails event={event} /></>;
 }
 
 function HpBar({ hp, maxHp }: { hp: number; maxHp: number }) {
