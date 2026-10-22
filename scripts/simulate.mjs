@@ -8,6 +8,8 @@
 //   npm run simulate -- --seed 1 --runs 100
 //   npm run simulate -- --mode=catchup --catchup-reps=20
 //   npm run simulate -- --json=reports/engineering/simulate-out.json
+//   npm run simulate -- --mode=v2 --level=3 --runs 100        (sweep a lower level for team-building contrast / dungeon benchmark)
+//   npm run simulate -- --mode=v2ledger --heroes=1 --ledger-days=7 --ledger-starting-gold=5000
 import os from "node:os";
 import { writeFileSync } from "node:fs";
 import process from "node:process";
@@ -37,6 +39,7 @@ const {
   gamePackageVersion,
   simulateBattleV2,
   simulateDungeonFloorBatch,
+  simulateExpeditionCyclesV2,
   resolveCraft,
   resolveReforge,
 } = game;
@@ -63,10 +66,16 @@ function parseArgs(argv) {
     seed: 1,
     runs: 32,
     maxCycles: 700,
-    mode: "all", // pacing | catchup | all
+    mode: "all", // pacing | catchup | v2 | v2ledger | all
     catchupReps: 10,
     json: null,
     quiet: false,
+    level: null, // override for v2TeamBuildingContrast/v2DungeonBenchmark; null keeps each check's own default
+    heroes: 3, // party size for v2PartyForHeroCount (1 | 3 | 5) and v2ledger
+    ledgerDays: 7,
+    ledgerCyclesPerDay: 60,
+    ledgerDungeonClearsPerDay: 2,
+    ledgerStartingGold: 0,
   };
   // Accepts both `--seed=1` and the documented `--seed 1` form.
   for (let i = 0; i < argv.length; i++) {
@@ -100,6 +109,24 @@ function parseArgs(argv) {
       case "quiet":
         out.quiet = true;
         break;
+      case "level":
+        out.level = Number(value);
+        break;
+      case "heroes":
+        out.heroes = Number(value);
+        break;
+      case "ledger-days":
+        out.ledgerDays = Number(value);
+        break;
+      case "ledger-cycles-per-day":
+        out.ledgerCyclesPerDay = Number(value);
+        break;
+      case "ledger-dungeon-clears-per-day":
+        out.ledgerDungeonClearsPerDay = Number(value);
+        break;
+      case "ledger-starting-gold":
+        out.ledgerStartingGold = Number(value);
+        break;
       default:
         console.error(`[simulate] unknown flag --${key}, ignoring`);
     }
@@ -108,6 +135,12 @@ function parseArgs(argv) {
   out.runs = Math.max(1, Math.min(500, Number.isFinite(out.runs) ? out.runs : 32));
   out.maxCycles = Math.max(1, Math.min(5000, Number.isFinite(out.maxCycles) ? out.maxCycles : 700));
   out.catchupReps = Math.max(1, Math.min(200, Number.isFinite(out.catchupReps) ? out.catchupReps : 10));
+  out.level = Number.isFinite(out.level) && out.level > 0 ? Math.min(10, Math.round(out.level)) : null;
+  out.heroes = [1, 3, 5].includes(out.heroes) ? out.heroes : 3;
+  out.ledgerDays = Math.max(1, Math.min(90, Number.isFinite(out.ledgerDays) ? out.ledgerDays : 7));
+  out.ledgerCyclesPerDay = Math.max(0, Math.min(480, Number.isFinite(out.ledgerCyclesPerDay) ? out.ledgerCyclesPerDay : 60));
+  out.ledgerDungeonClearsPerDay = Math.max(0, Math.min(20, Number.isFinite(out.ledgerDungeonClearsPerDay) ? out.ledgerDungeonClearsPerDay : 2));
+  out.ledgerStartingGold = Math.max(0, Number.isFinite(out.ledgerStartingGold) ? out.ledgerStartingGold : 0);
   return out;
 }
 
@@ -459,12 +492,46 @@ function v2GlassCannonParty(level) {
   ];
 }
 
+// content.md's Old Road roster (index.ts OLD_ROAD_ENEMIES); kept as an ID list
+// so both the hand-specified v2OldRoadEnemies() combatants (direct
+// simulateBattleV2 calls) and simulateExpeditionCyclesV2's buildEnemyCombatants
+// lookup (the v2ledger daily loop) reference the same three enemies.
+const OLD_ROAD_ENEMY_IDS = ["enemy_road_brigand", "enemy_road_wolf", "enemy_road_cutpurse"];
+
 function v2OldRoadEnemies() {
   return [
-    { kind: "enemy", id: "brigand", slotIndex: 0, enemyId: "enemy_road_brigand", stats: { maxHp: 50, atk: 9, def: 4, spd: 7 } },
-    { kind: "enemy", id: "wolf", slotIndex: 1, enemyId: "enemy_road_wolf", stats: { maxHp: 35, atk: 11, def: 2, spd: 11 } },
-    { kind: "enemy", id: "cutpurse", slotIndex: 2, enemyId: "enemy_road_cutpurse", stats: { maxHp: 30, atk: 8, def: 2, spd: 10 } },
+    { kind: "enemy", id: "brigand", slotIndex: 0, enemyId: OLD_ROAD_ENEMY_IDS[0], stats: { maxHp: 50, atk: 9, def: 4, spd: 7 } },
+    { kind: "enemy", id: "wolf", slotIndex: 1, enemyId: OLD_ROAD_ENEMY_IDS[1], stats: { maxHp: 35, atk: 11, def: 2, spd: 11 } },
+    { kind: "enemy", id: "cutpurse", slotIndex: 2, enemyId: OLD_ROAD_ENEMY_IDS[2], stats: { maxHp: 30, atk: 8, def: 2, spd: 10 } },
   ];
+}
+
+/** v2Hero() output is already CombatantInputV2-shaped (used directly by simulateBattleV2); this reshapes it to PartyMemberInputV2 (heroId instead of id) for simulateExpeditionCyclesV2/simulateDungeonFloorBatch. */
+function toPartyMemberV2(h) {
+  return { heroId: h.id, slotIndex: h.slotIndex, primaryClassId: h.primaryClassId, secondaryClassId: h.secondaryClassId, level: h.level, equipment: h.equipment, skillLoadout: h.skillLoadout };
+}
+
+/**
+ * gear.md section 7 asks M2-28 to "include 1/3/5-hero groups" in its pacing
+ * evidence. 3 reuses v2BalancedParty (tank/healer/dps). 1 is a single
+ * vanguard/cleric dual-class generalist (bulwark_call for mitigation,
+ * mending_light for self-sustain — classes.md's union skill pool lets a
+ * primary vanguard pull an active from its cleric secondary) standing in for
+ * "no backup if this hero struggles." 5 adds two more back-row DPS (slots 3-4)
+ * to the balanced three, per classes.md section 3's 3-front/2-back formation.
+ */
+function v2PartyForHeroCount(heroCount, level) {
+  if (heroCount === 1) {
+    return [v2Hero("solo", 0, "class_vanguard", "class_cleric", level, ["bulwark_call", "mending_light"], ["thick_hide", "devotion"])];
+  }
+  if (heroCount === 5) {
+    return [
+      ...v2BalancedParty(level),
+      v2Hero("dps4", 3, "class_ranger", null, level, ["aimed_shot", "volley"], ["hunters_focus", "momentum"]),
+      v2Hero("dps5", 4, "class_arcanist", null, level, ["firebolt", "meteor"], ["overload", "arcane_reserve"]),
+    ];
+  }
+  return v2BalancedParty(level);
 }
 
 function v2Reproducibility(seed) {
@@ -476,7 +543,7 @@ function v2Reproducibility(seed) {
 
 /** Runs the same Old Road v2 encounter with a balanced party vs. a same-average-power glass-cannon party, across many seeds, reporting win rate and rounds-to-clear per build — direct evidence for M2.md acceptance check 7. */
 function v2TeamBuildingContrast(opts) {
-  const level = 5;
+  const level = opts.level ?? 5;
   const results = { balanced: { wins: 0, rounds: [] }, glassCannon: { wins: 0, rounds: [] } };
   for (let i = 0; i < opts.runs; i++) {
     const seed = opts.seed + i;
@@ -489,12 +556,11 @@ function v2TeamBuildingContrast(opts) {
     }
   }
   const summarize = (r) => ({ winRate: r.wins / opts.runs, avgRoundsToClear: r.rounds.length ? Math.round((r.rounds.reduce((a, b) => a + b, 0) / r.rounds.length) * 100) / 100 : null });
-  return { runs: opts.runs, balanced: summarize(results.balanced), glassCannon: summarize(results.glassCannon) };
+  return { runs: opts.runs, level, balanced: summarize(results.balanced), glassCannon: summarize(results.glassCannon) };
 }
 
-/** Full-clear benchmark for the one shipped M2-31 dungeon, with the balanced party, across several seeds. */
-function v2DungeonBenchmark(opts) {
-  const party = v2BalancedParty(8).map((h, i) => ({ heroId: h.id, slotIndex: i, primaryClassId: h.primaryClassId, secondaryClassId: h.secondaryClassId, level: h.level, equipment: h.equipment, skillLoadout: h.skillLoadout }));
+function v2DungeonClearRateForParty(partyFn, level, opts) {
+  const party = partyFn(level).map(toPartyMemberV2);
   let cleared = 0;
   let failed = 0;
   const floorsProcessedSamples = [];
@@ -514,10 +580,20 @@ function v2DungeonBenchmark(opts) {
     floorsProcessedSamples.push(result.floorsProcessed);
   }
   return {
-    runs: opts.runs,
     clearRate: cleared / opts.runs,
     failed,
     avgFloorsProcessed: Math.round((floorsProcessedSamples.reduce((a, b) => a + b, 0) / floorsProcessedSamples.length) * 100) / 100,
+  };
+}
+
+/** Full-clear benchmark for the one shipped M2-31 dungeon, now run for both the balanced and glass-cannon builds (same content, same seeds) so clear rate is comparable build-vs-build, not just against Old Road. */
+function v2DungeonBenchmark(opts) {
+  const level = opts.level ?? 8;
+  return {
+    runs: opts.runs,
+    level,
+    balanced: v2DungeonClearRateForParty(v2BalancedParty, level, opts),
+    glassCannon: v2DungeonClearRateForParty(v2GlassCannonParty, level, opts),
   };
 }
 
@@ -530,6 +606,122 @@ function v2CraftingReproducibility(seed) {
   const r2 = resolveReforge(createRngState(seed), "weapon", "epic", affixes, 2);
   const reforgeOk = JSON.stringify(r1) === JSON.stringify(r2);
   return { ok: craftOk && reforgeOk, seed };
+}
+
+function addMaterials(a, b) {
+  return { scrap: a.scrap + b.scrap, sigil: a.sigil + b.sigil, core: a.core + b.core };
+}
+
+/**
+ * gear.md section 7 asks M2-28 to produce a "multi-day material/gold ledger"
+ * so a legacy-gold-vs-material-constraint test is possible: run N days of
+ * combined Old Road + dungeon_aqueduct_depths clears and report cumulative
+ * gold/scrap/sigil/core balances. Mirrors gear.md's own worked week budget
+ * (60 Old Road cycles/day + 2 dungeon clears/day by default).
+ *
+ * Hero level is held fixed for the whole run (opts.level, default 8, same as
+ * v2DungeonBenchmark's "established party" level) — this harness does not yet
+ * simulate v2 mid-run leveling (simulateExpeditionCyclesV2's returned
+ * liveLevels is bookkeeping only; combat stats are drawn from the frozen
+ * party's static level field). Rerun at different --level values to sample
+ * different progression points, same as --level does for the other two v2
+ * checks. --ledger-starting-gold seeds an initial gold balance so a legacy-gold
+ * run can be diffed against a from-zero run to isolate the gold vs. material
+ * constraint gear.md asks about.
+ */
+function runV2Ledger(opts) {
+  const level = opts.level ?? 8;
+  const party = v2PartyForHeroCount(opts.heroes, level);
+  const partyMembers = party.map(toPartyMemberV2);
+  const heroIds = party.map((h) => h.id);
+
+  let oldRoadRngState = createRngState(mixSeed(opts.seed));
+  let oldRoadUnequipped = 0;
+  let dungeonRngState = createRngState(mixSeed(opts.seed + 500_000));
+  let dungeonUnequipped = 0;
+  let cyclesCompletedBefore = 0;
+
+  let gold = opts.ledgerStartingGold;
+  let materials = { scrap: 0, sigil: 0, core: 0 };
+  let xpPerParticipant = 0;
+  let itemsCount = 0;
+  let overflowConvertedCount = 0;
+  let oldRoadWins = 0;
+  let oldRoadLosses = 0;
+  let dungeonClears = 0;
+  let dungeonFails = 0;
+  const dailyBalances = [];
+
+  for (let day = 1; day <= opts.ledgerDays; day++) {
+    if (opts.ledgerCyclesPerDay > 0) {
+      const oldRoadResult = simulateExpeditionCyclesV2({
+        areaId: "area_old_road",
+        enemyIds: OLD_ROAD_ENEMY_IDS,
+        frozenParty: partyMembers,
+        liveLevels: Object.fromEntries(heroIds.map((id) => [id, { level, xp: 0 }])),
+        combatSeedBase: mixSeed(opts.seed + day),
+        rngState: oldRoadRngState,
+        unequippedCount: oldRoadUnequipped,
+        cyclesCompletedBefore,
+        cycles: opts.ledgerCyclesPerDay,
+      });
+      oldRoadRngState = oldRoadResult.rngState;
+      oldRoadUnequipped = oldRoadResult.unequippedCount;
+      cyclesCompletedBefore += opts.ledgerCyclesPerDay;
+      gold += oldRoadResult.gold;
+      materials = addMaterials(materials, oldRoadResult.materials);
+      xpPerParticipant += oldRoadResult.xpPerParticipant;
+      itemsCount += oldRoadResult.items.length;
+      overflowConvertedCount += oldRoadResult.overflowConvertedCount;
+      oldRoadWins += oldRoadResult.wins;
+      oldRoadLosses += oldRoadResult.losses;
+    }
+
+    for (let clear = 0; clear < opts.ledgerDungeonClearsPerDay; clear++) {
+      const dungeonResult = simulateDungeonFloorBatch({
+        dungeonId: "dungeon_aqueduct_depths",
+        frozenParty: partyMembers,
+        currentFloor: 1,
+        combatSeedBase: mixSeed(opts.seed + day * 1000 + clear),
+        rngState: dungeonRngState,
+        unequippedCount: dungeonUnequipped,
+        eligibleFloors: 4,
+      });
+      dungeonRngState = dungeonResult.rngState;
+      dungeonUnequipped = dungeonResult.unequippedCount;
+      if (dungeonResult.outcome === "cleared") dungeonClears += 1;
+      else dungeonFails += 1;
+      for (const floor of dungeonResult.floorResults) {
+        if (!floor.rewards) continue;
+        gold += floor.rewards.gold;
+        materials = addMaterials(materials, floor.rewards.materials);
+        xpPerParticipant += floor.rewards.xp;
+        if (floor.rewards.item) itemsCount += 1;
+        if (floor.rewards.overflowConverted) overflowConvertedCount += 1;
+      }
+    }
+
+    dailyBalances.push({
+      day,
+      gold,
+      materials: { ...materials },
+      oldRoadWins,
+      oldRoadLosses,
+      dungeonClears,
+      dungeonFails,
+    });
+  }
+
+  return {
+    heroCount: opts.heroes,
+    level,
+    days: opts.ledgerDays,
+    cyclesPerDay: opts.ledgerCyclesPerDay,
+    dungeonClearsPerDay: opts.ledgerDungeonClearsPerDay,
+    startingGold: opts.ledgerStartingGold,
+    final: { gold, materials, xpPerParticipant, itemsCount, overflowConvertedCount, oldRoadWins, oldRoadLosses, dungeonClears, dungeonFails },
+    dailyBalances,
+  };
 }
 
 function runV2Checks(opts) {
@@ -585,8 +777,16 @@ async function main() {
     if (!v2.reproducibility.ok) process.exitCode = 1;
     console.log(`[simulate] crafting/reforge reproducibility (seed ${v2.craftingReproducibility.seed}): ${v2.craftingReproducibility.ok ? "PASS" : "FAIL"}`);
     if (!v2.craftingReproducibility.ok) process.exitCode = 1;
-    console.log(`[simulate] team-building contrast (${v2.teamBuildingContrast.runs} runs, Old Road v2): balanced win rate ${v2.teamBuildingContrast.balanced.winRate}, avg rounds ${v2.teamBuildingContrast.balanced.avgRoundsToClear}; glass-cannon win rate ${v2.teamBuildingContrast.glassCannon.winRate}, avg rounds ${v2.teamBuildingContrast.glassCannon.avgRoundsToClear}`);
-    console.log(`[simulate] dungeon_aqueduct_depths full-clear benchmark (${v2.dungeonBenchmark.runs} runs, balanced level-8 party): clear rate ${v2.dungeonBenchmark.clearRate}, avg floors processed ${v2.dungeonBenchmark.avgFloorsProcessed}`);
+    console.log(`[simulate] team-building contrast (${v2.teamBuildingContrast.runs} runs, Old Road v2, level ${v2.teamBuildingContrast.level}): balanced win rate ${v2.teamBuildingContrast.balanced.winRate}, avg rounds ${v2.teamBuildingContrast.balanced.avgRoundsToClear}; glass-cannon win rate ${v2.teamBuildingContrast.glassCannon.winRate}, avg rounds ${v2.teamBuildingContrast.glassCannon.avgRoundsToClear}`);
+    console.log(`[simulate] dungeon_aqueduct_depths full-clear benchmark (${v2.dungeonBenchmark.runs} runs, level ${v2.dungeonBenchmark.level}): balanced clear rate ${v2.dungeonBenchmark.balanced.clearRate} (avg floors ${v2.dungeonBenchmark.balanced.avgFloorsProcessed}); glass-cannon clear rate ${v2.dungeonBenchmark.glassCannon.clearRate} (avg floors ${v2.dungeonBenchmark.glassCannon.avgFloorsProcessed})`);
+  }
+
+  if (opts.mode === "v2ledger" || opts.mode === "all") {
+    const ledger = runV2Ledger(opts);
+    report.v2ledger = ledger;
+    console.log(`[simulate] v2 ledger: ${ledger.heroCount}-hero party, level ${ledger.level}, ${ledger.days} days (${ledger.cyclesPerDay} Old Road cycles/day + ${ledger.dungeonClearsPerDay} dungeon clears/day), starting gold ${ledger.startingGold}`);
+    console.log(`  final balances: gold ${ledger.final.gold}, scrap ${ledger.final.materials.scrap}, sigil ${ledger.final.materials.sigil}, core ${ledger.final.materials.core}, items ${ledger.final.itemsCount}, overflow-converted ${ledger.final.overflowConvertedCount}`);
+    console.log(`  old road wins/losses: ${ledger.final.oldRoadWins}/${ledger.final.oldRoadLosses}; dungeon clears/fails: ${ledger.final.dungeonClears}/${ledger.final.dungeonFails}`);
   }
 
   if (opts.mode === "catchup" || opts.mode === "all") {
