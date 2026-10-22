@@ -100,3 +100,18 @@ Next: CTO must record the additive damageBreakdown contract decision in design/s
 - Checks this run: `git status --short` showed a clean starting worktree; `git ls-files --error-unmatch design/game/combat.md design/game/classes.md design/game/narrative/copy.md design/studio/milestones/M2.md` exited 0 and confirmed all required inputs are tracked; targeted `rg` and `Get-Content` reads confirmed the source/document mismatch. `git diff --stat c8ebd205253517c4b0b6f132b396e08512a5a423` and `git diff --name-only c8ebd205253517c4b0b6f132b396e08512a5a423` reviewed the full task scope, including earlier implementation.
 - No runtime code changed in this follow-up. Previously recorded build/test results remain historical evidence; they were not rerun and do not prove the missing documentation gate passed. No command was refused.
 - Next: integrate the CTO-owned recorded amendment into this task's baseline, verify it matches the implemented shape/semantics, then resubmit for review. Task remains unfinished until that gate is met.
+
+## Integrated-baseline verification follow-up (2026-10-22)
+
+Result: **blocked; required frozen-contract amendment is not integrated**. Inspected current HEAD `bd7b6b0` (`Receive approved project baseline`): it adds only `qa/reports/M2-29-playtest-13c2c764.md` and `tests/e2e/m2-29-concurrency-check.mjs`. Neither frozen DTO document contains `damageBreakdown`, `DamageBreakdown`, or `DamageStep`. The exact `BattleEventDTO` in `design/studio/contracts.md` still ends with `death`; `design/game/combat.md` section 8.6 likewise lacks the additive evidence field. The requested amendment therefore cannot yet be verified against implementation or accepted.
+
+Verification this run:
+
+- `git status --short`: clean before this report update.
+- `git ls-files --error-unmatch design/game/combat.md design/game/classes.md design/game/narrative/copy.md design/studio/milestones/M2.md`: exit 0; all original required inputs remain tracked.
+- `git show --stat --oneline HEAD`: exit 0; confirms the latest baseline contains only the two QA files above.
+- Targeted `rg` reads of the frozen documents and TypeScript definitions confirm the missing amendment. Source still declares optional readonly `damageBreakdown`, readonly ordered steps (`kind`, `inputs`, `value`), `damage`, `hpBefore`, and `hpLoss`. Inspection of `pushEvent` confirms resolved damage precedes Vital Surge/HP clamping, and actual HP loss equals negative event amount.
+- `git diff --stat 71ae95ff0a74946d02e80d8ca8820751e2af9db8` and `git diff --name-only 71ae95ff0a74946d02e80d8ca8820751e2af9db8`: exit 0; reviewed cumulative task scope covering tooltips, authoritative damage evidence, UI, tests, verification scripts and this report.
+- No runtime code changed; previous runtime results above remain historical evidence. No runtime checks were repeated and no command was refused. The optional registry search for tooltip/breakdown text returned no match.
+
+Next: integrate the already-requested CTO-owned amendment into this isolated task baseline, then compare its shape and semantics with the source and resubmit. Do not create a duplicate prerequisite task, edit another department's documents, switch branches, or merge manually. Contract-freeze acceptance remains unresolved; the task is not complete.
