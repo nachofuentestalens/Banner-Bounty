@@ -44,6 +44,8 @@ console.log('PASS: DamageStep, DamageBreakdown and optional readonly event field
 
 Initial path corrections: reading the Engineering report locally failed because it exists on the originating branch; corrected to `git show`. The initial `git ls-files` used root-relative paths from the studio directory and failed; corrected with `git -C ../..`. Neither was a missing required input or an approval refusal.
 
+Checkpoint delivery: `git add contracts.md architecture.md reports/damage-breakdown-contract.md` and `git commit -m "Record additive damage breakdown battle-event contract"` were refused with permission denied creating `D:/Personal/B&B/.git/worktrees/195f2cb0-d2b9-4998-97e7-f1a1860bbc50/index.lock`, outside this session's writable scope. The dashboard subsequently saved all three files in commit `21b5697`. On resumption, `git status --short` was clean; `git log -2 --oneline` confirmed that checkpoint, and `git diff --stat 71ae95ff0a74946d02e80d8ca8820751e2af9db8` confirmed exactly three Leadership documents (90 inserted lines before this delivery note). No branch switch or integration was performed. This report-only delivery note is left for the dashboard's next automatic checkpoint.
+
 ## Limitations and next task
 
 Documentation acceptance is complete. No runtime build, simulation or browser checks were rerun for this documentation-only change; the originating report's test results remain historical Engineering evidence, not independently certified here. `combat.md` 8.6 explicitly delegates the exact TypeScript shape to the contracts owner, so this additive metadata amendment needs no combat-rule edit. No unresolved contract question remains.
