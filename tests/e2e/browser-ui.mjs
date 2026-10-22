@@ -64,7 +64,7 @@ await check("load built client; select Company A", async () => {
 // ---- A11: keyboard-only operation of core actions, 1280x720 ------------
 await check("A11.1 keyboard-only: Expedition nav has visible focus and starts an expedition", async () => {
   let focused = "";
-  for (let i = 0; i < 20 && focused !== "Expedition"; i++) {
+  for (let i = 0; i < 80 && focused !== "Expedition"; i++) {
     await pageA.keyboard.press("Tab");
     focused = await pageA.evaluate(() => document.activeElement?.textContent ?? "");
   }
@@ -77,7 +77,7 @@ await check("A11.1 keyboard-only: Expedition nav has visible focus and starts an
   await pageA.keyboard.press("Enter");
   await pageA.getByRole("heading", { level: 1, name: "Expedition" }).waitFor();
   focused = "";
-  for (let i = 0; i < 20 && focused !== "Start Expedition"; i++) {
+  for (let i = 0; i < 80 && focused !== "Start Expedition"; i++) {
     await pageA.keyboard.press("Tab");
     focused = await pageA.evaluate(() => document.activeElement?.textContent ?? "");
   }
@@ -90,7 +90,7 @@ await check("A11.1 keyboard-only: Expedition nav has visible focus and starts an
 
 await check("A11.2 keyboard-only: Inventory shows empty state before any drop", async () => {
   let focused = "";
-  for (let i = 0; i < 20 && focused !== "Inventory"; i++) {
+  for (let i = 0; i < 80 && focused !== "Inventory"; i++) {
     await pageA.keyboard.press("Tab");
     focused = await pageA.evaluate(() => document.activeElement?.textContent ?? "");
   }
@@ -104,14 +104,14 @@ await check("A11.2 keyboard-only: Inventory shows empty state before any drop", 
 await check("A11.3 keyboard-only: collect rewards and reach Boss screen", async () => {
   advance(14); // past the 12-cycle level-3 point (tuning.md)
   let focused = "";
-  for (let i = 0; i < 20 && focused !== "Expedition"; i++) {
+  for (let i = 0; i < 80 && focused !== "Expedition"; i++) {
     await pageA.keyboard.press("Tab");
     focused = await pageA.evaluate(() => document.activeElement?.textContent ?? "");
   }
   await pageA.keyboard.press("Enter");
   await pageA.getByRole("heading", { level: 1, name: "Expedition" }).waitFor();
   focused = "";
-  for (let i = 0; i < 20 && focused !== "Stop and Collect"; i++) {
+  for (let i = 0; i < 80 && focused !== "Stop and Collect"; i++) {
     await pageA.keyboard.press("Tab");
     focused = await pageA.evaluate(() => document.activeElement?.textContent ?? "");
   }
@@ -119,7 +119,7 @@ await check("A11.3 keyboard-only: collect rewards and reach Boss screen", async 
   await pageA.keyboard.press("Enter");
   await pageA.getByRole("button", { name: "Start Expedition" }).waitFor();
   focused = "";
-  for (let i = 0; i < 20 && focused !== "Boss"; i++) {
+  for (let i = 0; i < 80 && focused !== "Boss"; i++) {
     await pageA.keyboard.press("Tab");
     focused = await pageA.evaluate(() => document.activeElement?.textContent ?? "");
   }
@@ -131,25 +131,33 @@ await check("A11.3 keyboard-only: collect rewards and reach Boss screen", async 
 
 await check("A11.4 keyboard-only: challenge boss, one-time reward visible then absent", async () => {
   let focused = "";
-  for (let i = 0; i < 20 && focused !== "Challenge"; i++) {
+  for (let i = 0; i < 80 && focused !== "Challenge"; i++) {
     await pageA.keyboard.press("Tab");
     focused = await pageA.evaluate(() => document.activeElement?.textContent ?? "");
   }
   assert.equal(focused, "Challenge");
   await pageA.keyboard.press("Enter");
-  await pageA.locator(".battle-result-panel h3").waitFor();
+  // BattleView now paces playback (~950ms/round) instead of resolving
+  // instantly, so the outcome heading reads "Battle in progress" until
+  // autoplay finishes, which can exceed a bounded wait for longer fights.
+  // Jump to the end via the keyboard-reachable "Skip to end" control instead
+  // of waiting out the animation.
+  await pageA.locator(".battle-result-panel").getByRole("button", { name: "Skip to end" }).click();
+  await pageA.waitForFunction(() => /Victory|Defeated|Draw/.test(document.querySelector(".battle-result-panel h3")?.textContent ?? ""), undefined, { timeout: 10_000 });
   const outcome = await pageA.locator(".battle-result-panel h3").innerText();
   const first = await pageA.locator(".battle-result-panel").innerText();
   await pageA.screenshot({ path: path.join(outDir, "03-boss-result-1280.png") });
   // Re-challenge via keyboard.
   focused = "";
-  for (let i = 0; i < 20 && focused !== "Challenge"; i++) {
+  for (let i = 0; i < 80 && focused !== "Challenge"; i++) {
     await pageA.keyboard.press("Tab");
     focused = await pageA.evaluate(() => document.activeElement?.textContent ?? "");
   }
+  assert.equal(focused, "Challenge", "could not re-find the Challenge button by keyboard");
   await pageA.keyboard.press("Enter");
   await pageA.waitForResponse((r) => r.url().endsWith("/boss/challenge"));
-  await pageA.locator(".battle-result-panel h3").waitFor();
+  await pageA.locator(".battle-result-panel").getByRole("button", { name: "Skip to end" }).click();
+  await pageA.waitForFunction(() => /Victory|Defeated|Draw/.test(document.querySelector(".battle-result-panel h3")?.textContent ?? ""), undefined, { timeout: 10_000 });
   const second = await pageA.locator(".battle-result-panel").innerText();
   if (outcome === "Victory") {
     assert.match(first, /Reward:/, "first victory should show a reward line");
@@ -186,7 +194,7 @@ await check("A11.5 390px viewport: five screens, no horizontal overflow, screens
   await pageN.goto(baseUrl);
   await pageN.getByRole("button", { name: "Company A" }).click();
   await pageN.getByRole("heading", { level: 1, name: "Company" }).waitFor();
-  const screens = ["Company", "Expedition", "Inventory", "Boss", "Arena"];
+  const screens = ["Company", "Expedition", "Dungeon", "Inventory", "Boss", "Arena"];
   const overflow = [];
   for (const label of screens) {
     if (label !== "Company") await nav(pageN, label);
@@ -202,26 +210,32 @@ await check("A11.5 390px viewport: five screens, no horizontal overflow, screens
 
 // ---- A11: empty/error/reconnect states ----------------------------------
 await check("A11.6 conflict toast: stale expectedRevision shows 'Action Rejected' and self-heals", async () => {
+  // Load the Formation editor first so pageA's in-memory state (and the
+  // revision its "Save formation" button will submit) is captured *before*
+  // the second tab bumps the server's revision underneath it.
+  await nav(pageA, "Company");
+  await pageA.getByRole("heading", { level: 2, name: "Formation" }).waitFor();
+
   // Force a stale revision from a second tab on the same account/context.
   const pageA2 = await ctxA.newPage();
   await pageA2.goto(baseUrl);
-  await pageA2.getByRole("heading", { level: 1, name: /Company|Expedition|Boss|Arena|Inventory/ }).waitFor();
+  await pageA2.getByRole("heading", { level: 1, name: /Company|Expedition|Boss|Arena|Inventory|Dungeon/ }).waitFor();
   const staleState = await (await ctxA.request.get(`${baseUrl}/account/state`)).json();
   // Mutate from pageA2 to bump the revision pageA doesn't know about yet.
-  await ctxA.request.patch(`${baseUrl}/party/order`, {
+  await ctxA.request.patch(`${baseUrl}/party/formation`, {
     data: {
       requestId: crypto.randomUUID(),
       expectedRevision: staleState.data.revision,
-      order: [staleState.data.heroes[1].heroId, staleState.data.heroes[0].heroId, staleState.data.heroes[2].heroId],
+      slots: [staleState.data.heroes[1].heroId, staleState.data.heroes[0].heroId, staleState.data.heroes[2].heroId, null, null],
     },
   });
   await pageA2.close();
-  // Now pageA's in-memory state still has the old revision; trigger a
-  // mutation from it that will race against the bumped server revision.
-  await nav(pageA, "Company");
-  const moveDownButtons = pageA.locator("section.hero-card").first().getByRole("button", { name: "Move down" });
-  if ((await moveDownButtons.count()) === 0) throw new Error("no 'Move down' button visible to trigger a conflict — inspect manually");
-  await moveDownButtons.click();
+
+  // Now pageA's in-memory state still has the old revision; edit the
+  // Formation select and save, racing against the bumped server revision.
+  await pageA.getByLabel("Front row slot 1").focus();
+  await pageA.keyboard.press("ArrowDown");
+  await pageA.getByRole("button", { name: "Save formation" }).click();
   const toastOrOk = await Promise.race([
     pageA.getByText("Action Rejected").waitFor({ timeout: 4000 }).then(() => "conflict-toast"),
     pageA.waitForTimeout(4000).then(() => "no-visible-conflict"),
