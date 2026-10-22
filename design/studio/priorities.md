@@ -67,25 +67,20 @@ go deeper than UI polish and would rework pacing fundamentals the M1-04/M1-13 fr
   reward-per-cycle tuning tables, and the simulation tooling that all assume a fixed cycle unit —
   this is an architecture/economy rework, not a battle-view tweak, and should be spec'd against a
   post-M2 baseline, not patched into the in-flight M2-26/M2-27 implementation. Feasibility spec
-  delivered (CTO, task `9fa4109a-92c5-4c03-85d7-406189c0f218`): `design/studio/reports/cycle-duration-feasibility.md`,
-  committed on that task's branch (commit `8391e56`), not yet merged to `main`.
+  delivered (CTO, task `9fa4109a-92c5-4c03-85d7-406189c0f218`):
+  [design/studio/reports/cycle-duration-feasibility.md](../../design/studio/reports/cycle-duration-feasibility.md),
+  merged on `main` (commit `8391e56`).
 - **Mid-expedition skill loadout changes (effective next fight, not immediately).** Not in M2's
   scope (`milestones/M2.md` scope item 3 is build-time loadout only). Needs a contract amendment
   (how/where the deferred change is recorded against a running, deterministic expedition) before
   any engine work, so it should follow M2-25/M2-26, not run alongside them. Spec delivered
-  (Systems Designer, task `f4491607-20b6-413e-b20c-bc0f026479fb`): `design/game/m3-mid-expedition-loadout-change.md`
-  and its report, committed on that task's branch (commit `d240ee4`), not yet merged to `main`.
+  (Systems Designer, task `f4491607-20b6-413e-b20c-bc0f026479fb`):
+  [design/game/m3-mid-expedition-loadout-change.md](../../design/game/m3-mid-expedition-loadout-change.md)
+  and [design/game/reports/m3-mid-expedition-loadout-change.md](../../design/game/reports/m3-mid-expedition-loadout-change.md),
+  merged on `main` (original commit `d240ee4`; integrated commit `c8ebd20`).
 
-Both specs were produced on sibling branches off the same base commit as this document's edit and
-do not depend on this "M3 candidate backlog" section existing — any task that reads this section as
-a committed input must first confirm this task (`7a015776-cebb-4909-b98b-efe2461d8ed6`) is merged
-to `main`; as of this note it is not.
-
-The commit hashes and task IDs cited above were reported by the CTO and Systems Designer on their
-own sibling branches; this document's author had no git/shell access to verify them independently
-and they are not present in this worktree's `planning/milestone.json`. Before treating either
-deliverable as a committed input, the owner or Producer should cross-check the hash/task ID against
-the dashboard's task registry and confirm the branch actually merged to `main`.
+Both specs and the Systems Designer's report are merged on `main`. The commit hashes above are
+confirmed in this branch's git history, and both task IDs match the corresponding report headers.
 
 Both remain real owner priorities, not rejected; this section is the full record of the reasoning
 and the tasks opened to spec them — there is no separate Game Director triage report beyond this
