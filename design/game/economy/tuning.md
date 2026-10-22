@@ -91,3 +91,46 @@ after integrating this task's `baseline.md` section 7 edit:
 
 No other rerun is required unless a future task changes `content.md`'s Tollkeeper stats or
 `combat.md`'s level-3 gate, at which point the boss-ready row must be re-measured from scratch.
+
+## M2-28: M2 pacing and class-balance tuning from simulation evidence
+
+Owner: Economy Designer. Date: 2026-10-21. Inputs: `design/game/economy/gear.md` section 7,
+`reports/engineering/M2-26.md` (engine delivery + `scripts/simulate.mjs --mode=v2`), a fresh
+`node scripts/simulate.mjs --mode=v2` run (3 seed bases, 500 total v2 runs) on this task's own
+build. Full commands/results are in `design/game/reports/M2-28.md`.
+
+**Decision 1 — correct `gear.md` section 7's week-budget math to the actual shipped dungeon
+(no code change).** Section 7's worked week budget was written against a hypothetical
+"if M2-31 supplies a three-floor introductory dungeon" before M2-31 ran. M2-31 actually shipped
+`dungeon_aqueduct_depths` as a 4-floor dungeon (3 ordinary + 1 boss), confirmed by this task's
+sim (`avgFloorsProcessed: 4`, `clearRate: 1` across 500 runs). Section 4's own formula at `n=4`
+gives different per-clear/day/week numbers than the `n=3` placeholder. Corrected in `gear.md`
+directly (documentation-only — section 7 is pacing narrative, not a value `packages/content`
+reads; sections 2-5's actual reward-profile numbers were already right and are unchanged).
+
+**Decision 2 — no reward-table change for the team-building-contrast gap; this is a
+combat/content balance question, not an economy one (same reasoning pattern as M1-13's
+boss-readiness finding above).** The existing `v2TeamBuildingContrast`/`v2DungeonBenchmark`
+harness (built by M2-26 specifically as "evidence infrastructure for M2-28's tuning pass") shows,
+at the only levels it tests (5 for Old Road, 8 for the dungeon), **no measurable contrast**: a
+balanced party (tank/healer/DPS) and a glass-cannon party (3 DPS, no tank, no healer skills) both
+win every encounter 100% of the time, with the glass-cannon build clearing marginally *faster*
+(fewer rounds) across all 3 seed bases tested (500 runs total). This is the same shape of finding
+as M1-13's boss-readiness gap: no XP/gold/drop/material number in this document or `gear.md`
+changes *why* a glass-cannon party currently wins as reliably as a balanced one — that is
+`content.md`'s enemy/boss stats and `combat.md`'s AI cadence (Systems Designer's authored
+surface), not a reward amount. Per the M1-13 precedent, this task does not speculatively edit
+numbers outside its own write scope to chase a different system's balance signal. Flagged as an
+open item for the Systems Designer / Game Director (M2-30) below, not acted on here.
+
+**Decision 3 — request a harness extension from the Gameplay Programmer rather than fabricate
+unmeasured evidence.** `gear.md` section 7 asks for 1/3/5-hero sweeps, offline-partition timing,
+a week-length material/gold ledger, a legacy-gold-vs-material-constraint test, and
+guaranteed-material-failure recovery — none of which `scripts/simulate.mjs --mode=v2` currently
+supports (it has exactly two fixed party presets and two fixed levels). Rather than report
+invented numbers, this task documents the gap and sends one scoped task block to the Gameplay
+Programmer to extend the harness; a follow-up tuning pass reruns against the extended harness
+once that lands.
+
+See `design/game/reports/M2-28.md` for the full evidence table, exact commands, and unresolved
+issues.
