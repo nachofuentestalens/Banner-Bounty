@@ -36,6 +36,14 @@ async function state(client) {
   return res.json.data;
 }
 
+// PATCH /party/formation (M2-25) replaces PATCH /party/order's fixed 3-tuple
+// with a 5-slot nullable tuple (packages/contracts/src/index.ts). Pads any
+// ordered heroId list out to 5 slots with null.
+function toSlots(ids) {
+  const slots = [...ids, null, null, null, null, null];
+  return slots.slice(0, 5);
+}
+
 // ---------------------------------------------------------------------------
 const { clock, advanceMs } = makeManualClock("2026-10-19T09:00:00.000Z");
 const server = await startTestServer({ clock });
@@ -85,14 +93,14 @@ await check("A02.3 unauthenticated request is rejected", async () => {
 
 await check("A02.4 B cannot reorder party using A's heroIds", async () => {
   const aHeroes = aState0.heroes.map((h) => h.heroId);
-  const res = await B.patch("/party/order", {
+  const res = await B.patch("/party/formation", {
     requestId: uuid(),
     expectedRevision: (await state(B)).revision,
-    order: aHeroes,
+    slots: toSlots(aHeroes),
   });
   assert.equal(res.status, 403);
   assert.equal(res.json.error.code, "forbidden");
-  return "foreign heroIds in /party/order -> 403 forbidden";
+  return "foreign heroIds in /party/formation -> 403 forbidden";
 });
 
 // ---- A07: retry / concurrency ------------------------------------------
@@ -100,17 +108,17 @@ await check("A07.1 identical retry (same requestId) returns identical result, no
   const fresh = makeClient(baseUrl);
   await selectAccount(fresh, "A"); // new session, same account A
   const st = await state(A);
-  const partyRes1 = await fresh.patch("/party/order", {
+  const partyRes1 = await fresh.patch("/party/formation", {
     requestId: "11111111-1111-1111-1111-111111111111",
     expectedRevision: st.revision,
-    order: [st.heroes[1].heroId, st.heroes[0].heroId, st.heroes[2].heroId],
+    slots: toSlots([st.heroes[1].heroId, st.heroes[0].heroId, st.heroes[2].heroId]),
   });
   assert.equal(partyRes1.status, 200);
   const rev1 = partyRes1.json.revision;
-  const partyRes2 = await fresh.patch("/party/order", {
+  const partyRes2 = await fresh.patch("/party/formation", {
     requestId: "11111111-1111-1111-1111-111111111111",
     expectedRevision: st.revision,
-    order: [st.heroes[1].heroId, st.heroes[0].heroId, st.heroes[2].heroId],
+    slots: toSlots([st.heroes[1].heroId, st.heroes[0].heroId, st.heroes[2].heroId]),
   });
   assert.equal(partyRes2.status, 200);
   assert.deepEqual(partyRes2.json.data, partyRes1.json.data, "retry must return identical stored result");
@@ -121,22 +129,22 @@ await check("A07.1 identical retry (same requestId) returns identical result, no
 await check("A07.2 reused requestId with different payload -> conflict, no mutation", async () => {
   const st = await state(A);
   const reqId = "22222222-2222-2222-2222-222222222222";
-  const first = await A.patch("/party/order", {
+  const first = await A.patch("/party/formation", {
     requestId: reqId,
     expectedRevision: st.revision,
-    order: [st.heroes[0].heroId, st.heroes[1].heroId, st.heroes[2].heroId],
+    slots: toSlots([st.heroes[0].heroId, st.heroes[1].heroId, st.heroes[2].heroId]),
   });
   assert.equal(first.status, 200);
   const before = await state(A);
-  const second = await A.patch("/party/order", {
+  const second = await A.patch("/party/formation", {
     requestId: reqId,
     expectedRevision: before.revision, // even with a fresh, correct revision
-    order: [st.heroes[2].heroId, st.heroes[1].heroId, st.heroes[0].heroId], // different payload, same requestId
+    slots: toSlots([st.heroes[2].heroId, st.heroes[1].heroId, st.heroes[0].heroId]), // different payload, same requestId
   });
   assert.equal(second.status, 409, `expected 409 conflict, got ${second.status}`);
   assert.equal(second.json.error.code, "conflict");
   const after = await state(A);
-  assert.deepEqual(after.partyOrder, before.partyOrder, "party order must not have changed");
+  assert.deepEqual(after.formation.slots, before.formation.slots, "party formation must not have changed");
   assert.equal(after.revision, before.revision, "revision must not have changed");
   return "reused requestId + different payload -> 409 conflict, state unchanged";
 });
@@ -226,8 +234,8 @@ await check("A05.3 reorder party IS allowed during active expedition (M1-01 deci
   const startRes = await A.post("/expedition/start", { requestId: uuid(), expectedRevision: st.revision });
   assert.equal(startRes.status, 200);
   const st2 = await state(A);
-  const order = [st2.heroes[2].heroId, st2.heroes[1].heroId, st2.heroes[0].heroId];
-  const reorderRes = await A.patch("/party/order", { requestId: uuid(), expectedRevision: st2.revision, order });
+  const slots = toSlots([st2.heroes[2].heroId, st2.heroes[1].heroId, st2.heroes[0].heroId]);
+  const reorderRes = await A.patch("/party/formation", { requestId: uuid(), expectedRevision: st2.revision, slots });
   assert.equal(reorderRes.status, 200, `reorder should succeed mid-expedition, got ${reorderRes.status} ${JSON.stringify(reorderRes.json)}`);
   const stopRes = await A.post("/expedition/stop", { requestId: uuid(), expectedRevision: (await state(A)).revision });
   assert.equal(stopRes.status, 200);
