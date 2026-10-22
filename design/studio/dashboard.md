@@ -11,6 +11,7 @@ This setup uses the live local API at `http://127.0.0.1:5190` for project `c6faa
 - Documents under `design/` appear in the native document browser. File edits are visible on refresh; git history appears only once those files are committed.
 - Department folders describe ownership. QA additionally owns `design/qa/` and `tests/e2e/`.
 - Existing provider/model choices are preserved. Role/task effort is low for bounded copy/review and medium for design or implementation; every run still reassesses actual complexity. No exact price ranking is assumed.
+- QA Player is read-only (read/glob/grep, no shell/browser) and cannot build, start or play the game; routing daily hands-on browser playtests to it reliably produces NOT PLAYED. Hands-on browser playtests (daily and milestone acceptance) route to QA Tester instead — see `design/studio/roles.md`. Changing which role the recurring "QA daily playtest" automation targets, or QA Player's enabled tools, is an AgentDashboard Roles/automation setting, not a repository or task-graph change.
 - Existing global concurrency remains one; all departments remain `ask`. No role task starts merely because its record or seat exists.
 
 ## Dependencies: native delivery flow (primary)

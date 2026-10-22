@@ -11,7 +11,28 @@ Use the existing eight AgentDashboard roles. A role is a responsibility, not a r
 | Economy Designer | Progression/reward math and measured tuning | `design/game/economy/baseline.md`, `tuning.md` | M1-04, M1-13 |
 | Tools Engineer | Workspace, launch/build/test commands, simulation tooling | root config, `scripts/`, tooling fixtures | M1-05, M1-12 |
 | Gameplay Programmer | Simulation, content encoding, API/storage, UI, integration | `apps/`, `packages/`, implementation tests | M1-06, M1-07, M1-08, M1-10, M1-11, M1-14 |
-| QA Tester | Independent acceptance, reproducible bugs, release evidence | `qa/`, `tests/e2e/`, `design/qa/` | M1-15 |
+| QA Tester | Independent acceptance, reproducible bugs, release evidence, hands-on browser playtests | `qa/`, `tests/e2e/`, `design/qa/` | M1-15, M2-29 |
+| QA Player | Read-only secondary review of a QA Tester playtest or report | reads only; no deliverables | — |
+
+### QA Player tool mismatch (resolved 2026-10-22)
+
+QA Player's AgentDashboard seat has read/glob/grep only — no shell, no browser — by design, since it
+is a read-only role. The recurring "QA daily playtest" automation was routing hands-on, build-and-play
+work to that seat anyway, so every run (e.g. `7549fac0`, 2026-10-21) could only report **NOT PLAYED**:
+no build, no server start, no play. That missed run stays recorded as NOT PLAYED; it was not gameplay
+evidence and must not be treated as one.
+
+QA Tester already has shell + browser and has produced real play evidence under that toolset (M1-10,
+M1-15, M2-07, M2-27 acceptance work); `design/studio/milestones/M2.md` already designates QA Tester,
+not QA Player, to verify M2's acceptance checks in the browser (M2-29). Daily hands-on browser
+playtests should follow the same routing: **QA Tester**, not QA Player. QA Player's remaining use is a
+read-only second opinion on a QA Tester playtest or report (as it already did reviewing 7549fac0), not
+running the game itself.
+
+Reassigning AgentDashboard's "QA daily playtest" recurring automation to QA Tester (or granting QA
+Player a shell + browser tool while keeping its read-only, no-edit source access) is a project setting
+in AgentDashboard's own Roles/automation panel, not a repository file or task-graph change — see the
+question raised from task `b9ebc865-c442-4ca0-aec3-17d399fb5510`.
 
 UI engineering, art fallbacks and server engineering belong to Gameplay Programmer for this slice; Systems Designer supplies the interface specification. Security/save-integrity review belongs to CTO and QA. Build/release operations belong to Tools Engineer and Gameplay Programmer. No separate marketing, finance, HR or art-production agent is needed before there is a playable game.
 
