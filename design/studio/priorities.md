@@ -81,5 +81,12 @@ do not depend on this "M3 candidate backlog" section existing — any task that 
 a committed input must first confirm this task (`7a015776-cebb-4909-b98b-efe2461d8ed6`) is merged
 to `main`; as of this note it is not.
 
-Both remain real owner priorities, not rejected; see the Game Director's 2026-10-22 triage report
-for the full reasoning and the tasks opened to spec them.
+The commit hashes and task IDs cited above were reported by the CTO and Systems Designer on their
+own sibling branches; this document's author had no git/shell access to verify them independently
+and they are not present in this worktree's `planning/milestone.json`. Before treating either
+deliverable as a committed input, the owner or Producer should cross-check the hash/task ID against
+the dashboard's task registry and confirm the branch actually merged to `main`.
+
+Both remain real owner priorities, not rejected; this section is the full record of the reasoning
+and the tasks opened to spec them — there is no separate Game Director triage report beyond this
+document.
