@@ -636,9 +636,9 @@ function runV2Ledger(opts) {
   const heroIds = party.map((h) => h.id);
 
   let oldRoadRngState = createRngState(mixSeed(opts.seed));
-  let oldRoadUnequipped = 0;
   let dungeonRngState = createRngState(mixSeed(opts.seed + 500_000));
-  let dungeonUnequipped = 0;
+  // Both activities award into the same account bag, as on the server.
+  let unequippedCount = 0;
   let cyclesCompletedBefore = 0;
 
   let gold = opts.ledgerStartingGold;
@@ -661,12 +661,12 @@ function runV2Ledger(opts) {
         liveLevels: Object.fromEntries(heroIds.map((id) => [id, { level, xp: 0 }])),
         combatSeedBase: mixSeed(opts.seed + day),
         rngState: oldRoadRngState,
-        unequippedCount: oldRoadUnequipped,
+        unequippedCount,
         cyclesCompletedBefore,
         cycles: opts.ledgerCyclesPerDay,
       });
       oldRoadRngState = oldRoadResult.rngState;
-      oldRoadUnequipped = oldRoadResult.unequippedCount;
+      unequippedCount = oldRoadResult.unequippedCount;
       cyclesCompletedBefore += opts.ledgerCyclesPerDay;
       gold += oldRoadResult.gold;
       materials = addMaterials(materials, oldRoadResult.materials);
@@ -684,11 +684,11 @@ function runV2Ledger(opts) {
         currentFloor: 1,
         combatSeedBase: mixSeed(opts.seed + day * 1000 + clear),
         rngState: dungeonRngState,
-        unequippedCount: dungeonUnequipped,
+        unequippedCount,
         eligibleFloors: 4,
       });
       dungeonRngState = dungeonResult.rngState;
-      dungeonUnequipped = dungeonResult.unequippedCount;
+      unequippedCount = dungeonResult.unequippedCount;
       if (dungeonResult.outcome === "cleared") dungeonClears += 1;
       else dungeonFails += 1;
       for (const floor of dungeonResult.floorResults) {
