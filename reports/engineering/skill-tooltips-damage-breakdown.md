@@ -2,7 +2,7 @@
 
 Task: `c5bd2700-b2bc-4995-8741-16f5521c9d7b` · Gameplay Programmer · 2026-10-22
 
-Result: **pass for this task; ready for agent review**. Tooltips and authoritative damage breakdowns are implemented and verified. The phase-one notes below are retained as an audit trail; the completion evidence supersedes their outstanding items. This is focused implementation evidence, not independent certification of the entire M2 milestone.
+Result: **implementation evidence recorded; contract-freeze review unresolved**. Tooltips and authoritative damage breakdowns are implemented and verified as described below, but task acceptance is pending an owning-document amendment for `BattleEventDTO.damageBreakdown`. The phase-one notes below are retained as an audit trail. This is focused implementation evidence, not independent certification of the entire M2 milestone.
 
 ## Changes and decisions
 
@@ -90,4 +90,13 @@ Existing M2-24 skill names/descriptions and M2-22 mechanics are reused. The exis
 
 No known unresolved implementation defect for the requested scope. Legacy reports cannot retroactively gain missing calculation evidence. This task does not add live cooldown counters, change balance, or claim independent QA certification across every expedition/dungeon/arena flow. The shared renderer and engine cover those routes; the real-browser fixture is a boss fight.
 
-Next: agent review and owner-controlled integration. CTO documentation follow-up must append the additive damageBreakdown contract and architecture note in the owned design/studio documents; Engineering cannot edit those paths. The optional shape and semantics are documented here and in source so review is concrete. Do not start duplicate M2-27 work.
+Next: CTO must record the additive damageBreakdown contract decision in design/studio/contracts.md before this task can pass review. Engineering cannot edit that path. Source and this report are supporting evidence, not substitutes for the frozen-contract amendment. Do not start duplicate M2-27 work.
+
+## Review follow-up: missing frozen-contract amendment (2026-10-22)
+
+- Confirmed the review finding: `packages/contracts/src/index.ts` declares optional `BattleEventDTO.damageBreakdown`, while `design/studio/contracts.md`'s exact DTO and `design/game/combat.md` section 8.6 omit it. The contracts document expressly requires a recorded decision in that file. This acceptance gate remains unresolved.
+- Engineering's assigned write scope prohibits both document paths. Route the concrete contract amendment to CTO through the dashboard task block; do not silently edit another department's files or remove the requested feature to bypass review.
+- Amendment payload: optional `damageBreakdown?: DamageBreakdown`; `DamageBreakdown = { readonly steps: readonly DamageStep[]; readonly damage: number; readonly hpBefore: number; readonly hpLoss: number }`; `DamageStep = { readonly kind: string; readonly inputs: readonly number[]; readonly value: number }`. Steps are server-recorded operands/results in evaluation order, not browser-computed formulas. `damage` is resolved damage before HP clamping and survival effects; `hpBefore` is target HP before application; `hpLoss` is actual loss after those effects and equals negative event amount. Direct hits (including dodges) and Burn ticks carry evidence; legacy reports and other events may omit it. Existing reports remain renderable with the unavailable-evidence fallback. No balance, RNG, endpoint, schema-migration or rules-version change is intended.
+- Checks this run: `git status --short` showed a clean starting worktree; `git ls-files --error-unmatch design/game/combat.md design/game/classes.md design/game/narrative/copy.md design/studio/milestones/M2.md` exited 0 and confirmed all required inputs are tracked; targeted `rg` and `Get-Content` reads confirmed the source/document mismatch. `git diff --stat c8ebd205253517c4b0b6f132b396e08512a5a423` and `git diff --name-only c8ebd205253517c4b0b6f132b396e08512a5a423` reviewed the full task scope, including earlier implementation.
+- No runtime code changed in this follow-up. Previously recorded build/test results remain historical evidence; they were not rerun and do not prove the missing documentation gate passed. No command was refused.
+- Next: integrate the CTO-owned recorded amendment into this task's baseline, verify it matches the implemented shape/semantics, then resubmit for review. Task remains unfinished until that gate is met.
