@@ -27,6 +27,12 @@ async function state(client) {
   return res.json.data;
 }
 
+// PATCH /party/formation (M2-25) replaces PATCH /party/order's fixed 3-tuple
+// with a 5-slot nullable tuple (packages/contracts/src/index.ts).
+function toSlots(ids) {
+  return [...ids, null, null, null, null, null].slice(0, 5);
+}
+
 const { clock, advanceMs } = makeManualClock("2026-10-19T09:00:00.000Z");
 const server = await startTestServer({ clock });
 const { baseUrl } = server;
@@ -150,10 +156,10 @@ await check("A10.3 later changes to B's live heroes never alter A's already-fetc
   // B reorders its party (a live change) after publishing; this must not
   // touch the already-published snapshot or A's saved report.
   const stB2 = await state(B);
-  await B.patch("/party/order", {
+  await B.patch("/party/formation", {
     requestId: uuid(),
     expectedRevision: stB2.revision,
-    order: [stB2.heroes[2].heroId, stB2.heroes[1].heroId, stB2.heroes[0].heroId],
+    slots: toSlots([stB2.heroes[2].heroId, stB2.heroes[1].heroId, stB2.heroes[0].heroId]),
   });
 
   const reportAfter = await A.get(`/battle-reports/${reportId}`);

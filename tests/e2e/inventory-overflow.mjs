@@ -43,24 +43,34 @@ const selectRes = await A.post("/dev/session/select", { accountSlot: "A" });
 assert.equal(selectRes.status, 200);
 const accountIdA = selectRes.json.data.accountId;
 
+// Schema note (M2-23/M2-25): item_instances no longer has a flat `affixId`
+// column; affixes are now a JSON-array `affixes` column alongside `rarityId`
+// (apps/server/src/progression.test.ts's own `addItems` fixture, and the v4
+// migration in apps/server/src/db/migrations.ts).
 function seedUnequippedItems(count) {
   const db = new DatabaseSync(dbPath);
-  const stmt = db.prepare(
-    `INSERT INTO item_instances (itemInstanceId, accountId, definitionId, affixId, equippedBy, createdAt)
-     VALUES (?, ?, ?, ?, NULL, ?)`,
-  );
-  const now = new Date().toISOString();
-  for (let i = 0; i < count; i++) {
-    stmt.run(`qa-seed-${uuid()}`, accountIdA, "item_trinket_luckycoin", null, now);
+  try {
+    const stmt = db.prepare(
+      `INSERT INTO item_instances (itemInstanceId, accountId, definitionId, rarityId, affixes, equippedBy, createdAt)
+       VALUES (?, ?, ?, ?, ?, NULL, ?)`,
+    );
+    const now = new Date().toISOString();
+    for (let i = 0; i < count; i++) {
+      stmt.run(`qa-seed-${uuid()}`, accountIdA, "item_trinket_luckycoin", "common", "[]", now);
+    }
+  } finally {
+    db.close();
   }
-  db.close();
 }
 
 function countUnequipped() {
   const db = new DatabaseSync(dbPath);
-  const row = db.prepare("SELECT COUNT(*) AS n FROM item_instances WHERE accountId = ? AND equippedBy IS NULL").get(accountIdA);
-  db.close();
-  return row.n;
+  try {
+    const row = db.prepare("SELECT COUNT(*) AS n FROM item_instances WHERE accountId = ? AND equippedBy IS NULL").get(accountIdA);
+    return row.n;
+  } finally {
+    db.close();
+  }
 }
 
 await check("setup: seed 99 unequipped items directly (fixture, not product code)", async () => {
@@ -141,17 +151,20 @@ await check("unequip at a full 100-item inventory is refused with validation/inv
   // Ensure exactly 100 unequipped items, then equip one into a hero's
   // weapon slot by seeding it directly and marking it equipped, so we can
   // attempt to unequip it back into an already-full inventory.
-  const db = new DatabaseSync(dbPath);
   const stAfterStop = JSON.parse(JSON.stringify(await state(A)));
   const heroId = stAfterStop.heroes[0].heroId;
   const equippedItemId = `qa-equipped-${uuid()}`;
   const now = new Date().toISOString();
-  db.prepare(
-    `INSERT INTO item_instances (itemInstanceId, accountId, definitionId, affixId, equippedBy, createdAt)
-     VALUES (?, ?, ?, NULL, ?, ?)`,
-  ).run(equippedItemId, accountIdA, "item_weapon_shortsword", heroId, now);
-  db.prepare(`UPDATE heroes SET equipmentWeapon = ? WHERE heroId = ?`).run(equippedItemId, heroId);
-  db.close();
+  const db = new DatabaseSync(dbPath);
+  try {
+    db.prepare(
+      `INSERT INTO item_instances (itemInstanceId, accountId, definitionId, rarityId, affixes, equippedBy, createdAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    ).run(equippedItemId, accountIdA, "item_weapon_shortsword", "common", "[]", heroId, now);
+    db.prepare(`UPDATE heroes SET equipmentWeapon = ? WHERE heroId = ?`).run(equippedItemId, heroId);
+  } finally {
+    db.close();
+  }
 
   const unequippedBefore = countUnequipped();
   if (unequippedBefore < 100) {
