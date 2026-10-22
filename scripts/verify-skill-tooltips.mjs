@@ -29,7 +29,7 @@ try {
     await page.screenshot({ path: path.join(out, `build-${width}.png`) });
     await label.focus();
     await page.keyboard.press("Escape");
-    assert.equal(await tooltip.count(), 0);
+    await tooltip.waitFor({ state: "hidden" });
     if (width === 390) await label.tap();
     else await label.click();
     await tooltip.waitFor();
@@ -76,6 +76,8 @@ try {
     const modifierLine = page.locator(".battle-log > li").nth(modifierIndex);
     assert.match(await modifierLine.innerText(), /Fortified DEF|Weakened ATK/);
     await modifierLine.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    await tooltip.waitFor({ state: "hidden" });
     await page.screenshot({ path: path.join(out, `modifier-${width}.png`) });
     console.log(`PASS ${width}px: tooltip access, real boss breakdowns, persisted events and final HP reconciliation`);
     await context.close();
