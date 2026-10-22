@@ -73,26 +73,26 @@ await check("oversized body (>16KB) is rejected even on a pre-auth endpoint (/de
 await check("over-length string (>256 chars) in a bounded field is rejected with validation", async () => {
   const st = await (await A.get("/account/state")).json.data;
   const longHeroId = "h".repeat(300);
-  const res = await A.patch("/party/order", {
+  const res = await A.patch("/party/formation", {
     requestId: uuid(),
     expectedRevision: st.revision,
-    order: [longHeroId, st.heroes[1].heroId, st.heroes[2].heroId],
+    slots: [longHeroId, st.heroes[1].heroId, st.heroes[2].heroId, null, null],
   });
   assert.equal(res.status, 400, JSON.stringify(res.json));
   assertErrorDTO(res.json, "validation");
-  return `300-char hero ID in /party/order -> 400 validation`;
+  return `300-char hero ID in /party/formation -> 400 validation`;
 });
 
-await check("wrong-arity tuple (4 elements instead of 3) in party order is rejected with validation", async () => {
+await check("wrong-arity tuple (4 elements instead of 5) in party formation is rejected with validation", async () => {
   const st = await (await A.get("/account/state")).json.data;
-  const res = await A.patch("/party/order", {
+  const res = await A.patch("/party/formation", {
     requestId: uuid(),
     expectedRevision: st.revision,
-    order: [st.heroes[0].heroId, st.heroes[1].heroId, st.heroes[2].heroId, st.heroes[0].heroId],
+    slots: [st.heroes[0].heroId, st.heroes[1].heroId, st.heroes[2].heroId, null],
   });
   assert.equal(res.status, 400, JSON.stringify(res.json));
   assertErrorDTO(res.json, "validation");
-  return `4-element order tuple -> 400 validation`;
+  return `4-element slots tuple (instead of 5) -> 400 validation`;
 });
 
 await check("missing requestId is rejected with validation, not a 500/crash", async () => {
