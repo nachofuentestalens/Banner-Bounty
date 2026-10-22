@@ -115,3 +115,11 @@ Verification this run:
 - No runtime code changed; previous runtime results above remain historical evidence. No runtime checks were repeated and no command was refused. The optional registry search for tooltip/breakdown text returned no match.
 
 Next: integrate the already-requested CTO-owned amendment into this isolated task baseline, then compare its shape and semantics with the source and resubmit. Do not create a duplicate prerequisite task, edit another department's documents, switch branches, or merge manually. Contract-freeze acceptance remains unresolved; the task is not complete.
+
+## Resume verification (2026-10-23)
+
+The requested integration has not reached this worktree. Starting HEAD is `327b125` (`Record missing contract amendment in baseline verification`), with a clean working tree; the preceding baseline remains `bd7b6b0`. Targeted search for `damageBreakdown`, `DamageBreakdown`, `DamageStep`, `BattleEventDTO` and section `8.6` again finds the evidence types only in `packages/contracts/src/index.ts`, not in either frozen document. The latest owner decisions contain no amendment for this field.
+
+Commands/results: `git status --short` returned no changes; `git log -4 --oneline` confirmed the checkpoint history; `git ls-files --error-unmatch design/game/combat.md design/game/classes.md design/game/narrative/copy.md design/studio/milestones/M2.md` exited 0; targeted `rg` and `Get-Content design/decisions.md -Tail 45` confirmed the gate remains unresolved. `git diff --stat 71ae95ff0a74946d02e80d8ca8820751e2af9db8` reviewed the cumulative 17-file implementation/report scope. No runtime changes or repeated runtime checks; no command was refused.
+
+Next: the dashboard must integrate the existing CTO amendment into this isolated baseline before Engineering can verify its shape and semantics. No duplicate prerequisite is requested. Task acceptance remains pending; earlier runtime evidence is historical and does not close this documentation gate.
