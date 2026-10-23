@@ -29,10 +29,12 @@ playtests should follow the same routing: **QA Tester**, not QA Player. QA Playe
 read-only second opinion on a QA Tester playtest or report (as it already did reviewing 7549fac0), not
 running the game itself.
 
-Reassigning AgentDashboard's "QA daily playtest" recurring automation to QA Tester (or granting QA
-Player a shell + browser tool while keeping its read-only, no-edit source access) is a project setting
-in AgentDashboard's own Roles/automation panel, not a repository file or task-graph change — see the
-question raised from task `b9ebc865-c442-4ca0-aec3-17d399fb5510`.
+Decided 2026-10-23: the owner chose option (a) — repoint the "QA daily playtest" recurring automation
+to QA Tester, not grant QA Player a shell/browser tool. This remains a project setting in AgentDashboard's
+own Roles/automation panel, not a repository file or task-graph change, so no code or task-graph edit
+implements it; whoever operates that panel still needs to flip the automation's target role to QA Tester.
+See the question and answer recorded under `design/decisions.md` (2026-10-22/23, from task
+`b9ebc865-c442-4ca0-aec3-17d399fb5510`).
 
 UI engineering, art fallbacks and server engineering belong to Gameplay Programmer for this slice; Systems Designer supplies the interface specification. Security/save-integrity review belongs to CTO and QA. Build/release operations belong to Tools Engineer and Gameplay Programmer. No separate marketing, finance, HR or art-production agent is needed before there is a playable game.
 
