@@ -413,6 +413,7 @@ BattleUnitDTO {
 }
 
 BattleEventDTO {
+  readonly damageBreakdown?: DamageBreakdown,  // additive evidence; 2026-10-22 decision below
   round: number,
   type: string,                 // unchanged M1 field; now also carries skill-specific values
   sourceId: string | null,
@@ -426,7 +427,43 @@ BattleEventDTO {
   statusExpired: string | null,                                  // NEW
   death: boolean,                                                // NEW
 }
+
+DamageStep {
+  readonly kind: string,
+  readonly inputs: readonly number[],
+  readonly value: number,
+}
+
+DamageBreakdown {
+  readonly steps: readonly DamageStep[],
+  readonly damage: number,
+  readonly hpBefore: number,
+  readonly hpLoss: number,
+}
 ```
+
+#### Recorded additive decision: damage calculation evidence (2026-10-22)
+
+CTO task `195f2cb0-d2b9-4998-97e7-f1a1860bbc50` records this contract amendment for
+Gameplay Programmer task `c5bd2700-b2bc-4995-8741-16f5521c9d7b` before implementation acceptance.
+The exact `BattleEventDTO` above gains optional readonly `damageBreakdown?: DamageBreakdown`.
+This extends the event metadata described in `combat.md` section 8.6; it does not amend combat rules.
+
+- `steps` records server-evaluated arithmetic in evaluation order. Each `DamageStep` contains a
+  `kind` code, the recorded numeric `inputs`, and the evaluated `value`. Record only evaluated
+  stages; evidence must not evaluate skipped calculations or consume additional RNG draws.
+- `damage` is resolved damage before HP clamping or Vital Surge. `hpBefore` is the target's HP
+  immediately before application. `hpLoss` is actual HP loss after clamping/survival effects and
+  equals negative event `amount`; `hpBefore - hpLoss` equals event `hpAfter`.
+- Direct hits, including dodges, and Burn ticks carry evidence. A dodge records zero damage and
+  zero HP loss without inventing skipped base-damage calculations or crit rolls. AoE and sequential
+  hits retain independent evidence per target event. Older reports and other events may omit the
+  field; missing evidence remains unavailable rather than being reconstructed.
+- The UI only formats recorded evidence; it never recalculates combat formulas or derives missing
+  evidence from HP changes. Unknown step kinds may use a neutral label with recorded numbers.
+- This is an additive report-data change only: no intended balance, RNG consumption, endpoint,
+  database migration, or rules-version change. Existing event fields keep their meanings; existing
+  report JSON can retain the optional data, and legacy reports remain renderable without backfill.
 
 This is the exact TypeScript shape `combat.md` section 8.6 left to this document. The battle view
 (M2-27) can render every acceptance-check-4/5 requirement (name, class, numeric HP, status + duration,
