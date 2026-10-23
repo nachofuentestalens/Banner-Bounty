@@ -82,6 +82,21 @@ go deeper than UI polish and would rework pacing fundamentals the M1-04/M1-13 fr
 Both specs and the Systems Designer's report are merged on `main`. The commit hashes above are
 confirmed in this branch's git history, and both task IDs match the corresponding report headers.
 
-Both remain real owner priorities, not rejected; this section is the full record of the reasoning
-and the tasks opened to spec them — there is no separate Game Director triage report beyond this
-document.
+Both remain real owner priorities, not rejected. The complete five-item disposition, including
+watchability as a separate acceptance concern, is in
+[the feedback triage report](reports/five-feedback-triage.md).
+
+### Five-feedback follow-through
+
+Keep existing M2 acceptance gates intact. Skill help and damage explanations support readable,
+consequential build choices; their existing Engineering task is approved, but the corresponding
+Design-owned interface/UI specification amendment is still needed (priority 7). Do not repeat the
+implementation or treat its approval as independent milestone QA.
+
+For M3 planning, prioritize reliable access to fights and deferred next-fight skill changes at 8,
+then variable fight-length cycle pacing at 7, subject to contracts and measured economy evidence.
+Watchability and cycle duration share a feasibility study but are distinct requirements: a visible
+replay does not prove real-time advancement, and shorter cycles do not guarantee accessible fights.
+The existing M2-30 verdict/M3 planning task owns scheduling; these are planning recommendations,
+not newly authorized implementation tasks. See the triage report for owners, prerequisites and
+observable acceptance targets. The unrelated debug menu is outside this five-item scope.
