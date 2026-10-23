@@ -163,3 +163,18 @@ Commands/results this run:
 - `git diff --check`: exit 0 after this report update.
 
 Only this Engineering evidence report changed in this run. No command was refused. No unresolved issue remains for the assigned scope; legacy reports still cannot supply evidence that was never stored, and the earlier stated QA coverage limits still apply. Next: dashboard reviewer acceptance and automatic integration of this completed task. No duplicate prerequisite, manual merge, branch switch or other-department edit is needed.
+
+## Owner-requested completion recheck (2026-10-23, HEAD a34c581)
+
+Result: complete; implementation and integrated-contract verification were already committed before this run. No additional runtime change was needed. All six required input paths remain tracked, and the prerequisite M2-27 implementation/report is present. The earlier phase-one statement that no prerequisite IDs were assigned is superseded by the current task assignment: prerequisite `ae4866f3-8c46-4142-bf70-c901d5d57d37`.
+
+Checks this run:
+
+- `git status --short`: clean starting worktree.
+- `git ls-files --error-unmatch apps/web/src/components/BattleView.tsx apps/web/src/screens/Company.tsx apps/web/src/types.ts design/game/combat.md design/game/classes.md design/game/narrative/copy.md`: exit 0.
+- Bounded source review confirms shared tooltip integration in Company and BattleView, server-recorded arithmetic rendering, and legacy fallback.
+- Node strict field comparison via PowerShell here-string: both contract and web shapes match the integrated document, including the optional readonly event field. The first scratch comparison incorrectly required the document to use the `interface` keyword and failed; correcting the extractor for the document's named-shape syntax and comma separators produced two PASS results. No application defect was found.
+- `git diff --stat c46a2d803445a21ba1020b1bc9788e380746faa5`: reviewed the cumulative 17-file task scope.
+- `git diff --check c46a2d803445a21ba1020b1bc9788e380746faa5`: exit 0 before this report-only update.
+
+Earlier build, focused test, simulation parity and desktop/mobile browser results above remain the runtime evidence; they were not repeated without a runtime change. No command was refused. No unresolved issue remains within the assigned scope. Next: dashboard reviewer acceptance and automatic integration; no manual branch switch or merge.
