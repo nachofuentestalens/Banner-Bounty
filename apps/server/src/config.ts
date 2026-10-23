@@ -20,6 +20,11 @@ export interface ServerConfig {
   bodyLimitBytes: number;
   /** Built client served by the API; undefined when SERVE_WEB=0 (dev, where Vite serves the UI). */
   webDistDir: string | undefined;
+  /**
+   * Local debug menu (level/XP/gold) for manual testing. Off unless
+   * DEBUG_TOOLS=1 is set explicitly, so it never appears for normal play.
+   */
+  debugToolsEnabled: boolean;
 }
 
 export function loadServerConfig(env: NodeJS.ProcessEnv = process.env): ServerConfig {
@@ -29,5 +34,6 @@ export function loadServerConfig(env: NodeJS.ProcessEnv = process.env): ServerCo
     dbPath: env.DB_PATH ?? DEFAULT_DB_PATH,
     bodyLimitBytes: MAX_BODY_BYTES,
     webDistDir: env.SERVE_WEB === "0" ? undefined : (env.WEB_DIST ?? DEFAULT_WEB_DIST),
+    debugToolsEnabled: env.DEBUG_TOOLS === "1",
   };
 }
