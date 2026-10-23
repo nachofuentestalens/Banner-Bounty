@@ -135,9 +135,19 @@ Required-input/prerequisite recheck repeated from the third phase is not re-run 
 
 Two boss fights from fresh level-1 accounts, both built from the real recruit/formation/leveling flow (no save edits): a balanced team (Vanguard tank + Cleric healer + Ranger damage) and a no-healer/no-tank team (Ranger + Arcanist + Rogue), same account-power starting point. Balanced build cleared in 8 rounds; the no-healer/no-tank build also cleared both runs but consistently faster/rougher (3–4 rounds, lower post-fight HP in observed runs) — the predicate used was "balanced wins AND (other build loses OR ends with less aggregate HP remaining)", which held in both executions. This is a directional signal from one fixed boss encounter, not a statistically robust tactics study; `check7-outcomes.json` retains the exact finalHp/rounds for independent review.
 
-### Check 8 — cooldowns, buffs/debuffs, taunt/threat: PASS (cooldown, buff), taunt not exercised
+### Check 8a — cooldowns and buff/debuff-into-damage: PASS
 
-From a boss fight report (`check8-boss-report.json`), every hero active-skill use with `cooldown > 0` (from `packages/content/src/v2/skills.ts`) was checked against the round gap to its previous use by the same source; no violation in either run (initial run's apparent violation was a test bug — `bulwark_call` emits two `statusApplied` sub-events, taunt and fortify, from a single cast in the same round; fixed by ignoring same-round repeats of the same skill/source before concluding PASS). A `damageBreakdown`-bearing event following a `statusApplied` event was observed (buff/debuff feeding into damage resolution), satisfying "an active buff/debuff changes a stat as stated" at a coarse level — exact before/after stat-value comparison was not isolated. Neither run cast a taunt skill in this particular fight, so the taunt/threat-redirect rule (combat.md 8.3) was **not exercised**; this is an open gap, not a pass.
+From a boss fight report (`check8-boss-report.json`), every hero active-skill use with `cooldown > 0` (from `packages/content/src/v2/skills.ts`) was checked against the round gap to its previous use by the same source; no violation in either run (initial run's apparent violation was a test bug — `bulwark_call` emits two `statusApplied` sub-events, taunt and fortify, from a single cast in the same round; fixed by ignoring same-round repeats of the same skill/source before concluding PASS). A `damageBreakdown`-bearing event following a `statusApplied` event was observed (buff/debuff feeding into damage resolution), satisfying "an active buff/debuff changes a stat as stated" at a coarse level — exact before/after stat-value comparison was not isolated.
+
+### Check 8b — taunt/threat redirect (combat.md section 8.2, "Taunt overrides everything"): PASS, with dedicated evidence
+
+Neither boss run in check 8a happened to produce a scenario where the taunt redirect was distinguishable from the engine's default lowest-position/lowest-HP targeting (the taunter and the "natural" target coincided). To exercise combat.md 8.2's rule unambiguously, this phase ran a dedicated, seeded, repeatable scenario directly against `packages/game`'s pure combat engine (`simulateBattleV2`), bypassing the HTTP layer so the setup is fully controlled:
+
+- **Command**: `node tests/e2e/taunt-redirect.mjs` (requires `packages/game` built: `npm run build -w packages/game` first; output written to `qa/artifacts/M2-29/mechanics/taunt-redirect-report.json` and `taunt-redirect-verdict.json`).
+- **Seed**: `777001` (fixed `rngSeed` passed to `simulateBattleV2`).
+- **Setup**: side A = `ally_bait` (Ranger, slot 0, no taunt skill — the pool's natural pick by lowest position) and `vanguard_taunter` (Vanguard, slot 1, loadout `[bulwark_call, '']` so its first action each round is the taunt skill per `classes.md` 4.1 priority); side B = `boss_tollkeeper#0` (the M2-31 boss), whose `tollkeeperAction` (combat2.ts) uses `pickLowestPosition` over the single-target pool on `round % 3 !== 0`, i.e. slot 0 (`ally_bait`) absent taunt.
+- **Result (event log, exact lines in `taunt-redirect-verdict.json`)**: round 1, `vanguard_taunter` casts `bulwark_call` on itself, `statusApplied: {statusId: "status_taunt", duration: 2}`. Round 2, the boss's single-target action (`toll_strike`, `sourceId: "boss_tollkeeper#0"`) has `targetId: "vanguard_taunter"` — not `ally_bait`, which remains the engine's lowest-position pick absent an active taunt. This confirms combat.md 8.2's "Taunt overrides everything... skipping row protection, HP, HP%, and position rules entirely" against a real, non-taunting single-target boss attack.
+- **Verdict**: check 8's taunt/threat sub-check is **PASS**, on this dedicated repro. It supersedes the "not exercised" result from the two general boss-fight runs in check 8a, which simply never produced a taunter/natural-target mismatch.
 
 ### Checks 9 & 10 — gear rarity/affixes and crafting/reforging: PASS
 
@@ -158,7 +168,8 @@ A literal single-fielded-hero formation (exactly one hero, level 1) reliably **l
 | 5 Feed | PASS (preserved) | — |
 | 6 Playback | PASS for HP/control sync (preserved); F02 affects status correctness | — |
 | 7 Tactics | PASS | One fixed boss encounter, two builds; directional signal only. |
-| 8 Mechanics | PASS (cooldown, buff); taunt/threat **not exercised** | No taunt cast in either observed run. |
+| 8a Mechanics (cooldown, buff) | PASS | No violations across observed runs. |
+| 8b Mechanics (taunt/threat redirect) | PASS | Dedicated seeded repro (`tests/e2e/taunt-redirect.mjs`, seed `777001`); see "Check 8b" above. |
 | 9 Gear | PASS | Two same-item/same-rarity crafts, different affixes; rarity tag visible in browser. |
 | 10 Crafting | PASS | Real materials/gold spent; affix changed; equip state carries to next fight (exact stat delta not isolated). |
 | 11 Content | PASS (preserved) | — |
@@ -167,7 +178,7 @@ A literal single-fielded-hero formation (exactly one hero, level 1) reliably **l
 ### Outstanding for a final verdict
 
 - F01 (formation rows not visible in battle) and F02 (status duration display) remain **open, unfixed, P2**. No claim that M2 is free of P0/P1 defects; no P0/P1 was found in this phase either.
-- Check 8's taunt/threat-redirect rule was not exercised by either run; a dedicated repro (recruit/level a Vanguard, force Bulwark Call to land, confirm subsequent single-target enemy hits redirect to the taunter) is still open.
+- Check 8's taunt/threat-redirect rule is now closed: PASS via the dedicated seeded repro (`tests/e2e/taunt-redirect.mjs`, seed `777001`) described in "Check 8b" above.
 - M2-08 contrast re-audit was not performed this phase.
 - Checks 7/9/10's "exact stat delta" and "statistically robust tactics" framings are narrower than the acceptance text's spirit; evidence is directional/functional, not exhaustive.
 - M2-30 remains gated pending completed QA and passed agent review; this report does not approve or integrate anything.

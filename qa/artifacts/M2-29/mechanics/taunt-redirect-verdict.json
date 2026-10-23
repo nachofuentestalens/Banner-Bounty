@@ -1,0 +1,90 @@
+{
+  "seed": 777001,
+  "tauntCastRound": 1,
+  "tauntCastEvent": {
+    "round": 1,
+    "type": "bulwark_call",
+    "sourceId": "vanguard_taunter",
+    "targetId": "vanguard_taunter",
+    "amount": 0,
+    "hpAfter": 40,
+    "skillId": "bulwark_call",
+    "crit": false,
+    "dodged": false,
+    "statusApplied": {
+      "statusId": "status_taunt",
+      "duration": 2,
+      "stacks": 1
+    },
+    "statusExpired": null,
+    "death": false
+  },
+  "bossActionRound": 2,
+  "bossActionEvent": {
+    "damageBreakdown": {
+      "steps": [
+        {
+          "kind": "dodge_roll",
+          "inputs": [
+            49,
+            5
+          ],
+          "value": 0
+        },
+        {
+          "kind": "crit_roll",
+          "inputs": [
+            60,
+            10
+          ],
+          "value": 0
+        },
+        {
+          "kind": "attack",
+          "inputs": [],
+          "value": 26
+        },
+        {
+          "kind": "defense",
+          "inputs": [],
+          "value": 6
+        },
+        {
+          "kind": "fortify",
+          "inputs": [
+            6,
+            130,
+            100
+          ],
+          "value": 7
+        },
+        {
+          "kind": "base_damage",
+          "inputs": [
+            26,
+            7
+          ],
+          "value": 23
+        }
+      ],
+      "damage": 23,
+      "hpBefore": 17,
+      "hpLoss": 17
+    },
+    "round": 2,
+    "type": "toll_strike",
+    "sourceId": "boss_tollkeeper#0",
+    "targetId": "vanguard_taunter",
+    "amount": -17,
+    "hpAfter": 0,
+    "skillId": null,
+    "crit": false,
+    "dodged": false,
+    "statusApplied": null,
+    "statusExpired": null,
+    "death": true
+  },
+  "naturalTargetWithoutTaunt": "ally_bait (slot 0, lowest position)",
+  "actualTarget": "vanguard_taunter",
+  "check8TauntStatus": "PASS"
+}

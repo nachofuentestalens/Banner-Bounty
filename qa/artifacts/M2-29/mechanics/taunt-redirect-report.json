@@ -1,0 +1,532 @@
+{
+  "seed": 777001,
+  "result": {
+    "result": "loss",
+    "rounds": 3,
+    "events": [
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                74,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                52,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 9
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                9,
+                8
+              ],
+              "value": 5
+            }
+          ],
+          "damage": 5,
+          "hpBefore": 220,
+          "hpLoss": 5
+        },
+        "round": 1,
+        "type": "aimed_shot",
+        "sourceId": "ally_bait",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -5,
+        "hpAfter": 215,
+        "skillId": "aimed_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "bulwark_call",
+        "sourceId": "vanguard_taunter",
+        "targetId": "vanguard_taunter",
+        "amount": 0,
+        "hpAfter": 40,
+        "skillId": "bulwark_call",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_taunt",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "bulwark_call",
+        "sourceId": "vanguard_taunter",
+        "targetId": "vanguard_taunter",
+        "amount": 0,
+        "hpAfter": 40,
+        "skillId": "bulwark_call",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_fortify",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                76,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                84,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 6
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                6,
+                130,
+                100
+              ],
+              "value": 7
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                26,
+                7
+              ],
+              "value": 23
+            }
+          ],
+          "damage": 23,
+          "hpBefore": 40,
+          "hpLoss": 23
+        },
+        "round": 1,
+        "type": "toll_strike",
+        "sourceId": "boss_tollkeeper#0",
+        "targetId": "vanguard_taunter",
+        "amount": -23,
+        "hpAfter": 17,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                88,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                93,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 9
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                9,
+                8
+              ],
+              "value": 5
+            }
+          ],
+          "damage": 5,
+          "hpBefore": 215,
+          "hpLoss": 5
+        },
+        "round": 2,
+        "type": "quick_shot",
+        "sourceId": "ally_bait",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -5,
+        "hpAfter": 210,
+        "skillId": "quick_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                75,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                83,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 7
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                7,
+                8
+              ],
+              "value": 3
+            }
+          ],
+          "damage": 3,
+          "hpBefore": 210,
+          "hpLoss": 3
+        },
+        "round": 2,
+        "type": "strike",
+        "sourceId": "vanguard_taunter",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -3,
+        "hpAfter": 207,
+        "skillId": "strike",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                49,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                60,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 6
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                6,
+                130,
+                100
+              ],
+              "value": 7
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                26,
+                7
+              ],
+              "value": 23
+            }
+          ],
+          "damage": 23,
+          "hpBefore": 17,
+          "hpLoss": 17
+        },
+        "round": 2,
+        "type": "toll_strike",
+        "sourceId": "boss_tollkeeper#0",
+        "targetId": "vanguard_taunter",
+        "amount": -17,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": true
+      },
+      {
+        "round": 2,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "vanguard_taunter",
+        "amount": 0,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_fortify",
+        "death": false
+      },
+      {
+        "round": 2,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "vanguard_taunter",
+        "amount": 0,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_taunt",
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                51,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                11,
+                25
+              ],
+              "value": 1
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 9
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                9,
+                8
+              ],
+              "value": 5
+            },
+            {
+              "kind": "critical",
+              "inputs": [
+                5,
+                3,
+                2
+              ],
+              "value": 7
+            }
+          ],
+          "damage": 7,
+          "hpBefore": 207,
+          "hpLoss": 7
+        },
+        "round": 3,
+        "type": "aimed_shot",
+        "sourceId": "ally_bait",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -7,
+        "hpAfter": 200,
+        "skillId": "aimed_shot",
+        "crit": true,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                90,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                91,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 4
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                26,
+                4
+              ],
+              "value": 24
+            },
+            {
+              "kind": "heavy_strike",
+              "inputs": [
+                24,
+                3,
+                2
+              ],
+              "value": 36
+            }
+          ],
+          "damage": 36,
+          "hpBefore": 32,
+          "hpLoss": 32
+        },
+        "round": 3,
+        "type": "toll_smash",
+        "sourceId": "boss_tollkeeper#0",
+        "targetId": "ally_bait",
+        "amount": -32,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": true
+      }
+    ],
+    "finalHp": {
+      "ally_bait": 0,
+      "vanguard_taunter": 0,
+      "boss_tollkeeper#0": 200
+    },
+    "units": [
+      {
+        "unitId": "ally_bait",
+        "side": "A",
+        "kind": "hero",
+        "classId": "class_ranger",
+        "secondaryClassId": null,
+        "slotIndex": 0,
+        "maxHp": 32
+      },
+      {
+        "unitId": "vanguard_taunter",
+        "side": "A",
+        "kind": "hero",
+        "classId": "class_vanguard",
+        "secondaryClassId": null,
+        "slotIndex": 1,
+        "maxHp": 40
+      },
+      {
+        "unitId": "boss_tollkeeper#0",
+        "side": "B",
+        "kind": "enemy",
+        "classId": null,
+        "secondaryClassId": null,
+        "slotIndex": 0,
+        "maxHp": 220
+      }
+    ]
+  }
+}
