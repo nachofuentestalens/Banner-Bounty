@@ -5,7 +5,9 @@ import type { AccountStateController } from "../useAccountState.js";
 import type { AccountState, Hero } from "../types.js";
 import { COPY, classCopy, composeItemName, skillCopy } from "../copy.js";
 import { isActivityActive, isSecondaryClassUnlocked, canAssignSecondaryClass } from "../rules.js";
-import { BASE_CLASS_IDS, unlockedSkillPool } from "../frozenIds.js";
+import { BASE_CLASS_IDS, CLASS_SKILLS, unlockedSkillPool } from "../frozenIds.js";
+import { SkillLabel } from "../components/SkillLabel.js";
+import { skillMechanics } from "../skillMechanics.js";
 
 function PrimaryActionBanner({ state, onGoExpedition }: { state: AccountState; onGoExpedition: () => void }) {
   let message: string;
@@ -64,14 +66,17 @@ function RecruitPanel({ state, controller }: { state: AccountState; controller: 
 
 function SkillSelect({ id, value, options, onChange, disabled }: { id: string; value: string; options: readonly string[]; onChange: (v: string) => void; disabled: boolean }) {
   return (
-    <select id={id} value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled}>
+    <span className="skill-choice">
+    <select id={id} value={value} title={value ? `${skillCopy(value).desc} ${skillMechanics(value) ?? ""}` : undefined} onChange={(e) => onChange(e.target.value)} disabled={disabled}>
       <option value="">(empty)</option>
       {options.map((skillId) => (
-        <option key={skillId} value={skillId}>
+        <option key={skillId} value={skillId} title={`${skillCopy(skillId).desc} ${skillMechanics(skillId) ?? ""}`}>
           {skillCopy(skillId).name}
         </option>
       ))}
     </select>
+    {value && <SkillLabel skillId={value} />}
+    </span>
   );
 }
 
@@ -146,6 +151,11 @@ function HeroCard({ hero, inventory, activityActive, accountRevision, controller
 
       <div className="loadout-editor">
         <h3>Skill loadout</h3>
+        <details className="skill-reference">
+          <summary>Inspect available skills</summary>
+          <p>Hover, focus or tap a skill for its effect. Active slot 1 takes priority when ready; otherwise slot 2, then Basic Attack.</p>
+          <ul>{[...new Set([...(CLASS_SKILLS[hero.primaryClassId] ?? []).filter((s) => s.kind === "basic").map((s) => s.skillId), ...activeOptions, ...passiveOptions])].map((skillId) => <li key={skillId}><SkillLabel skillId={skillId} /></li>)}</ul>
+        </details>
         <label htmlFor={`${headingId}-active0`}>Active 1</label>
         <SkillSelect id={`${headingId}-active0`} value={active[0]} options={activeOptions} onChange={(v) => setActive([v, active[1]])} disabled={loadoutLocked} />
         <label htmlFor={`${headingId}-active1`}>Active 2</label>

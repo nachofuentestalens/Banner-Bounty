@@ -7,13 +7,14 @@ import { DungeonScreen } from "./screens/Dungeon.js";
 import { InventoryScreen } from "./screens/Inventory.js";
 import { BossScreen } from "./screens/Boss.js";
 import { ArenaScreen } from "./screens/Arena.js";
+import { DebugScreen } from "./screens/Debug.js";
 import { NavBar } from "./components/NavBar.js";
 import { LoadingPanel } from "./components/LoadingPanel.js";
 import { OfflineBanner } from "./components/Toasts.js";
 import { ToastList } from "./components/Toasts.js";
 import { useAccountState } from "./useAccountState.js";
 
-export type Screen = "company" | "expedition" | "dungeon" | "inventory" | "boss" | "arena";
+export type Screen = "company" | "expedition" | "dungeon" | "inventory" | "boss" | "arena" | "debug";
 
 type SessionState = { kind: "checking" } | { kind: "unauthenticated" } | { kind: "offline" } | { kind: "authenticated"; displayName: string };
 
@@ -25,6 +26,9 @@ interface CurrentSession {
 export function App() {
   const [session, setSession] = useState<SessionState>({ kind: "checking" });
   const [screen, setScreen] = useState<Screen>("company");
+  // Hidden unless the server opts in with DEBUG_TOOLS=1 (apps/server/src/config.ts);
+  // off by default so the debug panel never appears for normal play.
+  const [debugEnabled, setDebugEnabled] = useState(false);
 
   const checkSession = useCallback(async () => {
     try {
@@ -42,6 +46,12 @@ export function App() {
   useEffect(() => {
     checkSession();
   }, [checkSession]);
+
+  useEffect(() => {
+    get<{ enabled: boolean }>("/debug/enabled")
+      .then(({ data }) => setDebugEnabled(data.enabled))
+      .catch(() => setDebugEnabled(false));
+  }, []);
 
   const controller = useAccountState(session.kind === "authenticated");
 
@@ -74,7 +84,7 @@ export function App() {
 
   return (
     <div className="app-shell">
-      <NavBar current={screen} onNavigate={setScreen} onLogout={logout} displayName={session.displayName} />
+      <NavBar current={screen} onNavigate={setScreen} onLogout={logout} displayName={session.displayName} showDebug={debugEnabled} />
       {controller.offline ? <OfflineBanner onRetry={controller.refetch} /> : null}
       <ToastList toasts={controller.toasts} onDismiss={controller.dismissToast} />
       {controller.loading || !controller.state ? (
@@ -89,8 +99,10 @@ export function App() {
         <InventoryScreen state={controller.state} controller={controller} />
       ) : screen === "boss" ? (
         <BossScreen state={controller.state} controller={controller} />
-      ) : (
+      ) : screen === "arena" ? (
         <ArenaScreen state={controller.state} controller={controller} />
+      ) : (
+        <DebugScreen state={controller.state} controller={controller} />
       )}
     </div>
   );

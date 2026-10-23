@@ -87,3 +87,13 @@ CTO asked:
 The owner answered:
 
 b
+
+## 2026-10-22 · Resolve recurring daily playtest tool mismatch
+
+Producer asked:
+
+> QA Player's AgentDashboard seat has no shell/browser (read-only by design), so the recurring "QA daily playtest" automation keeps producing NOT PLAYED runs (e.g. 7549fac0, 2026-10-21) — confirmed by two independent sessions on that seat. I've documented in design/studio/roles.md and dashboard.md that hands-on browser playtests should route to QA Tester instead (which already has shell+browser and real play evidence from M1-10/M1-15/M2-07/M2-27), with QA Player kept as a read-only second-opinion reviewer. I have no tool/endpoint to change which role AgentDashboard's recurring daily-playtest automation targets, or to grant a role additional tools. Could you either (a) repoint the "QA daily playtest" automation to QA Tester, or (b) add a shell + browser tool to QA Player's seat while leaving its file-edit permissions read-only? I'd recommend (a), since QA Tester already owns hands-on browser verification for M2 acceptance (M2-29) and this just extends that to the daily cadence.
+
+The owner answered:
+
+let's go with option a then

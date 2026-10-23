@@ -258,22 +258,34 @@ from this assumption. New recruit XP starts at zero and requires fielding that h
 | First craft / reforge | Introductory dungeon: 4 scrap after two ordinary wins, or a boss; target first session after access, <=2 full clears |
 | First epic | Guaranteed crafting route targeted days 4-7 at two introductory full clears/day; lucky drops can be earlier |
 
-**Worked week budget, not a prescribed dungeon layout:** if M2-31 supplies a
-three-floor introductory dungeon, one full clear takes 9 credited minutes and
-pays 32 XP/hero, 80 gold, 8 scrap, 2 sigils, 1 core and mean 1.5 items.
+**Worked week budget, not a prescribed dungeon layout (M2-28 revision):** M2-31
+shipped `dungeon_aqueduct_depths` as a **4-floor** introductory dungeon (3 ordinary
++ 1 final boss), not the 3-floor placeholder this section originally assumed before
+M2-31 ran. Using section 4's general formula at `n=4`: one full clear takes 12
+credited minutes and pays 40 XP/hero, 100 gold, 10 scrap, 2 sigils, 1 core and mean
+1.75 items (sigils/core are flat per clear, from the one final-boss floor; scrap/
+gold/XP/items scale with `n`). Confirmed against `node scripts/simulate.mjs
+--mode=v2`'s dungeon benchmark (`design/game/reports/M2-28.md`): 200+ seeded runs at
+a balanced level-8 party report `avgFloorsProcessed: 4`, `clearRate: 1`, matching
+`n=4` exactly.
+
 An established party completing two such runs/day plus 60 won Old Road cycles/day
-earns per day 760 gold, 304 XP/participant, 16 scrap, 4 sigils, 2 cores and
-mean 18 items. Seven days give 5320 gold, 2128 XP/continuously fielded hero
-(cap discards surplus), 112 scrap, 28 sigils, 14 cores, mean 126 items before
-overflow. This is 78 credited minutes/day, not eight hours/day and not all active
+earns per day 800 gold, 320 XP/participant, 20 scrap, 4 sigils, 2 cores and
+mean 18.5 items. Seven days give 5600 gold, 2240 XP/continuously fielded hero
+(cap discards surplus), 140 scrap, 28 sigils, 14 cores, mean 129.5 items before
+overflow. This is 84 credited minutes/day, not eight hours/day and not all active
 attention. Day-one access/recruitment delays can shift this calendar later.
 
 One uncommon craft, one rare craft, one epic craft and two rare reforges cost
-1500 gold, 80 scrap, 16 sigils and 8 cores. Remaining week balances before
-recruitment are 3820 gold, 32 scrap, 12 sigils and 6 cores; recruiting heroes
-4-6 costs 1800 more, leaving 2020 gold. The epic alone is affordable after four
-days' materials; the whole listed crafting basket after five. Upgrades are for a
-few chosen slots, not a promise of outfitting all 15 active-party slots with epics.
+1500 gold, 80 scrap, 16 sigils and 8 cores (unchanged — recipe costs don't depend on
+dungeon floor count). Remaining week balances before recruitment are 4100 gold,
+60 scrap, 12 sigils and 6 cores; recruiting heroes 4-6 costs 1800 more, leaving 2300
+gold. The epic alone is affordable after four days' materials (unchanged: cores,
+the binding constraint, are still earned at 2/day); the whole listed crafting basket
+is now affordable after **four** days, not five, since the corrected scrap income
+(20/day, not 16/day) reaches the 80-scrap basket total exactly on day 4. Upgrades
+are for a few chosen slots, not a promise of outfitting all 15 active-party slots
+with epics.
 
 With 14 introductory final-boss wins, natural epic count has binomial distribution
 `Binomial(14,.02)`: expected .28, probability >=1 is `1-.98^14` (~24.64%).
@@ -292,3 +304,15 @@ week at 30/78/480 credited minutes/day, and guaranteed-material failure recovery
 Retune only on that evidence. M2-29 owns browser verification of rarity, visible
 stat changes, receipts, overflow and dungeon playback. M2-23 claims table readiness,
 not that M2 gameplay or its pacing targets have passed.
+
+**M2-28 status (2026-10-21):** the floor-count correction above is evidence-based
+(simulated and arithmetic-checked). `scripts/simulate.mjs --mode=v2`'s existing
+harness only exercises two fixed 3-hero party presets (balanced vs. glass-cannon)
+at fixed levels (5 for Old Road, 8 for the dungeon) and reports win rate/rounds/
+clear rate only — it does not yet support the 1/3/5-hero sweep, offline-partition
+timing, week-length material/gold ledger, legacy-gold-vs-material-constraint test,
+or guaranteed-material-failure-recovery checks this section asks for. See
+`design/game/reports/M2-28.md` for exactly what was run, what it showed (no
+measurable team-building contrast at the tested levels — both presets clear 100%
+of the time, glass-cannon marginally faster), and the harness-extension request
+sent to Gameplay Programmer to close the remaining gaps in a follow-up run.

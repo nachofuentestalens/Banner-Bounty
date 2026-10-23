@@ -4,15 +4,16 @@ import { buildServer } from "./app.js";
 import { loadServerConfig } from "./config.js";
 
 const config = loadServerConfig();
-const { port, host, dbPath, webDistDir } = config;
+const { port, host, dbPath, webDistDir, debugToolsEnabled } = config;
 
-const app = buildServer({ dbPath, webDistDir });
+const app = buildServer({ dbPath, webDistDir, debugToolsEnabled });
 
 app
   .listen({ port, host })
   .then(() => {
     console.log(`[server] listening on http://${host}:${port}`);
     console.log(`[server] save database: ${dbPath}`);
+    console.log(`[server] debug tools (level/XP/gold menu): ${debugToolsEnabled ? "ENABLED (DEBUG_TOOLS=1)" : "disabled"}`);
     if (webDistDir) {
       const built = fs.existsSync(path.join(webDistDir, "index.html"));
       console.log(
