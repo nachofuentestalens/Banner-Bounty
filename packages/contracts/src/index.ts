@@ -507,6 +507,34 @@ export const NoPayloadMutationRequestSchema = z.object({
 });
 export type NoPayloadMutationRequest = z.infer<typeof NoPayloadMutationRequestSchema>;
 
+// Local debug tools (gated by apps/server's debugToolsEnabled; disabled by
+// default so these never reach normal play). Same mutation envelope,
+// precondition/revision/idempotency path as every other command — no
+// direct DB write bypasses authoritative validation.
+export const DebugSetHeroLevelRequestSchema = z.object({
+  ...MutationEnvelopeShape,
+  heroId: boundedString(64),
+  level: z.number().int().min(1).max(10),
+});
+export type DebugSetHeroLevelRequest = z.infer<typeof DebugSetHeroLevelRequestSchema>;
+
+export const DebugGrantHeroXpRequestSchema = z.object({
+  ...MutationEnvelopeShape,
+  heroId: boundedString(64),
+  xp: z.number().int().min(1).max(100000),
+});
+export type DebugGrantHeroXpRequest = z.infer<typeof DebugGrantHeroXpRequestSchema>;
+
+export const DebugGrantGoldRequestSchema = z.object({
+  ...MutationEnvelopeShape,
+  gold: z.number().int().min(1).max(1000000),
+});
+export type DebugGrantGoldRequest = z.infer<typeof DebugGrantGoldRequestSchema>;
+
+export interface DebugGoldResultDTO {
+  gold: number;
+}
+
 export const ArenaChallengeRequestSchema = z.object({
   ...MutationEnvelopeShape,
   snapshotId: boundedString(64),

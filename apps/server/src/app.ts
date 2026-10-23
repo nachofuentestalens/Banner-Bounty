@@ -16,6 +16,9 @@ import {
   ReforgeRequestSchema,
   DungeonStartRequestSchema,
   AreaSelectRequestSchema,
+  DebugSetHeroLevelRequestSchema,
+  DebugGrantHeroXpRequestSchema,
+  DebugGrantGoldRequestSchema,
   type Account,
 } from "@banner-and-bounty/contracts";
 import { MAX_BODY_BYTES } from "@banner-and-bounty/contracts";
@@ -39,6 +42,7 @@ import { craftItem, reforgeItem } from "./services/craftingService.js";
 import { startDungeon, settleDungeon, stopDungeon } from "./services/dungeonService.js";
 import { settleExpedition, startExpedition, stopExpedition } from "./services/expeditionService.js";
 import { challengeBoss } from "./services/bossService.js";
+import { debugGrantGold, debugGrantHeroXp, debugSetHeroLevel } from "./services/debugService.js";
 import { registerStaticClient } from "./http/staticClient.js";
 import { SESSION_COOKIE_NAME, parseCookies, serializeSessionCookie, serializeClearedSessionCookie } from "./http/cookies.js";
 
@@ -48,6 +52,8 @@ export interface BuildServerOptions {
   clock?: Clock;
   /** Built apps/web dist directory to serve; omitted in tests and `npm run dev` (Vite serves the UI). */
   webDistDir?: string | undefined;
+  /** Local debug menu (level/XP/gold); off by default so it never reaches normal play. */
+  debugToolsEnabled?: boolean;
 }
 
 declare module "fastify" {
@@ -126,6 +132,36 @@ export function buildServer(options: BuildServerOptions = {}): FastifyInstance {
     ok: true,
     data: { status: "ok", schemaVersion: currentSchemaVersion(db) },
   }));
+
+  const debugToolsEnabled = options.debugToolsEnabled ?? false;
+
+  // Always available so the client can hide its debug panel without probing
+  // a mutation route; returns only a boolean, never game state.
+  app.get("/debug/enabled", async () => ({ ok: true, data: { enabled: debugToolsEnabled } }));
+
+  if (debugToolsEnabled) {
+    // Local debug menu (level/XP/gold) for manual testing. Gated off by
+    // default (config.ts DEBUG_TOOLS=1) so it never appears for normal play;
+    // every route below goes through runMutation, the same
+    // precondition/revision/idempotency path as every other command.
+    app.post("/debug/hero/level", async (request) => {
+      const accountId = requireSession(request);
+      const { result, revision } = debugSetHeroLevel(db, accountId, DebugSetHeroLevelRequestSchema.parse(request.body));
+      return { ok: true, data: result, revision };
+    });
+
+    app.post("/debug/hero/xp", async (request) => {
+      const accountId = requireSession(request);
+      const { result, revision } = debugGrantHeroXp(db, accountId, DebugGrantHeroXpRequestSchema.parse(request.body));
+      return { ok: true, data: result, revision };
+    });
+
+    app.post("/debug/gold", async (request) => {
+      const accountId = requireSession(request);
+      const { result, revision } = debugGrantGold(db, accountId, DebugGrantGoldRequestSchema.parse(request.body));
+      return { ok: true, data: result, revision };
+    });
+  }
 
   app.post("/dev/session/select", async (request, reply) => {
     const body = SelectSessionRequestSchema.parse(request.body);
