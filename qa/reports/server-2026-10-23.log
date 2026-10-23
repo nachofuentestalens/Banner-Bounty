@@ -1,0 +1,7 @@
+
+> banner-and-bounty@0.1.0 start
+> node apps/server/dist/main.js
+
+[server] listening on http://127.0.0.1:3100
+[server] save database: data/playtest.sqlite
+[server] serving built client from C:\Users\user\AppData\Local\AgentDashboard\worktrees\830c996b-a622-400e-8571-6f785ad0897a\apps\web\dist at http://127.0.0.1:3100/
