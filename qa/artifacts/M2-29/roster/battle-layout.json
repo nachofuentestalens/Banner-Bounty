@@ -1,0 +1,1304 @@
+{
+  "report": {
+    "reportId": "56d7d502-af44-4942-bebd-59394cbfa8d6",
+    "kind": "boss",
+    "seed": "1f7b71dc",
+    "rulesVersion": 1,
+    "createdAt": "2026-10-23T18:00:00.000Z",
+    "participantsSnapshot": {
+      "units": [
+        {
+          "unitId": "00000000-0000-4000-8000-0000000a0001",
+          "side": "A",
+          "kind": "hero",
+          "name": "Vanguard",
+          "classId": "class_vanguard",
+          "secondaryClassId": "class_cleric",
+          "slotIndex": 0,
+          "maxHp": 102
+        },
+        {
+          "unitId": "00000000-0000-4000-8000-0000000a0002",
+          "side": "A",
+          "kind": "hero",
+          "name": "Ranger",
+          "classId": "class_ranger",
+          "secondaryClassId": null,
+          "slotIndex": 1,
+          "maxHp": 68
+        },
+        {
+          "unitId": "00000000-0000-4000-8000-0000000a0003",
+          "side": "A",
+          "kind": "hero",
+          "name": "Arcanist",
+          "classId": "class_arcanist",
+          "secondaryClassId": null,
+          "slotIndex": 2,
+          "maxHp": 64
+        },
+        {
+          "unitId": "392ec1be-65ab-405b-ad83-8ae79e1086ec",
+          "side": "A",
+          "kind": "hero",
+          "name": "Cleric",
+          "classId": "class_cleric",
+          "secondaryClassId": null,
+          "slotIndex": 3,
+          "maxHp": 34
+        },
+        {
+          "unitId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+          "side": "A",
+          "kind": "hero",
+          "name": "Herald",
+          "classId": "class_herald",
+          "secondaryClassId": null,
+          "slotIndex": 4,
+          "maxHp": 30
+        },
+        {
+          "unitId": "boss_tollkeeper#0",
+          "side": "B",
+          "kind": "enemy",
+          "name": "The Tollkeeper",
+          "classId": null,
+          "secondaryClassId": null,
+          "slotIndex": 0,
+          "maxHp": 220
+        }
+      ]
+    },
+    "events": [
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                60,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                83,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 27
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                27,
+                8
+              ],
+              "value": 23
+            }
+          ],
+          "damage": 23,
+          "hpBefore": 220,
+          "hpLoss": 23
+        },
+        "round": 1,
+        "type": "aimed_shot",
+        "sourceId": "00000000-0000-4000-8000-0000000a0002",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -23,
+        "hpAfter": 197,
+        "skillId": "aimed_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "war_hymn",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 0,
+        "hpAfter": 102,
+        "skillId": "war_hymn",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_haste",
+          "duration": 3,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "war_hymn",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "00000000-0000-4000-8000-0000000a0002",
+        "amount": 0,
+        "hpAfter": 68,
+        "skillId": "war_hymn",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_haste",
+          "duration": 3,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "war_hymn",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "00000000-0000-4000-8000-0000000a0003",
+        "amount": 0,
+        "hpAfter": 64,
+        "skillId": "war_hymn",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_haste",
+          "duration": 3,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "war_hymn",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "392ec1be-65ab-405b-ad83-8ae79e1086ec",
+        "amount": 0,
+        "hpAfter": 34,
+        "skillId": "war_hymn",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_haste",
+          "duration": 3,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "war_hymn",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "amount": 0,
+        "hpAfter": 30,
+        "skillId": "war_hymn",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_haste",
+          "duration": 3,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "bulwark_call",
+        "sourceId": "00000000-0000-4000-8000-0000000a0001",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 0,
+        "hpAfter": 102,
+        "skillId": "bulwark_call",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_taunt",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "bulwark_call",
+        "sourceId": "00000000-0000-4000-8000-0000000a0001",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 0,
+        "hpAfter": 102,
+        "skillId": "bulwark_call",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_fortify",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                4,
+                5
+              ],
+              "value": 1
+            }
+          ],
+          "damage": 0,
+          "hpBefore": 197,
+          "hpLoss": 0
+        },
+        "round": 1,
+        "type": "firebolt",
+        "sourceId": "00000000-0000-4000-8000-0000000a0003",
+        "targetId": "boss_tollkeeper#0",
+        "amount": 0,
+        "hpAfter": 197,
+        "skillId": "firebolt",
+        "crit": false,
+        "dodged": true,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "mending_light",
+        "sourceId": "392ec1be-65ab-405b-ad83-8ae79e1086ec",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 0,
+        "hpAfter": 102,
+        "skillId": "mending_light",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                14,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                43,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 14
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 20
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                20,
+                130,
+                100
+              ],
+              "value": 26
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                14,
+                26
+              ],
+              "value": 1
+            }
+          ],
+          "damage": 1,
+          "hpBefore": 102,
+          "hpLoss": 1
+        },
+        "round": 1,
+        "type": "toll_strike",
+        "sourceId": "boss_tollkeeper#0",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": -1,
+        "hpAfter": 101,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                95,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                71,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 27
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                27,
+                8
+              ],
+              "value": 23
+            }
+          ],
+          "damage": 23,
+          "hpBefore": 197,
+          "hpLoss": 23
+        },
+        "round": 2,
+        "type": "quick_shot",
+        "sourceId": "00000000-0000-4000-8000-0000000a0002",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -23,
+        "hpAfter": 174,
+        "skillId": "quick_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                18,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                16,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 6
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                6,
+                8
+              ],
+              "value": 2
+            }
+          ],
+          "damage": 2,
+          "hpBefore": 174,
+          "hpLoss": 2
+        },
+        "round": 2,
+        "type": "rally_strike",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -2,
+        "hpAfter": 172,
+        "skillId": "rally_strike",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 2,
+        "type": "mending_light",
+        "sourceId": "00000000-0000-4000-8000-0000000a0001",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 1,
+        "hpAfter": 102,
+        "skillId": "mending_light",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                21,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                7,
+                10
+              ],
+              "value": 1
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 28
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                28,
+                8
+              ],
+              "value": 24
+            },
+            {
+              "kind": "overload",
+              "inputs": [
+                24,
+                11,
+                10
+              ],
+              "value": 26
+            },
+            {
+              "kind": "critical",
+              "inputs": [
+                26,
+                3,
+                2
+              ],
+              "value": 39
+            }
+          ],
+          "damage": 39,
+          "hpBefore": 172,
+          "hpLoss": 39
+        },
+        "round": 2,
+        "type": "firebolt",
+        "sourceId": "00000000-0000-4000-8000-0000000a0003",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -39,
+        "hpAfter": 133,
+        "skillId": "firebolt",
+        "crit": true,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_burn",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                67,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                64,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 7
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                7,
+                8
+              ],
+              "value": 3
+            }
+          ],
+          "damage": 3,
+          "hpBefore": 133,
+          "hpLoss": 3
+        },
+        "round": 2,
+        "type": "smite",
+        "sourceId": "392ec1be-65ab-405b-ad83-8ae79e1086ec",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -3,
+        "hpAfter": 130,
+        "skillId": "smite",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                91,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                41,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 14
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 20
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                20,
+                130,
+                100
+              ],
+              "value": 26
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                14,
+                26
+              ],
+              "value": 1
+            }
+          ],
+          "damage": 1,
+          "hpBefore": 102,
+          "hpLoss": 1
+        },
+        "round": 2,
+        "type": "toll_strike",
+        "sourceId": "boss_tollkeeper#0",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": -1,
+        "hpAfter": 101,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "burn",
+              "inputs": [
+                1,
+                28
+              ],
+              "value": 9
+            }
+          ],
+          "damage": 9,
+          "hpBefore": 130,
+          "hpLoss": 9
+        },
+        "round": 2,
+        "type": "burn_tick",
+        "sourceId": null,
+        "targetId": "boss_tollkeeper#0",
+        "amount": -9,
+        "hpAfter": 121,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 2,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 0,
+        "hpAfter": 101,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_fortify",
+        "death": false
+      },
+      {
+        "round": 2,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 0,
+        "hpAfter": 101,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_taunt",
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                82,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                15,
+                25
+              ],
+              "value": 1
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 27
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                27,
+                8
+              ],
+              "value": 23
+            },
+            {
+              "kind": "critical",
+              "inputs": [
+                23,
+                3,
+                2
+              ],
+              "value": 34
+            }
+          ],
+          "damage": 34,
+          "hpBefore": 121,
+          "hpLoss": 34
+        },
+        "round": 3,
+        "type": "aimed_shot",
+        "sourceId": "00000000-0000-4000-8000-0000000a0002",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -34,
+        "hpAfter": 87,
+        "skillId": "aimed_shot",
+        "crit": true,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 3,
+        "type": "war_hymn",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 0,
+        "hpAfter": 101,
+        "skillId": "war_hymn",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_haste",
+          "duration": 3,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 3,
+        "type": "war_hymn",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "00000000-0000-4000-8000-0000000a0002",
+        "amount": 0,
+        "hpAfter": 68,
+        "skillId": "war_hymn",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_haste",
+          "duration": 3,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 3,
+        "type": "war_hymn",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "00000000-0000-4000-8000-0000000a0003",
+        "amount": 0,
+        "hpAfter": 64,
+        "skillId": "war_hymn",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_haste",
+          "duration": 3,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 3,
+        "type": "war_hymn",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "392ec1be-65ab-405b-ad83-8ae79e1086ec",
+        "amount": 0,
+        "hpAfter": 34,
+        "skillId": "war_hymn",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_haste",
+          "duration": 3,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 3,
+        "type": "war_hymn",
+        "sourceId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "targetId": "1f1a8d0c-5e10-469e-bd23-61dbcedff92d",
+        "amount": 0,
+        "hpAfter": 30,
+        "skillId": "war_hymn",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_haste",
+          "duration": 3,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                13,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                0,
+                10
+              ],
+              "value": 1
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 20
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                20,
+                8
+              ],
+              "value": 16
+            },
+            {
+              "kind": "critical",
+              "inputs": [
+                16,
+                3,
+                2
+              ],
+              "value": 24
+            }
+          ],
+          "damage": 24,
+          "hpBefore": 87,
+          "hpLoss": 24
+        },
+        "round": 3,
+        "type": "strike",
+        "sourceId": "00000000-0000-4000-8000-0000000a0001",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -24,
+        "hpAfter": 63,
+        "skillId": "strike",
+        "crit": true,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                32,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                90,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 28
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                28,
+                8
+              ],
+              "value": 24
+            },
+            {
+              "kind": "overload",
+              "inputs": [
+                24,
+                11,
+                10
+              ],
+              "value": 26
+            }
+          ],
+          "damage": 26,
+          "hpBefore": 63,
+          "hpLoss": 26
+        },
+        "round": 3,
+        "type": "firebolt",
+        "sourceId": "00000000-0000-4000-8000-0000000a0003",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -26,
+        "hpAfter": 37,
+        "skillId": "firebolt",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_burn",
+          "duration": 2,
+          "stacks": 2
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 3,
+        "type": "mending_light",
+        "sourceId": "392ec1be-65ab-405b-ad83-8ae79e1086ec",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 1,
+        "hpAfter": 102,
+        "skillId": "mending_light",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                98,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                67,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 14
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 20
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                14,
+                20
+              ],
+              "value": 4
+            },
+            {
+              "kind": "heavy_strike",
+              "inputs": [
+                4,
+                3,
+                2
+              ],
+              "value": 6
+            }
+          ],
+          "damage": 6,
+          "hpBefore": 102,
+          "hpLoss": 6
+        },
+        "round": 3,
+        "type": "toll_smash",
+        "sourceId": "boss_tollkeeper#0",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": -6,
+        "hpAfter": 96,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "burn",
+              "inputs": [
+                2,
+                28
+              ],
+              "value": 18
+            }
+          ],
+          "damage": 18,
+          "hpBefore": 37,
+          "hpLoss": 18
+        },
+        "round": 3,
+        "type": "burn_tick",
+        "sourceId": null,
+        "targetId": "boss_tollkeeper#0",
+        "amount": -18,
+        "hpAfter": 19,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                98,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                14,
+                25
+              ],
+              "value": 1
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 27
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                27,
+                8
+              ],
+              "value": 23
+            },
+            {
+              "kind": "critical",
+              "inputs": [
+                23,
+                3,
+                2
+              ],
+              "value": 34
+            }
+          ],
+          "damage": 34,
+          "hpBefore": 19,
+          "hpLoss": 19
+        },
+        "round": 4,
+        "type": "quick_shot",
+        "sourceId": "00000000-0000-4000-8000-0000000a0002",
+        "targetId": "boss_tollkeeper#0",
+        "amount": -19,
+        "hpAfter": 0,
+        "skillId": "quick_shot",
+        "crit": true,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": true
+      },
+      {
+        "round": 4,
+        "type": "bulwark_call",
+        "sourceId": "00000000-0000-4000-8000-0000000a0001",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 0,
+        "hpAfter": 96,
+        "skillId": "bulwark_call",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_taunt",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 4,
+        "type": "bulwark_call",
+        "sourceId": "00000000-0000-4000-8000-0000000a0001",
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 0,
+        "hpAfter": 96,
+        "skillId": "bulwark_call",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_fortify",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 4,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "00000000-0000-4000-8000-0000000a0001",
+        "amount": 0,
+        "hpAfter": 96,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_weaken",
+        "death": false
+      },
+      {
+        "round": 4,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "boss_tollkeeper#0",
+        "amount": 0,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_burn",
+        "death": false
+      }
+    ],
+    "result": {
+      "outcome": "win",
+      "rounds": 4,
+      "finalHp": {
+        "00000000-0000-4000-8000-0000000a0001": 96,
+        "00000000-0000-4000-8000-0000000a0002": 68,
+        "00000000-0000-4000-8000-0000000a0003": 64,
+        "392ec1be-65ab-405b-ad83-8ae79e1086ec": 34,
+        "1f1a8d0c-5e10-469e-bd23-61dbcedff92d": 30,
+        "boss_tollkeeper#0": 0
+      }
+    }
+  },
+  "layout": [
+    {
+      "text": "Vanguard (Vanguard / Cleric)Ready102 / 102 HP",
+      "x": 41,
+      "y": 164.53125
+    },
+    {
+      "text": "Ranger (Ranger)Ready68 / 68 HP",
+      "x": 41,
+      "y": 300.703125
+    },
+    {
+      "text": "Arcanist (Arcanist)Ready64 / 64 HP",
+      "x": 41,
+      "y": 436.875
+    },
+    {
+      "text": "Cleric (Cleric)Ready34 / 34 HP",
+      "x": 41,
+      "y": 573.046875
+    },
+    {
+      "text": "Herald (Herald)Ready30 / 30 HP",
+      "x": 41,
+      "y": 709.21875
+    }
+  ]
+}
