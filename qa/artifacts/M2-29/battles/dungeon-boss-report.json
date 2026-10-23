@@ -1,0 +1,1269 @@
+{
+  "reportId": "44834808-737b-4967-b566-b6583e09e5db",
+  "kind": "dungeon_boss",
+  "participantsSnapshot": {
+    "units": [
+      {
+        "unitId": "00000000-0000-4000-8000-0000000a0001",
+        "side": "A",
+        "kind": "hero",
+        "name": "Vanguard",
+        "classId": "class_vanguard",
+        "secondaryClassId": "class_cleric",
+        "slotIndex": 0,
+        "maxHp": 102
+      },
+      {
+        "unitId": "00000000-0000-4000-8000-0000000a0002",
+        "side": "A",
+        "kind": "hero",
+        "name": "Ranger",
+        "classId": "class_ranger",
+        "secondaryClassId": null,
+        "slotIndex": 1,
+        "maxHp": 68
+      },
+      {
+        "unitId": "00000000-0000-4000-8000-0000000a0003",
+        "side": "A",
+        "kind": "hero",
+        "name": "Arcanist",
+        "classId": "class_arcanist",
+        "secondaryClassId": null,
+        "slotIndex": 2,
+        "maxHp": 64
+      },
+      {
+        "unitId": "boss_drowned_warden#0",
+        "side": "B",
+        "kind": "enemy",
+        "name": "The Drowned Warden",
+        "classId": null,
+        "secondaryClassId": null,
+        "slotIndex": 0,
+        "maxHp": 300
+      }
+    ]
+  },
+  "seed": "",
+  "rulesVersion": 1,
+  "events": [
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              76,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              3,
+              25
+            ],
+            "value": 1
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 27
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              27,
+              9
+            ],
+            "value": 23
+          },
+          {
+            "kind": "critical",
+            "inputs": [
+              23,
+              3,
+              2
+            ],
+            "value": 34
+          }
+        ],
+        "damage": 34,
+        "hpBefore": 300,
+        "hpLoss": 34
+      },
+      "round": 1,
+      "type": "aimed_shot",
+      "sourceId": "00000000-0000-4000-8000-0000000a0002",
+      "targetId": "boss_drowned_warden#0",
+      "amount": -34,
+      "hpAfter": 266,
+      "skillId": "aimed_shot",
+      "crit": true,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 1,
+      "type": "mending_light",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 102,
+      "skillId": "mending_light",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              5,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              90,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 16
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 20
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              16,
+              20
+            ],
+            "value": 6
+          }
+        ],
+        "damage": 6,
+        "hpBefore": 102,
+        "hpLoss": 6
+      },
+      "round": 1,
+      "type": "wardens_grasp",
+      "sourceId": "boss_drowned_warden#0",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": -6,
+      "hpAfter": 96,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              33,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              90,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 28
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              28,
+              9
+            ],
+            "value": 24
+          },
+          {
+            "kind": "overload",
+            "inputs": [
+              24,
+              11,
+              10
+            ],
+            "value": 26
+          }
+        ],
+        "damage": 26,
+        "hpBefore": 266,
+        "hpLoss": 26
+      },
+      "round": 1,
+      "type": "firebolt",
+      "sourceId": "00000000-0000-4000-8000-0000000a0003",
+      "targetId": "boss_drowned_warden#0",
+      "amount": -26,
+      "hpAfter": 240,
+      "skillId": "firebolt",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "burn",
+            "inputs": [
+              1,
+              28
+            ],
+            "value": 9
+          }
+        ],
+        "damage": 9,
+        "hpBefore": 240,
+        "hpLoss": 9
+      },
+      "round": 1,
+      "type": "burn_tick",
+      "sourceId": null,
+      "targetId": "boss_drowned_warden#0",
+      "amount": -9,
+      "hpAfter": 231,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              50,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              93,
+              25
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 27
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              27,
+              9
+            ],
+            "value": 23
+          }
+        ],
+        "damage": 23,
+        "hpBefore": 231,
+        "hpLoss": 23
+      },
+      "round": 2,
+      "type": "quick_shot",
+      "sourceId": "00000000-0000-4000-8000-0000000a0002",
+      "targetId": "boss_drowned_warden#0",
+      "amount": -23,
+      "hpAfter": 208,
+      "skillId": "quick_shot",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 2,
+      "type": "bulwark_call",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 96,
+      "skillId": "bulwark_call",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_taunt",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 2,
+      "type": "bulwark_call",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 96,
+      "skillId": "bulwark_call",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_fortify",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              87,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              98,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 16
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 20
+          },
+          {
+            "kind": "fortify",
+            "inputs": [
+              20,
+              130,
+              100
+            ],
+            "value": 26
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              16,
+              26
+            ],
+            "value": 3
+          },
+          {
+            "kind": "heavy_strike",
+            "inputs": [
+              3,
+              3,
+              2
+            ],
+            "value": 4
+          }
+        ],
+        "damage": 4,
+        "hpBefore": 96,
+        "hpLoss": 4
+      },
+      "round": 2,
+      "type": "crushing_current",
+      "sourceId": "boss_drowned_warden#0",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": -4,
+      "hpAfter": 92,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_weaken",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              90,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              7,
+              10
+            ],
+            "value": 1
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 28
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              28,
+              9
+            ],
+            "value": 24
+          },
+          {
+            "kind": "overload",
+            "inputs": [
+              24,
+              11,
+              10
+            ],
+            "value": 26
+          },
+          {
+            "kind": "critical",
+            "inputs": [
+              26,
+              3,
+              2
+            ],
+            "value": 39
+          }
+        ],
+        "damage": 39,
+        "hpBefore": 208,
+        "hpLoss": 39
+      },
+      "round": 2,
+      "type": "firebolt",
+      "sourceId": "00000000-0000-4000-8000-0000000a0003",
+      "targetId": "boss_drowned_warden#0",
+      "amount": -39,
+      "hpAfter": 169,
+      "skillId": "firebolt",
+      "crit": true,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 2
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "burn",
+            "inputs": [
+              2,
+              28
+            ],
+            "value": 18
+          }
+        ],
+        "damage": 18,
+        "hpBefore": 169,
+        "hpLoss": 18
+      },
+      "round": 2,
+      "type": "burn_tick",
+      "sourceId": null,
+      "targetId": "boss_drowned_warden#0",
+      "amount": -18,
+      "hpAfter": 151,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              65,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              95,
+              25
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 27
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              27,
+              9
+            ],
+            "value": 23
+          }
+        ],
+        "damage": 23,
+        "hpBefore": 151,
+        "hpLoss": 23
+      },
+      "round": 3,
+      "type": "aimed_shot",
+      "sourceId": "00000000-0000-4000-8000-0000000a0002",
+      "targetId": "boss_drowned_warden#0",
+      "amount": -23,
+      "hpAfter": 128,
+      "skillId": "aimed_shot",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 3,
+      "type": "mending_light",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 10,
+      "hpAfter": 102,
+      "skillId": "mending_light",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              95,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              13,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 16
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 20
+          },
+          {
+            "kind": "fortify",
+            "inputs": [
+              20,
+              130,
+              100
+            ],
+            "value": 26
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              16,
+              26
+            ],
+            "value": 3
+          }
+        ],
+        "damage": 3,
+        "hpBefore": 102,
+        "hpLoss": 3
+      },
+      "round": 3,
+      "type": "wardens_grasp",
+      "sourceId": "boss_drowned_warden#0",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": -3,
+      "hpAfter": 99,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              68,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              13,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 28
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              28,
+              9
+            ],
+            "value": 24
+          },
+          {
+            "kind": "overload",
+            "inputs": [
+              24,
+              11,
+              10
+            ],
+            "value": 26
+          }
+        ],
+        "damage": 26,
+        "hpBefore": 128,
+        "hpLoss": 26
+      },
+      "round": 3,
+      "type": "firebolt",
+      "sourceId": "00000000-0000-4000-8000-0000000a0003",
+      "targetId": "boss_drowned_warden#0",
+      "amount": -26,
+      "hpAfter": 102,
+      "skillId": "firebolt",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 3
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "burn",
+            "inputs": [
+              3,
+              28
+            ],
+            "value": 27
+          }
+        ],
+        "damage": 27,
+        "hpBefore": 102,
+        "hpLoss": 27
+      },
+      "round": 3,
+      "type": "burn_tick",
+      "sourceId": null,
+      "targetId": "boss_drowned_warden#0",
+      "amount": -27,
+      "hpAfter": 75,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 3,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 99,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_weaken",
+      "death": false
+    },
+    {
+      "round": 3,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 99,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_fortify",
+      "death": false
+    },
+    {
+      "round": 3,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 99,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_taunt",
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              11,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              82,
+              25
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 27
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              27,
+              9
+            ],
+            "value": 23
+          }
+        ],
+        "damage": 23,
+        "hpBefore": 75,
+        "hpLoss": 23
+      },
+      "round": 4,
+      "type": "quick_shot",
+      "sourceId": "00000000-0000-4000-8000-0000000a0002",
+      "targetId": "boss_drowned_warden#0",
+      "amount": -23,
+      "hpAfter": 52,
+      "skillId": "quick_shot",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              83,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              32,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 20
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              20,
+              9
+            ],
+            "value": 16
+          }
+        ],
+        "damage": 16,
+        "hpBefore": 52,
+        "hpLoss": 16
+      },
+      "round": 4,
+      "type": "strike",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "boss_drowned_warden#0",
+      "amount": -16,
+      "hpAfter": 36,
+      "skillId": "strike",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              40,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              51,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 16
+          },
+          {
+            "kind": "tidal_surge",
+            "inputs": [
+              16,
+              7,
+              10
+            ],
+            "value": 11
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 20
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              11,
+              20
+            ],
+            "value": 1
+          }
+        ],
+        "damage": 1,
+        "hpBefore": 99,
+        "hpLoss": 1
+      },
+      "round": 4,
+      "type": "tidal_surge",
+      "sourceId": "boss_drowned_warden#0",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": -1,
+      "hpAfter": 98,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_weaken",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              48,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              61,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 16
+          },
+          {
+            "kind": "tidal_surge",
+            "inputs": [
+              16,
+              7,
+              10
+            ],
+            "value": 11
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 13
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              11,
+              13
+            ],
+            "value": 5
+          }
+        ],
+        "damage": 5,
+        "hpBefore": 68,
+        "hpLoss": 5
+      },
+      "round": 4,
+      "type": "tidal_surge",
+      "sourceId": "boss_drowned_warden#0",
+      "targetId": "00000000-0000-4000-8000-0000000a0002",
+      "amount": -5,
+      "hpAfter": 63,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_weaken",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              28,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              15,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 16
+          },
+          {
+            "kind": "tidal_surge",
+            "inputs": [
+              16,
+              7,
+              10
+            ],
+            "value": 11
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 12
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              11,
+              12
+            ],
+            "value": 5
+          }
+        ],
+        "damage": 5,
+        "hpBefore": 64,
+        "hpLoss": 5
+      },
+      "round": 4,
+      "type": "tidal_surge",
+      "sourceId": "boss_drowned_warden#0",
+      "targetId": "00000000-0000-4000-8000-0000000a0003",
+      "amount": -5,
+      "hpAfter": 59,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_weaken",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              42,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              18,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 28
+          },
+          {
+            "kind": "weaken",
+            "inputs": [
+              28,
+              70,
+              100
+            ],
+            "value": 19
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              19,
+              9
+            ],
+            "value": 15
+          },
+          {
+            "kind": "overload",
+            "inputs": [
+              15,
+              11,
+              10
+            ],
+            "value": 16
+          }
+        ],
+        "damage": 16,
+        "hpBefore": 36,
+        "hpLoss": 16
+      },
+      "round": 4,
+      "type": "firebolt",
+      "sourceId": "00000000-0000-4000-8000-0000000a0003",
+      "targetId": "boss_drowned_warden#0",
+      "amount": -16,
+      "hpAfter": 20,
+      "skillId": "firebolt",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "burn",
+            "inputs": [
+              3,
+              28
+            ],
+            "value": 27
+          }
+        ],
+        "damage": 27,
+        "hpBefore": 20,
+        "hpLoss": 20
+      },
+      "round": 4,
+      "type": "burn_tick",
+      "sourceId": null,
+      "targetId": "boss_drowned_warden#0",
+      "amount": -20,
+      "hpAfter": 0,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": true
+    },
+    {
+      "round": 4,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "boss_drowned_warden#0",
+      "amount": 0,
+      "hpAfter": 0,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_burn",
+      "death": false
+    }
+  ],
+  "result": {
+    "outcome": "win",
+    "rounds": 4,
+    "finalHp": {
+      "00000000-0000-4000-8000-0000000a0001": 98,
+      "00000000-0000-4000-8000-0000000a0002": 63,
+      "00000000-0000-4000-8000-0000000a0003": 59,
+      "boss_drowned_warden#0": 0
+    }
+  },
+  "createdAt": "2026-10-24T12:13:01.000Z"
+}

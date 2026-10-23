@@ -1,0 +1,710 @@
+{
+  "reportId": "e7b36d79-f4b1-4c30-abcf-bbe90ac3f2e8",
+  "kind": "dungeon_floor",
+  "participantsSnapshot": {
+    "units": [
+      {
+        "unitId": "00000000-0000-4000-8000-0000000a0001",
+        "side": "A",
+        "kind": "hero",
+        "name": "Vanguard",
+        "classId": "class_vanguard",
+        "secondaryClassId": "class_cleric",
+        "slotIndex": 0,
+        "maxHp": 102
+      },
+      {
+        "unitId": "00000000-0000-4000-8000-0000000a0002",
+        "side": "A",
+        "kind": "hero",
+        "name": "Ranger",
+        "classId": "class_ranger",
+        "secondaryClassId": null,
+        "slotIndex": 1,
+        "maxHp": 68
+      },
+      {
+        "unitId": "00000000-0000-4000-8000-0000000a0003",
+        "side": "A",
+        "kind": "hero",
+        "name": "Arcanist",
+        "classId": "class_arcanist",
+        "secondaryClassId": null,
+        "slotIndex": 2,
+        "maxHp": 64
+      },
+      {
+        "unitId": "enemy_depths_broodling#0",
+        "side": "B",
+        "kind": "enemy",
+        "name": "Depths Broodling",
+        "classId": null,
+        "secondaryClassId": null,
+        "slotIndex": 0,
+        "maxHp": 55
+      },
+      {
+        "unitId": "enemy_depths_broodling#1",
+        "side": "B",
+        "kind": "enemy",
+        "name": "Depths Broodling",
+        "classId": null,
+        "secondaryClassId": null,
+        "slotIndex": 1,
+        "maxHp": 55
+      }
+    ]
+  },
+  "seed": "",
+  "rulesVersion": 1,
+  "events": [
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              48,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              42,
+              25
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 27
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 5
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              27,
+              5
+            ],
+            "value": 25
+          }
+        ],
+        "damage": 25,
+        "hpBefore": 55,
+        "hpLoss": 25
+      },
+      "round": 1,
+      "type": "aimed_shot",
+      "sourceId": "00000000-0000-4000-8000-0000000a0002",
+      "targetId": "enemy_depths_broodling#0",
+      "amount": -25,
+      "hpAfter": 30,
+      "skillId": "aimed_shot",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              12,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              99,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 14
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 12
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              14,
+              12
+            ],
+            "value": 8
+          },
+          {
+            "kind": "brood_surge",
+            "inputs": [
+              8,
+              3,
+              2
+            ],
+            "value": 12
+          }
+        ],
+        "damage": 12,
+        "hpBefore": 64,
+        "hpLoss": 12
+      },
+      "round": 1,
+      "type": "brood_surge",
+      "sourceId": "enemy_depths_broodling#0",
+      "targetId": "00000000-0000-4000-8000-0000000a0003",
+      "amount": -12,
+      "hpAfter": 52,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              89,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              19,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 14
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 12
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              14,
+              12
+            ],
+            "value": 8
+          },
+          {
+            "kind": "brood_surge",
+            "inputs": [
+              8,
+              3,
+              2
+            ],
+            "value": 12
+          }
+        ],
+        "damage": 12,
+        "hpBefore": 52,
+        "hpLoss": 12
+      },
+      "round": 1,
+      "type": "brood_surge",
+      "sourceId": "enemy_depths_broodling#1",
+      "targetId": "00000000-0000-4000-8000-0000000a0003",
+      "amount": -12,
+      "hpAfter": 40,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 1,
+      "type": "mending_light",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0003",
+      "amount": 16,
+      "hpAfter": 56,
+      "skillId": "mending_light",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              83,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              47,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 28
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 5
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              28,
+              5
+            ],
+            "value": 26
+          },
+          {
+            "kind": "overload",
+            "inputs": [
+              26,
+              11,
+              10
+            ],
+            "value": 28
+          }
+        ],
+        "damage": 28,
+        "hpBefore": 30,
+        "hpLoss": 28
+      },
+      "round": 1,
+      "type": "firebolt",
+      "sourceId": "00000000-0000-4000-8000-0000000a0003",
+      "targetId": "enemy_depths_broodling#0",
+      "amount": -28,
+      "hpAfter": 2,
+      "skillId": "firebolt",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "burn",
+            "inputs": [
+              1,
+              28
+            ],
+            "value": 9
+          }
+        ],
+        "damage": 9,
+        "hpBefore": 2,
+        "hpLoss": 2
+      },
+      "round": 1,
+      "type": "burn_tick",
+      "sourceId": null,
+      "targetId": "enemy_depths_broodling#0",
+      "amount": -2,
+      "hpAfter": 0,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": true
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              3,
+              5
+            ],
+            "value": 1
+          }
+        ],
+        "damage": 0,
+        "hpBefore": 55,
+        "hpLoss": 0
+      },
+      "round": 2,
+      "type": "quick_shot",
+      "sourceId": "00000000-0000-4000-8000-0000000a0002",
+      "targetId": "enemy_depths_broodling#1",
+      "amount": 0,
+      "hpAfter": 55,
+      "skillId": "quick_shot",
+      "crit": false,
+      "dodged": true,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              76,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              24,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 14
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 12
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              14,
+              12
+            ],
+            "value": 8
+          }
+        ],
+        "damage": 8,
+        "hpBefore": 56,
+        "hpLoss": 8
+      },
+      "round": 2,
+      "type": "enemy_strike",
+      "sourceId": "enemy_depths_broodling#1",
+      "targetId": "00000000-0000-4000-8000-0000000a0003",
+      "amount": -8,
+      "hpAfter": 48,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 2,
+      "type": "bulwark_call",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 102,
+      "skillId": "bulwark_call",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_taunt",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 2,
+      "type": "bulwark_call",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 102,
+      "skillId": "bulwark_call",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_fortify",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              18,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              55,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 28
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 5
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              28,
+              5
+            ],
+            "value": 26
+          },
+          {
+            "kind": "overload",
+            "inputs": [
+              26,
+              11,
+              10
+            ],
+            "value": 28
+          }
+        ],
+        "damage": 28,
+        "hpBefore": 55,
+        "hpLoss": 28
+      },
+      "round": 2,
+      "type": "firebolt",
+      "sourceId": "00000000-0000-4000-8000-0000000a0003",
+      "targetId": "enemy_depths_broodling#1",
+      "amount": -28,
+      "hpAfter": 27,
+      "skillId": "firebolt",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "burn",
+            "inputs": [
+              1,
+              28
+            ],
+            "value": 9
+          }
+        ],
+        "damage": 9,
+        "hpBefore": 27,
+        "hpLoss": 9
+      },
+      "round": 2,
+      "type": "burn_tick",
+      "sourceId": null,
+      "targetId": "enemy_depths_broodling#1",
+      "amount": -9,
+      "hpAfter": 18,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 2,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "enemy_depths_broodling#0",
+      "amount": 0,
+      "hpAfter": 0,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_burn",
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              51,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              62,
+              25
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 27
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 5
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              27,
+              5
+            ],
+            "value": 25
+          }
+        ],
+        "damage": 25,
+        "hpBefore": 18,
+        "hpLoss": 18
+      },
+      "round": 3,
+      "type": "aimed_shot",
+      "sourceId": "00000000-0000-4000-8000-0000000a0002",
+      "targetId": "enemy_depths_broodling#1",
+      "amount": -18,
+      "hpAfter": 0,
+      "skillId": "aimed_shot",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": true
+    },
+    {
+      "round": 3,
+      "type": "mending_light",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0003",
+      "amount": 16,
+      "hpAfter": 64,
+      "skillId": "mending_light",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 3,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 102,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_fortify",
+      "death": false
+    },
+    {
+      "round": 3,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 102,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_taunt",
+      "death": false
+    },
+    {
+      "round": 3,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "enemy_depths_broodling#1",
+      "amount": 0,
+      "hpAfter": 0,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_burn",
+      "death": false
+    }
+  ],
+  "result": {
+    "outcome": "win",
+    "rounds": 3,
+    "finalHp": {
+      "00000000-0000-4000-8000-0000000a0001": 102,
+      "00000000-0000-4000-8000-0000000a0002": 68,
+      "00000000-0000-4000-8000-0000000a0003": 64,
+      "enemy_depths_broodling#0": 0,
+      "enemy_depths_broodling#1": 0
+    }
+  },
+  "createdAt": "2026-10-24T12:10:01.000Z"
+}

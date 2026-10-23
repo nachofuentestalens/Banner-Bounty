@@ -1,0 +1,66 @@
+[
+  {
+    "floor": 1,
+    "reportId": "64fef6b4-4b99-4250-8149-496018270cf1",
+    "result": "win",
+    "isBoss": false,
+    "rewards": {
+      "xp": 8,
+      "gold": 20,
+      "materials": {
+        "scrap": 2,
+        "sigil": 0,
+        "core": 0
+      },
+      "items": []
+    }
+  },
+  {
+    "floor": 2,
+    "reportId": "a96825ac-20ac-4c20-b8af-9dcaf57399bc",
+    "result": "win",
+    "isBoss": false,
+    "rewards": {
+      "xp": 8,
+      "gold": 20,
+      "materials": {
+        "scrap": 2,
+        "sigil": 0,
+        "core": 0
+      },
+      "items": []
+    }
+  },
+  {
+    "floor": 3,
+    "reportId": "e7b36d79-f4b1-4c30-abcf-bbe90ac3f2e8",
+    "result": "win",
+    "isBoss": false,
+    "rewards": {
+      "xp": 8,
+      "gold": 20,
+      "materials": {
+        "scrap": 2,
+        "sigil": 0,
+        "core": 0
+      },
+      "items": []
+    }
+  },
+  {
+    "floor": 4,
+    "reportId": "44834808-737b-4967-b566-b6583e09e5db",
+    "result": "win",
+    "isBoss": true,
+    "rewards": {
+      "xp": 16,
+      "gold": 49,
+      "materials": {
+        "scrap": 4,
+        "sigil": 2,
+        "core": 1
+      },
+      "items": []
+    }
+  }
+]

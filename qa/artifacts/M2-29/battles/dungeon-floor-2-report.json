@@ -1,0 +1,716 @@
+{
+  "reportId": "a96825ac-20ac-4c20-b8af-9dcaf57399bc",
+  "kind": "dungeon_floor",
+  "participantsSnapshot": {
+    "units": [
+      {
+        "unitId": "00000000-0000-4000-8000-0000000a0001",
+        "side": "A",
+        "kind": "hero",
+        "name": "Vanguard",
+        "classId": "class_vanguard",
+        "secondaryClassId": "class_cleric",
+        "slotIndex": 0,
+        "maxHp": 102
+      },
+      {
+        "unitId": "00000000-0000-4000-8000-0000000a0002",
+        "side": "A",
+        "kind": "hero",
+        "name": "Ranger",
+        "classId": "class_ranger",
+        "secondaryClassId": null,
+        "slotIndex": 1,
+        "maxHp": 68
+      },
+      {
+        "unitId": "00000000-0000-4000-8000-0000000a0003",
+        "side": "A",
+        "kind": "hero",
+        "name": "Arcanist",
+        "classId": "class_arcanist",
+        "secondaryClassId": null,
+        "slotIndex": 2,
+        "maxHp": 64
+      },
+      {
+        "unitId": "enemy_aqueduct_drowned#0",
+        "side": "B",
+        "kind": "enemy",
+        "name": "Drowned Warden-Thrall",
+        "classId": null,
+        "secondaryClassId": null,
+        "slotIndex": 0,
+        "maxHp": 65
+      },
+      {
+        "unitId": "enemy_aqueduct_husk#1",
+        "side": "B",
+        "kind": "enemy",
+        "name": "Aqueduct Husk",
+        "classId": null,
+        "secondaryClassId": null,
+        "slotIndex": 1,
+        "maxHp": 40
+      }
+    ]
+  },
+  "seed": "",
+  "rulesVersion": 1,
+  "events": [
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              96,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              81,
+              25
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 27
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 4
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              27,
+              4
+            ],
+            "value": 25
+          }
+        ],
+        "damage": 25,
+        "hpBefore": 40,
+        "hpLoss": 25
+      },
+      "round": 1,
+      "type": "aimed_shot",
+      "sourceId": "00000000-0000-4000-8000-0000000a0002",
+      "targetId": "enemy_aqueduct_husk#1",
+      "amount": -25,
+      "hpAfter": 15,
+      "skillId": "aimed_shot",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 1,
+      "type": "mending_light",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 102,
+      "skillId": "mending_light",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              62,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              76,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 20
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              9,
+              20
+            ],
+            "value": 1
+          }
+        ],
+        "damage": 1,
+        "hpBefore": 102,
+        "hpLoss": 1
+      },
+      "round": 1,
+      "type": "enemy_strike",
+      "sourceId": "enemy_aqueduct_husk#1",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": -1,
+      "hpAfter": 101,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              27,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              5,
+              10
+            ],
+            "value": 1
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 28
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 4
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              28,
+              4
+            ],
+            "value": 26
+          },
+          {
+            "kind": "overload",
+            "inputs": [
+              26,
+              11,
+              10
+            ],
+            "value": 28
+          },
+          {
+            "kind": "critical",
+            "inputs": [
+              28,
+              3,
+              2
+            ],
+            "value": 42
+          }
+        ],
+        "damage": 42,
+        "hpBefore": 15,
+        "hpLoss": 15
+      },
+      "round": 1,
+      "type": "firebolt",
+      "sourceId": "00000000-0000-4000-8000-0000000a0003",
+      "targetId": "enemy_aqueduct_husk#1",
+      "amount": -15,
+      "hpAfter": 0,
+      "skillId": "firebolt",
+      "crit": true,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": true
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              70,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              34,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 12
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 12
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              12,
+              12
+            ],
+            "value": 6
+          }
+        ],
+        "damage": 6,
+        "hpBefore": 64,
+        "hpLoss": 6
+      },
+      "round": 1,
+      "type": "enemy_strike",
+      "sourceId": "enemy_aqueduct_drowned#0",
+      "targetId": "00000000-0000-4000-8000-0000000a0003",
+      "amount": -6,
+      "hpAfter": 58,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              37,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              70,
+              25
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 27
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 6
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              27,
+              6
+            ],
+            "value": 24
+          }
+        ],
+        "damage": 24,
+        "hpBefore": 65,
+        "hpLoss": 24
+      },
+      "round": 2,
+      "type": "quick_shot",
+      "sourceId": "00000000-0000-4000-8000-0000000a0002",
+      "targetId": "enemy_aqueduct_drowned#0",
+      "amount": -24,
+      "hpAfter": 41,
+      "skillId": "quick_shot",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 2,
+      "type": "bulwark_call",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 101,
+      "skillId": "bulwark_call",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_taunt",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 2,
+      "type": "bulwark_call",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 101,
+      "skillId": "bulwark_call",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_fortify",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              20,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              62,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 28
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 6
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              28,
+              6
+            ],
+            "value": 25
+          },
+          {
+            "kind": "overload",
+            "inputs": [
+              25,
+              11,
+              10
+            ],
+            "value": 27
+          }
+        ],
+        "damage": 27,
+        "hpBefore": 41,
+        "hpLoss": 27
+      },
+      "round": 2,
+      "type": "firebolt",
+      "sourceId": "00000000-0000-4000-8000-0000000a0003",
+      "targetId": "enemy_aqueduct_drowned#0",
+      "amount": -27,
+      "hpAfter": 14,
+      "skillId": "firebolt",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              23,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              95,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 12
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 20
+          },
+          {
+            "kind": "fortify",
+            "inputs": [
+              20,
+              130,
+              100
+            ],
+            "value": 26
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              12,
+              26
+            ],
+            "value": 1
+          }
+        ],
+        "damage": 1,
+        "hpBefore": 101,
+        "hpLoss": 1
+      },
+      "round": 2,
+      "type": "enemy_strike",
+      "sourceId": "enemy_aqueduct_drowned#0",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": -1,
+      "hpAfter": 100,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "burn",
+            "inputs": [
+              1,
+              28
+            ],
+            "value": 9
+          }
+        ],
+        "damage": 9,
+        "hpBefore": 14,
+        "hpLoss": 9
+      },
+      "round": 2,
+      "type": "burn_tick",
+      "sourceId": null,
+      "targetId": "enemy_aqueduct_drowned#0",
+      "amount": -9,
+      "hpAfter": 5,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 2,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "enemy_aqueduct_husk#1",
+      "amount": 0,
+      "hpAfter": 0,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_burn",
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              66,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              86,
+              25
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 27
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 6
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              27,
+              6
+            ],
+            "value": 24
+          },
+          {
+            "kind": "execute",
+            "inputs": [
+              24,
+              3,
+              2
+            ],
+            "value": 36
+          }
+        ],
+        "damage": 36,
+        "hpBefore": 5,
+        "hpLoss": 5
+      },
+      "round": 3,
+      "type": "aimed_shot",
+      "sourceId": "00000000-0000-4000-8000-0000000a0002",
+      "targetId": "enemy_aqueduct_drowned#0",
+      "amount": -5,
+      "hpAfter": 0,
+      "skillId": "aimed_shot",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": true
+    },
+    {
+      "round": 3,
+      "type": "mending_light",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "00000000-0000-4000-8000-0000000a0003",
+      "amount": 6,
+      "hpAfter": 64,
+      "skillId": "mending_light",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "round": 3,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 100,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_fortify",
+      "death": false
+    },
+    {
+      "round": 3,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": 0,
+      "hpAfter": 100,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_taunt",
+      "death": false
+    },
+    {
+      "round": 3,
+      "type": "status_expire",
+      "sourceId": null,
+      "targetId": "enemy_aqueduct_drowned#0",
+      "amount": 0,
+      "hpAfter": 0,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": "status_burn",
+      "death": false
+    }
+  ],
+  "result": {
+    "outcome": "win",
+    "rounds": 3,
+    "finalHp": {
+      "00000000-0000-4000-8000-0000000a0001": 100,
+      "00000000-0000-4000-8000-0000000a0002": 68,
+      "00000000-0000-4000-8000-0000000a0003": 64,
+      "enemy_aqueduct_drowned#0": 0,
+      "enemy_aqueduct_husk#1": 0
+    }
+  },
+  "createdAt": "2026-10-24T12:07:01.000Z"
+}
