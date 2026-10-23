@@ -53,3 +53,50 @@ successful run is not the same as a passing review, and invalidated evidence mus
 behind a green status. A P0/P1 defect specific to M2 also includes: a battle view that cannot show
 what happened in a fight, or combat state that desyncs from a playback control (pause/step/speed/
 skip).
+
+## M3 candidate backlog (from 2026-10-22 owner feedback triage)
+
+Not scoped into M2; tracked here so M2-30's verdict/M3 plan picks them up. Two owner-reported gaps
+go deeper than UI polish and would rework pacing fundamentals the M1-04/M1-13 freezes and M2-22's
+"no real-time input" decision rely on:
+
+- **Cycle duration tied to actual fight length, watched close to real time.** Today a cycle is a
+  fixed ~1-minute abstract time unit (`economy/baseline.md`, `economy/tuning.md`) decoupled from
+  how long a fight actually takes to resolve, and nothing guarantees a fight is on-screen while it
+  runs. Binding cycle length to fight length touches the offline-progress cap math, the
+  reward-per-cycle tuning tables, and the simulation tooling that all assume a fixed cycle unit —
+  this is an architecture/economy rework, not a battle-view tweak, and should be spec'd against a
+  post-M2 baseline, not patched into the in-flight M2-26/M2-27 implementation. Feasibility spec
+  delivered (CTO, task `9fa4109a-92c5-4c03-85d7-406189c0f218`):
+  [design/studio/reports/cycle-duration-feasibility.md](../../design/studio/reports/cycle-duration-feasibility.md),
+  merged on `main` (commit `8391e56`).
+- **Mid-expedition skill loadout changes (effective next fight, not immediately).** Not in M2's
+  scope (`milestones/M2.md` scope item 3 is build-time loadout only). Needs a contract amendment
+  (how/where the deferred change is recorded against a running, deterministic expedition) before
+  any engine work, so it should follow M2-25/M2-26, not run alongside them. Spec delivered
+  (Systems Designer, task `f4491607-20b6-413e-b20c-bc0f026479fb`):
+  [design/game/m3-mid-expedition-loadout-change.md](../../design/game/m3-mid-expedition-loadout-change.md)
+  and [design/game/reports/m3-mid-expedition-loadout-change.md](../../design/game/reports/m3-mid-expedition-loadout-change.md),
+  merged on `main` (original commit `d240ee4`; integrated commit `c8ebd20`).
+
+Both specs and the Systems Designer's report are merged on `main`. The commit hashes above are
+confirmed in this branch's git history, and both task IDs match the corresponding report headers.
+
+Both remain real owner priorities, not rejected. The complete five-item disposition, including
+watchability as a separate acceptance concern, is in
+[the feedback triage report](reports/five-feedback-triage.md).
+
+### Five-feedback follow-through
+
+Keep existing M2 acceptance gates intact. Skill help and damage explanations support readable,
+consequential build choices; their existing Engineering task is approved, but the corresponding
+Design-owned interface/UI specification amendment is still needed (priority 7). Do not repeat the
+implementation or treat its approval as independent milestone QA.
+
+For M3 planning, prioritize reliable access to fights and deferred next-fight skill changes at 8,
+then variable fight-length cycle pacing at 7, subject to contracts and measured economy evidence.
+Watchability and cycle duration share a feasibility study but are distinct requirements: a visible
+replay does not prove real-time advancement, and shorter cycles do not guarantee accessible fights.
+The existing M2-30 verdict/M3 planning task owns scheduling; these are planning recommendations,
+not newly authorized implementation tasks. See the triage report for owners, prerequisites and
+observable acceptance targets. The unrelated debug menu is outside this five-item scope.
