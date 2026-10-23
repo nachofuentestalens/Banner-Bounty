@@ -2,7 +2,7 @@
 
 Task: `c5bd2700-b2bc-4995-8741-16f5521c9d7b` · Gameplay Programmer · 2026-10-22
 
-Result: **implementation evidence recorded; contract-freeze review unresolved**. Tooltips and authoritative damage breakdowns are implemented and verified as described below, but task acceptance is pending an owning-document amendment for `BattleEventDTO.damageBreakdown`. The phase-one notes below are retained as an audit trail. This is focused implementation evidence, not independent certification of the entire M2 milestone.
+Result: **implementation complete; integrated contract verified**. Tooltips and authoritative damage breakdowns are implemented and verified as described below. The CTO-owned amendment for `BattleEventDTO.damageBreakdown` is now integrated and matches the implementation; the final verification below closes the previously unresolved documentation gate. The phase-one notes below are retained as an audit trail. This is focused implementation evidence, not independent certification of the entire M2 milestone.
 
 ## Changes and decisions
 
@@ -137,3 +137,29 @@ Acceptance remains blocked: the starting worktree was clean, and the latest comm
 Commands/results: `git status --short` returned no changes; `git log -3 --oneline` confirmed checkpoint-only history; `rg -n 'damageBreakdown|DamageBreakdown|DamageStep|BattleEventDTO|8\.6' design/studio/contracts.md design/game/combat.md packages/contracts/src/index.ts` found the damage evidence definitions only in source; `Get-Content design/decisions.md -Tail 25` showed no applicable new decision; `git ls-files --error-unmatch design/game/combat.md design/game/classes.md design/game/narrative/copy.md design/studio/milestones/M2.md` passed; `git diff --stat 71ae95ff0a74946d02e80d8ca8820751e2af9db8` confirmed the cumulative 17-file scope. No command was refused. Earlier runtime results remain historical evidence.
 
 Next: dashboard integration of the existing CTO amendment into this isolated worktree, then comparison of documented DTO shape and combat semantics against implementation. Do not duplicate the prerequisite task or manually merge. Contract-freeze acceptance remains unresolved.
+
+
+## Final integrated-contract verification (2026-10-23, HEAD 2b0685c)
+
+Result: **complete for the assigned scope; ready for reviewer acceptance**. The approved baseline now includes CTO task `195f2cb0-d2b9-4998-97e7-f1a1860bbc50`'s dated decision in `design/studio/contracts.md`, its architecture note, and its evidence report. Earlier blocker entries above are historical and superseded by this verification.
+
+| Remaining acceptance check | Evidence/result |
+| --- | --- |
+| Integrated owning-document decision | PASS: `git show --stat --oneline HEAD` identifies the three integrated Leadership documents; contracts.md lines 445-466 record the originating task, compatibility and authoritative evidence semantics. |
+| Exact documented DTO | PASS: automated Node strict comparison matches every `DamageStep` and `DamageBreakdown` field, including readonly arrays, against both `packages/contracts/src/index.ts` and `apps/web/src/types.ts`; the optional readonly event property is present in all three. |
+| Combat semantics | PASS by source review: `resolveHit` records only evaluated stages and returns immediately on dodge; `pushEvent` preserves pre-survival resolved damage, captures prior HP, and records actual loss after Vital Surge/clamping as negative event amount; `tickStatuses` records Burn separately. These match the integrated decision. |
+| Document ownership and compatibility | PASS: combat.md section 8.6 expressly delegates exact TypeScript shapes while fixing the logical contract. This optional metadata addition satisfies that contract without changing combat rules; a separate Design amendment is unnecessary. `battlePresentation.ts` preserves evidence through event spreading, and `DamageDetails.tsx` formats recorded values with a legacy fallback. |
+| Prior implementation acceptance | The final acceptance table and runtime/browser evidence above remain applicable. This integration changes documentation only; no runtime code changed and no passing runtime checks were repeated. No new runtime verification is claimed. |
+
+Commands/results this run:
+
+- `git status --short`: clean initial worktree.
+- `git log -1 --oneline` and `git show --stat --oneline HEAD`: exit 0; baseline `2b0685c`, three CTO documentation files integrated.
+- `git ls-files --error-unmatch apps/web/src/components/BattleView.tsx apps/web/src/screens/Company.tsx apps/web/src/types.ts design/game/combat.md design/game/classes.md design/game/narrative/copy.md`: exit 0; all six required inputs tracked.
+- Bounded `rg`/`Get-Content` inspection of contracts, combat section 8.6, architecture, CTO report, latest owner decisions, engine evidence capture, server presentation and UI formatter: matched the semantics described above.
+- Node comparison via PowerShell here-string (`@' ... '@ | node`): exit 0, two PASS messages for the contract and web types. It extracts each named interface body, normalizes field separators/whitespace, uses `assert.deepEqual` against the document, and checks the optional readonly property explicitly.
+- `git diff --quiet HEAD -- apps packages scripts`: exit 0; no uncommitted runtime changes.
+- `git diff --stat c46a2d803445a21ba1020b1bc9788e380746faa5`: exit 0; inspected cumulative 17-file task scope covering tooltips, damage evidence, UI, tests, verification scripts and report.
+- `git diff --check`: exit 0 after this report update.
+
+Only this Engineering evidence report changed in this run. No command was refused. No unresolved issue remains for the assigned scope; legacy reports still cannot supply evidence that was never stored, and the earlier stated QA coverage limits still apply. Next: dashboard reviewer acceptance and automatic integration of this completed task. No duplicate prerequisite, manual merge, branch switch or other-department edit is needed.
