@@ -10,12 +10,13 @@ const LINKS: Array<{ screen: Screen; label: string }> = [
   { screen: "arena", label: COPY.nav_arena },
 ];
 
-export function NavBar({ current, onNavigate, onLogout, displayName }: { current: Screen; onNavigate: (screen: Screen) => void; onLogout: () => void; displayName: string }) {
+export function NavBar({ current, onNavigate, onLogout, displayName, showDebug }: { current: Screen; onNavigate: (screen: Screen) => void; onLogout: () => void; displayName: string; showDebug?: boolean }) {
+  const links = showDebug ? [...LINKS, { screen: "debug" as const, label: "Debug" }] : LINKS;
   return (
     <nav className="nav-bar" aria-label="Main">
       <span className="nav-account">{displayName}</span>
       <ul className="nav-links">
-        {LINKS.map((link) => (
+        {links.map((link) => (
           <li key={link.screen}>
             <button type="button" className={link.screen === current ? "nav-link nav-link-active" : "nav-link"} aria-current={link.screen === current ? "page" : undefined} onClick={() => onNavigate(link.screen)}>
               {link.label}
