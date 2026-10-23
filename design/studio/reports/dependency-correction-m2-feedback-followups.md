@@ -4,71 +4,81 @@ Date: 2026-10-23 · Owner: Producer · Task ID `08adcf41-a367-44dc-b87b-19437e61
 
 ## Scope
 
-Verify and, where a supported mechanism exists, correct `dependencyIds`/`requiredPaths` on three
-tasks flagged by Game Director triage of 2026-10-22 owner feedback (task
-`7a015776-cebb-4909-b98b-efe2461d8ed6`, "Triage 5 feedback items"):
+Verify and, where warranted, correct `dependencyIds`/`requiredPaths` on three tasks flagged by
+Game Director triage of 2026-10-22 owner feedback (task `7a015776-cebb-4909-b98b-efe2461d8ed6`,
+"Triage 5 feedback items"):
 
 1. `c5bd2700-b2bc-4995-8741-16f5521c9d7b` — Add skill hover tooltips + damage breakdown to battle/build UI
 2. `f4491607-20b6-413e-b20c-bc0f026479fb` — Spec: mid-expedition deferred skill loadout change (M3 candidate)
 3. `9fa4109a-92c5-4c03-85d7-406189c0f218` — Feasibility spec: bind expedition cycle duration to real fight length (M3 candidate)
 
-## Capability gap (confirmed)
+## Owner resolution (2026-10-22T20:15:28.673Z)
 
-`GET /api/tasks/:id` works for read-only verification. `scripts/dashboard.mjs` (lines 186-191) is
-the only code path that calls `PATCH /api/tasks/:id`, and it only ever sends `tokenBudget`,
-`toolBudget`, `autoCompact` (execution settings). No script or documented route supports editing a
-task's `dependencyIds` or `requiredPaths` after creation. There is no supported mechanism to edit
-either field on an existing task; this report records the verified correct/target state instead of
-issuing an unverified PATCH.
+The owner resolved this escalation directly: `c5bd2700` was corrected through the supported API
+(not a manual metadata edit), and the two merged specifications (`f4491607`, `9fa4109a`) were
+explicitly exempted from retroactive dependency changes. This report records the verified
+correct/target state consistent with that resolution. No further dependency edits, task reopenings,
+or escalation follow from it.
 
 ## Findings
 
-### 1. `c5bd2700` — already correct, left unchanged
+### 1. `c5bd2700` — corrected via the supported API; verified
 
-Live `GET` confirms `dependencyIds: ["ae4866f3-8c46-4142-bf70-c901d5d57d37"]` (the actual `[M2-27]`
-implementation task — "Wire M2 through the server and browser, including the full battle view",
-stage `approved`) and `requiredPaths` exactly matching the six paths requested in the original
-triage note. `ae4866f3`'s evidence report exists at `reports/engineering/M2-27.md` (tracked in this
-checkout), resolving the original note's concern that no M2-27 report could be found. No action
-taken, per instruction to leave this task unchanged.
+Live `GET /api/tasks/c5bd2700-b2bc-4995-8741-16f5521c9d7b` confirms:
 
-### 2 & 3. `f4491607` and `9fa4109a` — no dependency change warranted
+- `dependencyIds: ["ae4866f3-8c46-4142-bf70-c901d5d57d37"]` — the actual `[M2-27]` implementation
+  task ("Wire M2 through the server and browser, including the full battle view"), stage `approved`.
+  `ae4866f3`'s evidence report exists at `reports/engineering/M2-27.md` (tracked in this checkout),
+  resolving the original triage note's concern that no M2-27 report could be found.
+- `requiredPaths` matches exactly the six paths requested in the original triage note.
+
+Both fields were corrected through the dashboard's supported API, per the owner's resolution. No
+further action needed.
+
+### 2 & 3. `f4491607` and `9fa4109a` — exempted from retroactive dependency changes; no edit made
 
 Both are `approved`, `dependencyIds: []`. The original triage note proposed adding
 `dependencyIds: ["7a015776-cebb-4909-b98b-efe2461d8ed6"]` to both, reasoning that the "M3 candidate
 backlog" section of `design/studio/priorities.md` they were pointed at only existed on `7a015776`'s
-branch.
+branch. The owner's 2026-10-22T20:15:28.673Z resolution explicitly exempts these two already-merged
+specifications from retroactive dependency changes, so no edit is made here, independent of the
+analysis below (which confirms the exemption is also the technically correct outcome, not merely an
+administrative one):
 
-That premise no longer holds, and the proposed fix is wrong regardless:
-
-- `7a015776` is **not** a delivery prerequisite for either task — it is the originating triage
-  request's own task (also still `in_progress`, not approved, and its branch is not merged to
-  `main`: its own `baseCommit` `71ae95f` is not an ancestor of `HEAD`). Making an approved,
-  delivered task depend on an unapproved, unintegrated task would record a backwards and currently
-  false relationship, and both tasks are `approved` — editing their dependencies would mean
-  reopening already-accepted work, which this task was told not to do.
-- The actual deliverables are independently verified merged to `main` already: commit `c10e21c`
-  ("Correct merged M3 specification references", on `7a015776`'s own branch, not merged) confirms
-  `design/game/m3-mid-expedition-loadout-change.md` (+ its report) landed via integrated commit
-  `c8ebd20`, and `design/studio/reports/cycle-duration-feasibility.md` landed via commit `8391e56`.
-  `git merge-base --is-ancestor` confirms both `c8ebd20` and `8391e56` are ancestors of `HEAD`, and
-  both files exist in this worktree. Each task's own `requiredPaths`/deliverable path is therefore
-  already a committed input with no missing prerequisite.
-- `f4491607`'s and `9fa4109a`'s `baseCommit` (`9e740ff`) is itself an ancestor of `HEAD`, so their
-  own execution baseline is integrated.
+- `7a015776` is the originating triage task itself (`in_progress`, not approved, not merged to
+  `main`). Making either approved, delivered spec depend on an unapproved, unintegrated task would
+  record a backwards and currently false relationship.
+- The deliverables are independently verified integrated into `main` via their delivery merge
+  records, not via `baseCommit` ancestry: `design/game/m3-mid-expedition-loadout-change.md` (+ its
+  report) landed via merge commit `c8ebd205` ("Add M3-candidate spec for mid-expedition deferred
+  skill-loadout change"), and `design/studio/reports/cycle-duration-feasibility.md` landed via merge
+  commit `8391e560` ("Update design/studio/reports/cycle-duration-feasibility.md"). `git merge-base
+  --is-ancestor c8ebd205 HEAD` and `git merge-base --is-ancestor 8391e560 HEAD` both confirm these
+  merge commits are ancestors of the current `HEAD`, and both deliverable files exist in this
+  worktree.
 
 Conclusion: no `dependencyIds` or `requiredPaths` edit on `f4491607` or `9fa4109a` is correct to
-make, now or retroactively — the original triage note's concern applies only to a **future** task
-that would read the (still unmerged) "M3 candidate backlog" section of `priorities.md` as a
-committed input, not to these two already-delivered specs. If such a future M3-planning task is
-created, it should depend on `7a015776` reaching `approved`/merged (not on these two), and should
-list the two reports' exact paths (`design/game/m3-mid-expedition-loadout-change.md` +
-`design/game/reports/m3-mid-expedition-loadout-change.md`; `design/studio/reports/cycle-duration-feasibility.md`)
-as `requiredPaths`, which are already committed on `main` independent of `7a015776`.
+make — both per the owner's explicit exemption and on the merits, since their deliverables are
+already integrated via verified merge-commit ancestry independent of `7a015776`.
+
+## Rule for future consumers
+
+Any future task (e.g. an M3-planning task) that consumes these specifications' outputs, or consumes
+changes landed through `priorities.md`, must declare the dependency explicitly rather than infer it
+from `baseCommit`:
+
+- Depend on each specification's producer task whose outputs it reads (here, the tasks that
+  produced `m3-mid-expedition-loadout-change.md` and `cycle-duration-feasibility.md`), with those
+  files listed in `requiredPaths`.
+- Depend on the producer of `priorities.md` (i.e. the task whose approved change last modified it)
+  when consuming priorities changes, with `design/studio/priorities.md` listed in `requiredPaths`.
+- A producer task must never list its own outputs as `requiredPaths`/inputs to itself.
 
 ## Outcome
 
-No repository-tracked task metadata needed correction beyond what was already in place. No PATCH
-was issued. This report is the verified correction payload for escalation: if dependency/requiredPaths
-editing on existing tasks is ever needed, the dashboard would need a new PATCH-supporting route —
-none exists today.
+`c5bd2700`'s `dependencyIds`/`requiredPaths` were corrected through the supported API and are
+verified correct. `f4491607` and `9fa4109a` are exempted from retroactive dependency changes per the
+owner's 2026-10-22T20:15:28.673Z resolution and require no edit; their deliverables are confirmed
+integrated into `main` via merge-commit ancestry (`c8ebd205`, `8391e560`), independent of the
+unmerged `7a015776`. No specification was reopened, no dependency was changed, and no task was
+created by this report.
