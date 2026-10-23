@@ -67,7 +67,7 @@ a proposal for another department. Preserve the historical M1 freeze and add a d
 
 ## Verification and limitations
 
-Commands ran from design/studio in the assigned worktree:
+Earlier attempt's checks, retained from its saved report (commands ran from design/studio):
 
 - `git status --short`: initially clean.
 - `git diff --stat caadba311c556c36ef9b555d40e7f6a44aa7fbe7` and
@@ -78,7 +78,7 @@ Commands ran from design/studio in the assigned worktree:
   exit 0; all inputs tracked. Engineering evidence report is also tracked.
 - Initial `Get-Content AGENTS.md` failed at studio level; repository-root AGENTS.md was then read.
   No approval refusal occurred.
-- Final `git diff --check` and scoped diff inspection: recorded after editing below.
+- Final verification was interrupted; the resumed run records it below.
 
 No build, simulation or browser tests run: this changes only Leadership documentation and task
 routing. Prior Engineering test results are attributed evidence, not rerun or independent passes.
@@ -86,3 +86,27 @@ No playability verdict or claim that all five features are delivered is made.
 
 Next: Systems Designer adds the bounded UI amendment and reports any mismatch; existing M2-30
 consumes this disposition for its verdict/M3 plan. Triage is complete; downstream delivery remains.
+
+## Resumed review verification (2026-10-23)
+
+- `git status --short`: exit 0, clean at resume; the triage artifact was already saved.
+- `git diff --stat caadba311c556c36ef9b555d40e7f6a44aa7fbe7` and the scoped full diff:
+  only priorities.md and this report differ from the requested task base. No app/server/web or
+  contracts source changes are part of this comparison. The earlier attempt's one-file observation
+  above describes its starting point, not this resumed run.
+- Read-only dashboard GET, filtered to the named task IDs and tooltip/damage/UI-amendment titles:
+  the seven delivered tasks remain approved; M2-30 remains in_progress (queued).
+  No matching Design UI-amendment task was found. An initial unfiltered formatting attempt produced
+  truncated output; the bounded ID/title lookup was used for the routing decision.
+- `git ls-files --error-unmatch` for this report, interface.md, ui-spec.md, classes.md, contracts.md
+  and reports/engineering/skill-tooltips-damage-breakdown.md: exit 0, all tracked.
+- `git diff --check caadba311c556c36ef9b555d40e7f6a44aa7fbe7`: exit 0, no whitespace errors.
+
+Dispatch exactly one gap fix to Systems Designer: add a dated skill-help/damage-explanation
+amendment to design/game/interface.md and design/game/ui-spec.md, preserving the historical freeze.
+Prerequisites are this triage task, Engineering task c5bd2700-b2bc-4995-8741-16f5521c9d7b and
+contract task 195f2cb0-d2b9-4998-97e7-f1a1860bbc50. Require their approved, integrated inputs before
+starting. Record accessible interactions, locked-build inspection, damage/HP-loss semantics,
+legacy fallback and observable checks; report discrepancies without silently authorizing behavior
+or editing Engineering source. Report path: design/game/reports/skill-help-damage-ui-amendment.md.
+The final reply emits the executable task block; its creation/integration is not claimed here.
