@@ -49,7 +49,21 @@ export interface StatusAppliedDTO {
   readonly stacks?: number;
 }
 
+/** Server-recorded arithmetic, in evaluation order. Optional on older reports. */
+export interface DamageStep {
+  readonly kind: string;
+  readonly inputs: readonly number[];
+  readonly value: number;
+}
+export interface DamageBreakdown {
+  readonly steps: readonly DamageStep[];
+  readonly damage: number;
+  readonly hpBefore: number;
+  readonly hpLoss: number;
+}
+
 export interface BattleEventV2 {
+  readonly damageBreakdown?: DamageBreakdown;
   readonly round: number;
   readonly type: string;
   readonly sourceId: string | null;
@@ -111,6 +125,7 @@ interface ActorState {
 }
 
 interface BattleCtx {
+  damageSteps?: DamageStep[];
   readonly actors: ActorState[];
   readonly events: BattleEventV2[];
   round: number;
@@ -194,26 +209,33 @@ function bySlotIndex(a: ActorState, b: ActorState): number {
   return a.slotIndex - b.slotIndex;
 }
 
-function basic(atk: number, targetDef: number): number {
-  return Math.max(1, atk - Math.floor(targetDef / 2));
+function record(ctx: BattleCtx, kind: string, inputs: number[], value: number): number {
+  ctx.damageSteps?.push({ kind, inputs, value });
+  return value;
+}
+function scale(ctx: BattleCtx, kind: string, value: number, numerator: number, denominator: number): number {
+  return record(ctx, kind, [value, numerator, denominator], Math.floor(value * numerator / denominator));
+}
+function basic(ctx: BattleCtx, atk: number, targetDef: number): number {
+  return record(ctx, "base_damage", [atk, targetDef], Math.max(1, atk - Math.floor(targetDef / 2)));
 }
 
 /** classes.md 2.1 steps 6-7 for ATK: Arcane Reserve (dynamic passive, +10% while any opposing unit burns), then status_weaken (-30%). */
 function readAtk(ctx: BattleCtx, actor: ActorState): number {
-  let v = actor.baseline.atk;
+  let v = record(ctx, "attack", [], actor.baseline.atk);
   if (hasPassive(actor, "arcane_reserve")) {
     const opposing = opposingTeam(actor.team);
     const anyBurning = livingOnTeam(ctx.actors, opposing).some((a) => a.statuses.some((s) => s.statusId === "status_burn"));
-    if (anyBurning) v = applyPercentModifier(v, 10);
+    if (anyBurning) v = record(ctx, "arcane_reserve", [v, 110, 100], applyPercentModifier(v, 10));
   }
-  if (actor.statuses.some((s) => s.statusId === "status_weaken")) v = applyPercentModifier(v, -30);
+  if (actor.statuses.some((s) => s.statusId === "status_weaken")) v = record(ctx, "weaken", [v, 70, 100], applyPercentModifier(v, -30));
   return v;
 }
 
 /** classes.md 2.1 step 7 for DEF: status_fortify (+30%). No dynamic DEF passive exists in this kit. */
-function readDef(actor: ActorState): number {
-  let v = actor.baseline.def;
-  if (actor.statuses.some((s) => s.statusId === "status_fortify")) v = applyPercentModifier(v, 30);
+function readDef(ctx: BattleCtx, actor: ActorState): number {
+  let v = record(ctx, "defense", [], actor.baseline.def);
+  if (actor.statuses.some((s) => s.statusId === "status_fortify")) v = record(ctx, "fortify", [v, 130, 100], applyPercentModifier(v, 30));
   return v;
 }
 
@@ -240,6 +262,7 @@ function critChanceFor(source: ActorState): number {
 }
 
 interface HitResult {
+  readonly steps: DamageStep[];
   readonly amount: number;
   readonly crit: boolean;
   readonly dodged: boolean;
@@ -251,26 +274,42 @@ interface HitResult {
  * `computeBaseDamage`), then Last Stand's -20% (classes.md 5.1, read-time).
  */
 function resolveHit(ctx: BattleCtx, target: ActorState, computeBaseDamage: () => number, opts: { guaranteedCrit: boolean; critSource: ActorState }): HitResult {
-  if (!opts.guaranteedCrit) {
-    const r1 = rollPercent(ctx);
-    if (r1 < dodgeChanceFor(target)) return { amount: 0, crit: false, dodged: true };
+  const steps: DamageStep[] = [];
+  ctx.damageSteps = steps;
+  try {
+    if (!opts.guaranteedCrit) {
+      const roll = rollPercent(ctx);
+      const chance = dodgeChanceFor(target);
+      record(ctx, "dodge_roll", [roll, chance], roll < chance ? 1 : 0);
+      if (roll < chance) return { amount: 0, crit: false, dodged: true, steps };
+    } else record(ctx, "guaranteed_crit", [], 1);
+    let crit = opts.guaranteedCrit;
+    if (!crit) {
+      const roll = rollPercent(ctx);
+      const chance = critChanceFor(opts.critSource);
+      crit = roll < chance;
+      record(ctx, "crit_roll", [roll, chance], crit ? 1 : 0);
+    }
+    let dmg = computeBaseDamage();
+    if (crit) dmg = scale(ctx, "critical", dmg, 3, 2);
+    if (hasPassive(target, "last_stand") && hpPercent(target) < 30) dmg = scale(ctx, "last_stand", dmg, 80, 100);
+    return { amount: Math.max(0, dmg), crit, dodged: false, steps };
+  } finally {
+    delete ctx.damageSteps;
   }
-  const crit = opts.guaranteedCrit || rollPercent(ctx) < critChanceFor(opts.critSource);
-  let dmg = computeBaseDamage();
-  if (crit) dmg = Math.floor((dmg * 3) / 2);
-  if (hasPassive(target, "last_stand") && hpPercent(target) < 30) dmg = Math.floor((dmg * 80) / 100);
-  return { amount: Math.max(0, dmg), crit, dodged: false };
 }
 
 // ---------------------------------------------------------------- HP/events
 
-function pushEvent(ctx: BattleCtx, source: ActorState | null, target: ActorState, amount: number, type: string, skillId: string | null, crit: boolean, dodged: boolean, statusApplied: StatusAppliedDTO | null): void {
+function pushEvent(ctx: BattleCtx, source: ActorState | null, target: ActorState, amount: number, type: string, skillId: string | null, crit: boolean, dodged: boolean, statusApplied: StatusAppliedDTO | null, steps?: DamageStep[]): void {
+  const hpBefore = target.hp;
   let applied = amount;
   if (applied < 0) {
     const wouldBe = target.hp + applied;
     if (wouldBe <= 0 && target.hp > 0 && hasPassive(target, "vital_surge") && !target.vitalSurgeUsed) {
       target.vitalSurgeUsed = true;
-      applied = 1 - target.hp; // clamp to 1 instead of 0, classes.md 5.2
+      applied = 1 - target.hp;
+      steps?.push({ kind: "vital_surge", inputs: [-amount, hpBefore], value: -applied }); // clamp to 1 instead of 0, classes.md 5.2
     }
   }
   const wasAlive = target.hp > 0;
@@ -279,6 +318,7 @@ function pushEvent(ctx: BattleCtx, source: ActorState | null, target: ActorState
   target.hp = clamped;
   const death = wasAlive && target.hp <= 0;
   ctx.events.push({
+    ...(steps ? { damageBreakdown: { steps, damage: -amount || 0, hpBefore, hpLoss: -actualDelta || 0 } } : {}),
     round: ctx.round,
     type,
     sourceId: source ? source.id : null,
@@ -329,8 +369,8 @@ function applyBurn(ctx: BattleCtx, applier: ActorState, target: ActorState): Sta
   return { statusId: "status_burn", duration: 2, stacks: existing.stacks };
 }
 
-function withOpportunist(actor: ActorState, target: ActorState, baseDmg: number): number {
-  return hasPassive(actor, "opportunist") && hpPercent(target) < 50 ? Math.floor((baseDmg * 6) / 5) : baseDmg;
+function withOpportunist(ctx: BattleCtx, actor: ActorState, target: ActorState, baseDmg: number): number {
+  return hasPassive(actor, "opportunist") && hpPercent(target) < 50 ? scale(ctx, "opportunist", baseDmg, 6, 5) : baseDmg;
 }
 
 function setCooldown(actor: ActorState, skillId: string): void {
@@ -364,8 +404,8 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
     // --------------------------------------------------------- Vanguard
     case "strike": {
       const target = pickLowestHp(resolveSingleTargetPool(ctx, actor, false));
-      const result = resolveHit(ctx, target, () => basic(readAtk(ctx, actor), readDef(target)), { guaranteedCrit: false, critSource: actor });
-      pushEvent(ctx, actor, target, -result.amount, "strike", skillId, result.crit, result.dodged, null);
+      const result = resolveHit(ctx, target, () => basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
+      pushEvent(ctx, actor, target, -result.amount, "strike", skillId, result.crit, result.dodged, null, result.steps);
       return;
     }
     case "bulwark_call": {
@@ -377,9 +417,9 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
     }
     case "shield_bash": {
       const target = pickLowestHp(resolveSingleTargetPool(ctx, actor, false));
-      const result = resolveHit(ctx, target, () => Math.max(1, Math.floor((readAtk(ctx, actor) * 12) / 10) - Math.floor(readDef(target) / 2)), { guaranteedCrit: false, critSource: actor });
+      const result = resolveHit(ctx, target, () => basic(ctx, scale(ctx, "shield_bash", readAtk(ctx, actor), 12, 10), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
       const statusDesc = result.dodged ? null : applyStatus(target, "status_weaken", 2);
-      pushEvent(ctx, actor, target, -result.amount, "shield_bash", skillId, result.crit, result.dodged, statusDesc);
+      pushEvent(ctx, actor, target, -result.amount, "shield_bash", skillId, result.crit, result.dodged, statusDesc, result.steps);
       setCooldown(actor, skillId);
       return;
     }
@@ -387,8 +427,8 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
     // ----------------------------------------------------------- Cleric
     case "smite": {
       const target = pickLowestHp(resolveSingleTargetPool(ctx, actor, false));
-      const result = resolveHit(ctx, target, () => basic(readAtk(ctx, actor), readDef(target)), { guaranteedCrit: false, critSource: actor });
-      pushEvent(ctx, actor, target, -result.amount, "smite", skillId, result.crit, result.dodged, null);
+      const result = resolveHit(ctx, target, () => basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
+      pushEvent(ctx, actor, target, -result.amount, "smite", skillId, result.crit, result.dodged, null, result.steps);
       return;
     }
     case "mending_light": {
@@ -411,8 +451,8 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
     // ----------------------------------------------------------- Ranger
     case "quick_shot": {
       const target = pickLowestHp(resolveSingleTargetPool(ctx, actor, false));
-      const result = resolveHit(ctx, target, () => basic(readAtk(ctx, actor), readDef(target)), { guaranteedCrit: false, critSource: actor });
-      pushEvent(ctx, actor, target, -result.amount, "quick_shot", skillId, result.crit, result.dodged, null);
+      const result = resolveHit(ctx, target, () => basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
+      pushEvent(ctx, actor, target, -result.amount, "quick_shot", skillId, result.crit, result.dodged, null, result.steps);
       return;
     }
     case "aimed_shot": {
@@ -424,12 +464,12 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
         ctx,
         target,
         () => {
-          const dmg = basic(readAtk(ctx, actor), readDef(target));
-          return bonus ? Math.floor((dmg * 3) / 2) : dmg;
+          const dmg = basic(ctx, readAtk(ctx, actor), readDef(ctx, target));
+          return bonus ? scale(ctx, "execute", dmg, 3, 2) : dmg;
         },
         { guaranteedCrit: false, critSource: actor },
       );
-      pushEvent(ctx, actor, target, -result.amount, "aimed_shot", skillId, result.crit, result.dodged, null);
+      pushEvent(ctx, actor, target, -result.amount, "aimed_shot", skillId, result.crit, result.dodged, null, result.steps);
       setCooldown(actor, skillId);
       return;
     }
@@ -442,10 +482,10 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
         const result = resolveHit(
           ctx,
           target,
-          () => Math.max(1, Math.floor((readAtk(ctx, actor) * atkMul) / 10) - Math.floor(readDef(target) / 2)),
+          () => basic(ctx, scale(ctx, "volley", readAtk(ctx, actor), atkMul, 10), readDef(ctx, target)),
           { guaranteedCrit: false, critSource: actor },
         );
-        pushEvent(ctx, actor, target, -result.amount, "volley", skillId, result.crit, result.dodged, null);
+        pushEvent(ctx, actor, target, -result.amount, "volley", skillId, result.crit, result.dodged, null, result.steps);
       }
       setCooldown(actor, skillId);
       return;
@@ -454,15 +494,15 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
     // ------------------------------------------------------------ Rogue
     case "puncture": {
       const target = pickLowestHp(resolveSingleTargetPool(ctx, actor, false));
-      const result = resolveHit(ctx, target, () => withOpportunist(actor, target, basic(readAtk(ctx, actor), readDef(target))), { guaranteedCrit: false, critSource: actor });
-      pushEvent(ctx, actor, target, -result.amount, "puncture", skillId, result.crit, result.dodged, null);
+      const result = resolveHit(ctx, target, () => withOpportunist(ctx, actor, target, basic(ctx, readAtk(ctx, actor), readDef(ctx, target))), { guaranteedCrit: false, critSource: actor });
+      pushEvent(ctx, actor, target, -result.amount, "puncture", skillId, result.crit, result.dodged, null, result.steps);
       return;
     }
     case "backstab": {
       const target = pickHighestSlotIndex(resolveSingleTargetPool(ctx, actor, true));
-      const result = resolveHit(ctx, target, () => withOpportunist(actor, target, basic(readAtk(ctx, actor), readDef(target))), { guaranteedCrit: true, critSource: actor });
+      const result = resolveHit(ctx, target, () => withOpportunist(ctx, actor, target, basic(ctx, readAtk(ctx, actor), readDef(ctx, target))), { guaranteedCrit: true, critSource: actor });
       const statusDesc = hasSynergy(actor, "Hexblade") ? applyBurn(ctx, actor, target) : null;
-      pushEvent(ctx, actor, target, -result.amount, "backstab", skillId, true, false, statusDesc);
+      pushEvent(ctx, actor, target, -result.amount, "backstab", skillId, true, false, statusDesc, result.steps);
       setCooldown(actor, skillId);
       return;
     }
@@ -470,8 +510,8 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
       const target = pickLowestHp(resolveSingleTargetPool(ctx, actor, false));
       for (let hit = 0; hit < 2; hit++) {
         if (target.hp <= 0) break;
-        const result = resolveHit(ctx, target, () => withOpportunist(actor, target, basic(readAtk(ctx, actor), readDef(target))), { guaranteedCrit: false, critSource: actor });
-        pushEvent(ctx, actor, target, -result.amount, "flurry", skillId, result.crit, result.dodged, null);
+        const result = resolveHit(ctx, target, () => withOpportunist(ctx, actor, target, basic(ctx, readAtk(ctx, actor), readDef(ctx, target))), { guaranteedCrit: false, critSource: actor });
+        pushEvent(ctx, actor, target, -result.amount, "flurry", skillId, result.crit, result.dodged, null, result.steps);
       }
       setCooldown(actor, skillId);
       return;
@@ -480,8 +520,8 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
     // --------------------------------------------------------- Arcanist
     case "arcane_bolt": {
       const target = pickLowestHp(resolveSingleTargetPool(ctx, actor, false));
-      const result = resolveHit(ctx, target, () => basic(readAtk(ctx, actor), readDef(target)), { guaranteedCrit: false, critSource: actor });
-      pushEvent(ctx, actor, target, -result.amount, "arcane_bolt", skillId, result.crit, result.dodged, null);
+      const result = resolveHit(ctx, target, () => basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
+      pushEvent(ctx, actor, target, -result.amount, "arcane_bolt", skillId, result.crit, result.dodged, null, result.steps);
       return;
     }
     case "firebolt": {
@@ -490,13 +530,13 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
         ctx,
         target,
         () => {
-          const dmg = basic(readAtk(ctx, actor), readDef(target));
-          return hasPassive(actor, "overload") ? Math.floor((dmg * 11) / 10) : dmg;
+          const dmg = basic(ctx, readAtk(ctx, actor), readDef(ctx, target));
+          return hasPassive(actor, "overload") ? scale(ctx, "overload", dmg, 11, 10) : dmg;
         },
         { guaranteedCrit: false, critSource: actor },
       );
       const statusDesc = result.dodged ? null : applyBurn(ctx, actor, target);
-      pushEvent(ctx, actor, target, -result.amount, "firebolt", skillId, result.crit, result.dodged, statusDesc);
+      pushEvent(ctx, actor, target, -result.amount, "firebolt", skillId, result.crit, result.dodged, statusDesc, result.steps);
       setCooldown(actor, skillId);
       return;
     }
@@ -506,11 +546,11 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
         const result = resolveHit(
           ctx,
           target,
-          () => Math.max(1, Math.floor((readAtk(ctx, actor) * 8) / 10) - Math.floor(readDef(target) / 2)),
+          () => basic(ctx, scale(ctx, "meteor", readAtk(ctx, actor), 8, 10), readDef(ctx, target)),
           { guaranteedCrit: false, critSource: actor },
         );
         const statusDesc = result.dodged ? null : applyBurn(ctx, actor, target);
-        pushEvent(ctx, actor, target, -result.amount, "meteor", skillId, result.crit, result.dodged, statusDesc);
+        pushEvent(ctx, actor, target, -result.amount, "meteor", skillId, result.crit, result.dodged, statusDesc, result.steps);
       }
       setCooldown(actor, skillId);
       return;
@@ -523,13 +563,13 @@ function castSkill(ctx: BattleCtx, actor: ActorState, skillId: string): void {
         ctx,
         target,
         () => {
-          const dmg = basic(readAtk(ctx, actor), readDef(target));
+          const dmg = basic(ctx, readAtk(ctx, actor), readDef(ctx, target));
           const selfHasted = actor.statuses.some((s) => s.statusId === "status_haste");
-          return hasPassive(actor, "battle_hymn") && selfHasted ? Math.floor((dmg * 110) / 100) : dmg;
+          return hasPassive(actor, "battle_hymn") && selfHasted ? scale(ctx, "battle_hymn", dmg, 110, 100) : dmg;
         },
         { guaranteedCrit: false, critSource: actor },
       );
-      pushEvent(ctx, actor, target, -result.amount, "rally_strike", skillId, result.crit, result.dodged, null);
+      pushEvent(ctx, actor, target, -result.amount, "rally_strike", skillId, result.crit, result.dodged, null, result.steps);
       return;
     }
     case "war_hymn": {
@@ -571,16 +611,16 @@ function resolveHeroActionV2(ctx: BattleCtx, actor: ActorState): void {
 
 function plainEnemyStrike(ctx: BattleCtx, actor: ActorState, ignoresRow: boolean): void {
   const target = pickLowestPosition(resolveSingleTargetPool(ctx, actor, ignoresRow));
-  const result = resolveHit(ctx, target, () => basic(readAtk(ctx, actor), readDef(target)), { guaranteedCrit: false, critSource: actor });
-  pushEvent(ctx, actor, target, -result.amount, "enemy_strike", null, result.crit, result.dodged, null);
+  const result = resolveHit(ctx, target, () => basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
+  pushEvent(ctx, actor, target, -result.amount, "enemy_strike", null, result.crit, result.dodged, null, result.steps);
 }
 
 function brigandAction(ctx: BattleCtx, actor: ActorState): void {
   if (ctx.round % 4 === 0) {
     const target = pickLowestPosition(resolveSingleTargetPool(ctx, actor, false));
-    const result = resolveHit(ctx, target, () => Math.floor((basic(readAtk(ctx, actor), readDef(target)) * 3) / 2), { guaranteedCrit: false, critSource: actor });
+    const result = resolveHit(ctx, target, () => scale(ctx, "heavy_strike", basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), 3, 2), { guaranteedCrit: false, critSource: actor });
     const statusDesc = result.dodged ? null : applyStatus(target, "status_weaken", 2);
-    pushEvent(ctx, actor, target, -result.amount, "crushing_blow", null, result.crit, result.dodged, statusDesc);
+    pushEvent(ctx, actor, target, -result.amount, "crushing_blow", null, result.crit, result.dodged, statusDesc, result.steps);
   } else {
     plainEnemyStrike(ctx, actor, false);
   }
@@ -589,8 +629,8 @@ function brigandAction(ctx: BattleCtx, actor: ActorState): void {
 function wolfAction(ctx: BattleCtx, actor: ActorState): void {
   const pool = resolveSingleTargetPool(ctx, actor, false);
   const target = ctx.round % 2 === 1 ? pickLowestHp(pool) : pickLowestPosition(pool);
-  const result = resolveHit(ctx, target, () => basic(readAtk(ctx, actor), readDef(target)), { guaranteedCrit: false, critSource: actor });
-  pushEvent(ctx, actor, target, -result.amount, "enemy_strike", null, result.crit, result.dodged, null);
+  const result = resolveHit(ctx, target, () => basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
+  pushEvent(ctx, actor, target, -result.amount, "enemy_strike", null, result.crit, result.dodged, null, result.steps);
 }
 
 function drownedAction(ctx: BattleCtx, actor: ActorState): void {
@@ -600,15 +640,15 @@ function drownedAction(ctx: BattleCtx, actor: ActorState): void {
     pushEvent(ctx, actor, target, 0, "drowned_weaken", null, false, false, applyStatus(target, "status_weaken", 2));
   } else {
     const target = pickLowestHp(pool);
-    const result = resolveHit(ctx, target, () => basic(readAtk(ctx, actor), readDef(target)), { guaranteedCrit: false, critSource: actor });
-    pushEvent(ctx, actor, target, -result.amount, "enemy_strike", null, result.crit, result.dodged, null);
+    const result = resolveHit(ctx, target, () => basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
+    pushEvent(ctx, actor, target, -result.amount, "enemy_strike", null, result.crit, result.dodged, null, result.steps);
   }
 }
 
 function currentAction(ctx: BattleCtx, actor: ActorState): void {
   const target = pickLowestHp(resolveSingleTargetPool(ctx, actor, true));
-  const result = resolveHit(ctx, target, () => basic(readAtk(ctx, actor), readDef(target)), { guaranteedCrit: false, critSource: actor });
-  pushEvent(ctx, actor, target, -result.amount, "enemy_strike", null, result.crit, result.dodged, null);
+  const result = resolveHit(ctx, target, () => basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
+  pushEvent(ctx, actor, target, -result.amount, "enemy_strike", null, result.crit, result.dodged, null, result.steps);
 }
 
 function broodlingAction(ctx: BattleCtx, actor: ActorState): void {
@@ -618,25 +658,25 @@ function broodlingAction(ctx: BattleCtx, actor: ActorState): void {
     ctx,
     target,
     () => {
-      const dmg = basic(readAtk(ctx, actor), readDef(target));
-      return isSurge ? Math.floor((dmg * 3) / 2) : dmg;
+      const dmg = basic(ctx, readAtk(ctx, actor), readDef(ctx, target));
+      return isSurge ? scale(ctx, "brood_surge", dmg, 3, 2) : dmg;
     },
     { guaranteedCrit: false, critSource: actor },
   );
-  pushEvent(ctx, actor, target, -result.amount, isSurge ? "brood_surge" : "enemy_strike", null, result.crit, result.dodged, null);
+  pushEvent(ctx, actor, target, -result.amount, isSurge ? "brood_surge" : "enemy_strike", null, result.crit, result.dodged, null, result.steps);
 }
 
 function tollkeeperAction(ctx: BattleCtx, actor: ActorState): void {
   const pool = resolveSingleTargetPool(ctx, actor, true);
   if (ctx.round % 3 === 0) {
     const target = pickLowestHpPercent(pool);
-    const result = resolveHit(ctx, target, () => Math.floor((basic(readAtk(ctx, actor), readDef(target)) * 3) / 2), { guaranteedCrit: false, critSource: actor });
+    const result = resolveHit(ctx, target, () => scale(ctx, "heavy_strike", basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), 3, 2), { guaranteedCrit: false, critSource: actor });
     const statusDesc = result.dodged ? null : applyStatus(target, "status_weaken", 2);
-    pushEvent(ctx, actor, target, -result.amount, "toll_smash", null, result.crit, result.dodged, statusDesc);
+    pushEvent(ctx, actor, target, -result.amount, "toll_smash", null, result.crit, result.dodged, statusDesc, result.steps);
   } else {
     const target = pickLowestPosition(pool);
-    const result = resolveHit(ctx, target, () => basic(readAtk(ctx, actor), readDef(target)), { guaranteedCrit: false, critSource: actor });
-    pushEvent(ctx, actor, target, -result.amount, "toll_strike", null, result.crit, result.dodged, null);
+    const result = resolveHit(ctx, target, () => basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
+    pushEvent(ctx, actor, target, -result.amount, "toll_strike", null, result.crit, result.dodged, null, result.steps);
   }
 }
 
@@ -644,25 +684,25 @@ function drownedWardenAction(ctx: BattleCtx, actor: ActorState): void {
   const mod = ctx.round % 4;
   if (mod === 2) {
     const target = pickLowestHpPercent(resolveSingleTargetPool(ctx, actor, true));
-    const result = resolveHit(ctx, target, () => Math.floor((basic(readAtk(ctx, actor), readDef(target)) * 3) / 2), { guaranteedCrit: false, critSource: actor });
+    const result = resolveHit(ctx, target, () => scale(ctx, "heavy_strike", basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), 3, 2), { guaranteedCrit: false, critSource: actor });
     const statusDesc = result.dodged ? null : applyStatus(target, "status_weaken", 2);
-    pushEvent(ctx, actor, target, -result.amount, "crushing_current", null, result.crit, result.dodged, statusDesc);
+    pushEvent(ctx, actor, target, -result.amount, "crushing_current", null, result.crit, result.dodged, statusDesc, result.steps);
   } else if (mod === 0) {
     const pool = resolveAoEPool(ctx, actor, true);
     for (const target of [...pool].sort(bySlotIndex)) {
       const result = resolveHit(
         ctx,
         target,
-        () => Math.max(1, Math.floor((readAtk(ctx, actor) * 7) / 10) - Math.floor(readDef(target) / 2)),
+        () => basic(ctx, scale(ctx, "tidal_surge", readAtk(ctx, actor), 7, 10), readDef(ctx, target)),
         { guaranteedCrit: false, critSource: actor },
       );
       const statusDesc = result.dodged ? null : applyStatus(target, "status_weaken", 2);
-      pushEvent(ctx, actor, target, -result.amount, "tidal_surge", null, result.crit, result.dodged, statusDesc);
+      pushEvent(ctx, actor, target, -result.amount, "tidal_surge", null, result.crit, result.dodged, statusDesc, result.steps);
     }
   } else {
     const target = pickLowestPosition(resolveSingleTargetPool(ctx, actor, true));
-    const result = resolveHit(ctx, target, () => basic(readAtk(ctx, actor), readDef(target)), { guaranteedCrit: false, critSource: actor });
-    pushEvent(ctx, actor, target, -result.amount, "wardens_grasp", null, result.crit, result.dodged, null);
+    const result = resolveHit(ctx, target, () => basic(ctx, readAtk(ctx, actor), readDef(ctx, target)), { guaranteedCrit: false, critSource: actor });
+    pushEvent(ctx, actor, target, -result.amount, "wardens_grasp", null, result.crit, result.dodged, null, result.steps);
   }
 }
 
@@ -719,7 +759,7 @@ function tickStatuses(ctx: BattleCtx, order: readonly ActorState[]): void {
     const burn = actor.statuses.find((s) => s.statusId === "status_burn");
     if (burn) {
       const dmg = burn.stacks * Math.floor(burn.tickAtk / 3);
-      pushEvent(ctx, null, actor, -dmg, "burn_tick", null, false, false, null);
+      pushEvent(ctx, null, actor, -dmg, "burn_tick", null, false, false, null, [{ kind: "burn", inputs: [burn.stacks, burn.tickAtk], value: dmg }]);
     }
   }
   for (const actor of order) {

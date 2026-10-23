@@ -7,6 +7,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { BattleEvent, BattleReportView, BattleUnit } from "../types.js";
 import { classCopy, skillCopy, statusCopy } from "../copy.js";
+import { SkillLabel } from "./SkillLabel.js";
+import { DamageDetails } from "./DamageDetails.js";
 
 const OUTCOME_LABEL = { win: "Victory", loss: "Defeated", draw: "Draw" } as const;
 
@@ -108,6 +110,14 @@ function describeEvent(e: BattleEvent, units: readonly BattleUnit[]): string {
   if (e.statusApplied) parts.push(`(${statusCopy(e.statusApplied.statusId).name} applied, ${e.statusApplied.duration} round(s))`);
   if (e.death) parts.push(`${target} falls.`);
   return parts.join(" ");
+}
+
+function EventDescription({ event, units }: { event: BattleEvent; units: readonly BattleUnit[] }) {
+  const description = describeEvent(event, units);
+  const name = event.skillId ? skillCopy(event.skillId).name : "";
+  const index = name ? description.indexOf(name) : -1;
+  if (index < 0 || !event.skillId) return <>{description}<DamageDetails event={event} /></>;
+  return <>{description.slice(0, index)}<SkillLabel skillId={event.skillId} />{description.slice(index + name.length)}<DamageDetails event={event} /></>;
 }
 
 function HpBar({ hp, maxHp }: { hp: number; maxHp: number }) {
@@ -213,7 +223,7 @@ export function BattleView({ report, extra }: { report: BattleReportView; extra?
             ))}
           </div>
           <p className="battle-action" role="status">
-            {event ? describeEvent(event, units) : "Both teams are ready. Watch each action unfold."}
+            {event ? <EventDescription event={event} units={units} /> : "Both teams are ready. Watch each action unfold."}
             {finished ? ` / ${OUTCOME_LABEL[report.result.outcome]}` : ""}
           </p>
           <div className="battle-controls">
@@ -272,7 +282,7 @@ export function BattleView({ report, extra }: { report: BattleReportView; extra?
           <ol className="battle-log">
             {report.events.map((e, i) => (
               <li key={i}>
-                Round {e.round} / {describeEvent(e, units)}
+                Round {e.round} / <EventDescription event={e} units={units} />
                 {e.hpAfter !== null ? ` / ${e.hpAfter} HP remaining` : ""}
               </li>
             ))}
