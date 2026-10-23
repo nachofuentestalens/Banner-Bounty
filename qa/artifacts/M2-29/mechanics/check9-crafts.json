@@ -1,0 +1,34 @@
+{
+  "craftA": {
+    "item": {
+      "itemInstanceId": "06116584-6e39-4dd6-803b-dd2fc11f5f57",
+      "accountId": "00000000-0000-4000-8000-00000000000a",
+      "definitionId": "item_weapon_shortsword",
+      "rarityId": "uncommon",
+      "affixes": [
+        {
+          "affixId": "affix_of_power",
+          "value": 2
+        }
+      ],
+      "equippedBy": null
+    },
+    "replacementConsumed": "8871b01a-bc93-4213-bece-dc9962793031"
+  },
+  "craftB": {
+    "item": {
+      "itemInstanceId": "f8360696-3711-45a9-b16c-b8925dbc0be6",
+      "accountId": "00000000-0000-4000-8000-00000000000a",
+      "definitionId": "item_weapon_shortsword",
+      "rarityId": "uncommon",
+      "affixes": [
+        {
+          "affixId": "affix_of_power",
+          "value": 1
+        }
+      ],
+      "equippedBy": null
+    },
+    "replacementConsumed": "350c8e1e-35df-4907-b5e3-4702cdae9985"
+  }
+}

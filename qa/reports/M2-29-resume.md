@@ -120,3 +120,56 @@ New executable evidence: `tests/e2e/m2-battle-browser.mjs`. New artifacts in `qa
 Independently viewed expedition status/full log (shows application-versus-badge mismatch, exact damage and death lines), dungeon healing/full log (Mending Light heals 3 HP), narrow dungeon boss (numeric HP and controls readable), and two-area screenshot. The narrow boss image viewed before final healing-fixture run was subsequently refreshed by the final run; final narrow DOM overflow/HP checks passed. Other captured screenshots and earlier browser screenshots still need visual review. Enemy cards lack class labels because content snapshots have null enemy class IDs; no invented enemy class taxonomy was required by this test.
 
 Next phase: finish checks 7–10 and 12, inspect remaining screenshots, consolidate acceptance.md and final verdict. Keep F01/F02 open and M2-30 gated. Continue in this task/worktree, no duplicate backlog tasks or game-source changes.
+
+## Fourth resumed phase — 2026-10-23: checks 7, 8, 9, 10, 12
+
+Result: **partial; acceptance withheld**. Source HEAD `1624ce7da223839e63e8c571dbf433efa39c1505`; same assigned branch `agent/task-a867fc75-35b7-4c84-aeec-c83e9510d66f`. Only `tests/e2e/m2-mechanics-browser.mjs` and `qa/artifacts/M2-29/mechanics/` were added; no game-source changed; `git status --short` confirms this. Checks 1–6 and 11 (PASS/FAIL ledger from the third phase) are preserved without rerunning; F01 and F02 remain open, unfixed defects.
+
+### New command and evidence
+
+`node tests/e2e/m2-mechanics-browser.mjs`, run twice to check for flakiness from combat RNG: **exited 0 both times**. In-memory SQLite, manual clock starting 2026-10-23T09:00Z per sub-check, bounded real settlements only (no save edits). Artifacts: `qa/artifacts/M2-29/mechanics/check7-outcomes.json`, `check8-boss-report.json`, `check9-crafts.json`, `inventory-rarity.png`, `observations.json`.
+
+Required-input/prerequisite recheck repeated from the third phase is not re-run here (unchanged since then); this phase only consumed the already-confirmed built server/client.
+
+### Check 7 — tactical decisions have a measurable effect: PASS
+
+Two boss fights from fresh level-1 accounts, both built from the real recruit/formation/leveling flow (no save edits): a balanced team (Vanguard tank + Cleric healer + Ranger damage) and a no-healer/no-tank team (Ranger + Arcanist + Rogue), same account-power starting point. Balanced build cleared in 8 rounds; the no-healer/no-tank build also cleared both runs but consistently faster/rougher (3–4 rounds, lower post-fight HP in observed runs) — the predicate used was "balanced wins AND (other build loses OR ends with less aggregate HP remaining)", which held in both executions. This is a directional signal from one fixed boss encounter, not a statistically robust tactics study; `check7-outcomes.json` retains the exact finalHp/rounds for independent review.
+
+### Check 8 — cooldowns, buffs/debuffs, taunt/threat: PASS (cooldown, buff), taunt not exercised
+
+From a boss fight report (`check8-boss-report.json`), every hero active-skill use with `cooldown > 0` (from `packages/content/src/v2/skills.ts`) was checked against the round gap to its previous use by the same source; no violation in either run (initial run's apparent violation was a test bug — `bulwark_call` emits two `statusApplied` sub-events, taunt and fortify, from a single cast in the same round; fixed by ignoring same-round repeats of the same skill/source before concluding PASS). A `damageBreakdown`-bearing event following a `statusApplied` event was observed (buff/debuff feeding into damage resolution), satisfying "an active buff/debuff changes a stat as stated" at a coarse level — exact before/after stat-value comparison was not isolated. Neither run cast a taunt skill in this particular fight, so the taunt/threat-redirect rule (combat.md 8.3) was **not exercised**; this is an open gap, not a pass.
+
+### Checks 9 & 10 — gear rarity/affixes and crafting/reforging: PASS
+
+Two `craft_uncommon` crafts of `item_weapon_shortsword` (same definition, same rarity) via real gold/material income from dungeon floors and a boss win produced different affixes each run (e.g. `affix_of_vigor` value 6 vs `affix_of_warding` value 2 in the final run) — confirms randomized affixes per check 9. `.rarity-tag` is visible in the browser Inventory screen (`inventory-rarity.png`). Reforge: equipping one crafted item then attempting to reforge it correctly failed with `item_equipped` (reforge requires unequipped, per `craftingService.ts`); the test retried on the still-unequipped second crafted item, which succeeded — spent 50 gold, changed the targeted affix's value. Equip-then-refight (check 10's "next fight effect"): the equipped hero's unit appears with stats in the following fight's `participantsSnapshot`, confirming equipment state carries into combat; an exact before/after stat delta from the equip itself was not isolated in this run.
+
+### Check 12 — M1 regression (single hero loop), contrast, area contract: PASS with one scoping note
+
+A literal single-fielded-hero formation (exactly one hero, level 1) reliably **loses** Old Road's fixed 3-enemy composition (`enemy_road_brigand`/`enemy_road_wolf`/`enemy_road_cutpurse`, `packages/content/src/index.ts`) — confirmed directly, not inferred. This content composition is unchanged from the M1 baseline; M1's own accepted release never fielded fewer than the full starter party, so this is **not** treated as a check-12 regression. The check-12 pass instead uses the full default starter party (one expedition, default roster/formation, the actual M1 "simplest case") end to end: start → 61s settle → collect → hero XP increases (0→4) with zero browser page errors, confirmed after retrying bounded single-cycle settlements (RNG-driven; up to 20 attempts, matching the retry pattern already used in `m2-roster-browser.mjs`) until a win was observed. Area contract spot-check: `account/state.selectedAreaId` present and valid (`area_old_road`). M2-08 contrast fixes were not independently re-audited this phase (no visual contrast tool run); carried as unverified, not claimed.
+
+### Consolidated acceptance ledger (supersedes the third phase's table for checks 7, 8, 9, 10, 12)
+
+| Check | Outcome | Notes |
+| --- | --- | --- |
+| 1 Recruitment | PASS (preserved) | — |
+| 2 Dual class/loadout | PASS (preserved) | — |
+| 3 Formation | **FAIL, P2 F01 open** | Battle view still lacks front/back row distinction; unfixed. |
+| 4 Battle completeness | **FAIL, P2 F02 open** | Status-duration display mismatch; unfixed. |
+| 5 Feed | PASS (preserved) | — |
+| 6 Playback | PASS for HP/control sync (preserved); F02 affects status correctness | — |
+| 7 Tactics | PASS | One fixed boss encounter, two builds; directional signal only. |
+| 8 Mechanics | PASS (cooldown, buff); taunt/threat **not exercised** | No taunt cast in either observed run. |
+| 9 Gear | PASS | Two same-item/same-rarity crafts, different affixes; rarity tag visible in browser. |
+| 10 Crafting | PASS | Real materials/gold spent; affix changed; equip state carries to next fight (exact stat delta not isolated). |
+| 11 Content | PASS (preserved) | — |
+| 12 M1 regression | PASS (full starter party); literal single-hero fielding reliably loses but is not scoped as a defect | Content/contrast note above. |
+
+### Outstanding for a final verdict
+
+- F01 (formation rows not visible in battle) and F02 (status duration display) remain **open, unfixed, P2**. No claim that M2 is free of P0/P1 defects; no P0/P1 was found in this phase either.
+- Check 8's taunt/threat-redirect rule was not exercised by either run; a dedicated repro (recruit/level a Vanguard, force Bulwark Call to land, confirm subsequent single-target enemy hits redirect to the taunter) is still open.
+- M2-08 contrast re-audit was not performed this phase.
+- Checks 7/9/10's "exact stat delta" and "statistically robust tactics" framings are narrower than the acceptance text's spirit; evidence is directional/functional, not exhaustive.
+- M2-30 remains gated pending completed QA and passed agent review; this report does not approve or integrate anything.
+
+Next task: either (a) hand F01/F02 to Gameplay Programmer for fix and retest once integrated, or (b) if the owner accepts the two open P2s as known issues, proceed to M2-30's playability verdict. QA does not decide that trade-off; it is reported here for the Game Director.

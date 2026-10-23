@@ -1,0 +1,110 @@
+{
+  "checks": {
+    "7": {
+      "status": "PASS",
+      "balanced": {
+        "outcome": "win",
+        "rounds": 6,
+        "finalHp": {
+          "00000000-0000-4000-8000-0000000a0001": 74,
+          "1554ef47-e458-4478-a22a-e34bbc59c65e": 34,
+          "00000000-0000-4000-8000-0000000a0002": 68,
+          "boss_tollkeeper#0": 0
+        }
+      },
+      "noHealerTank": {
+        "outcome": "win",
+        "rounds": 4,
+        "finalHp": {
+          "00000000-0000-4000-8000-0000000a0002": 40,
+          "00000000-0000-4000-8000-0000000a0003": 64,
+          "6bba885f-94bb-465c-bc05-46e9ae87a175": 26,
+          "boss_tollkeeper#0": 0
+        }
+      }
+    },
+    "8": {
+      "cooldown": "PASS",
+      "cooldownDetail": null,
+      "buffEffect": "PASS",
+      "taunt": "NOT OBSERVED (no taunt cast in this fight)",
+      "threatViolation": null,
+      "statusEventCount": 6
+    },
+    "9": {
+      "status": "PASS",
+      "craftA": {
+        "itemInstanceId": "06116584-6e39-4dd6-803b-dd2fc11f5f57",
+        "accountId": "00000000-0000-4000-8000-00000000000a",
+        "definitionId": "item_weapon_shortsword",
+        "rarityId": "uncommon",
+        "affixes": [
+          {
+            "affixId": "affix_of_power",
+            "value": 2
+          }
+        ],
+        "equippedBy": null
+      },
+      "craftB": {
+        "itemInstanceId": "f8360696-3711-45a9-b16c-b8925dbc0be6",
+        "accountId": "00000000-0000-4000-8000-00000000000a",
+        "definitionId": "item_weapon_shortsword",
+        "rarityId": "uncommon",
+        "affixes": [
+          {
+            "affixId": "affix_of_power",
+            "value": 1
+          }
+        ],
+        "equippedBy": null
+      }
+    },
+    "10": {
+      "status": "PASS",
+      "goldSpent": 50,
+      "affixChanged": true,
+      "firstAttemptError": "AssertionError [ERR_ASSERTION]: /reforge: {\"ok\":false,\"error\":{\"code\":\"validation\",\"message\":\"reforge requires an unequipped item\",\"correlationId\":\"7cf6a261-bdd0-48ac-9bce-304918f257db\",\"details\":{\"reason\":\"item_equipped\"}}}\n\n400 !== 200\n",
+      "before": [
+        {
+          "affixId": "affix_of_power",
+          "value": 1
+        }
+      ],
+      "after": [
+        {
+          "affixId": "affix_of_vigor",
+          "value": 4
+        }
+      ]
+    },
+    "12": {
+      "status": "PASS",
+      "note": "default-party prepare/dispatch/collect/improve loop completed end to end (one expedition, default starter roster)",
+      "xpBefore": 0,
+      "xpAfter": 4,
+      "errors": []
+    },
+    "10b": {
+      "status": "PASS",
+      "note": "equipped hero present with stats in the following fight participant snapshot",
+      "heroUnit": {
+        "unitId": "00000000-0000-4000-8000-0000000a0001",
+        "side": "A",
+        "kind": "hero",
+        "name": "Vanguard",
+        "classId": "class_vanguard",
+        "secondaryClassId": null,
+        "slotIndex": 0,
+        "maxHp": 85
+      }
+    },
+    "12-area-contract": {
+      "status": "PASS",
+      "areaState": {
+        "selectedAreaId": "area_old_road"
+      }
+    }
+  },
+  "findings": []
+}
