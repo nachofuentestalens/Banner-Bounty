@@ -151,3 +151,59 @@ These are a content addition, not a new mechanic — each labels an already-froz
 1. **Expedition combat-log detail:** `contracts.md`'s `expedition/settle`/`stop` response has no `reportId`/`events` field, only aggregate rewards — unlike boss/arena which return a full `BattleReport`. Confirm with Gameplay Programmer/Tools Engineer during M1-10 whether expedition cycles produce a retrievable per-cycle log or whether `ExpeditionControls`'s result panel is aggregate-only by design (current `first-playable.md`/`combat.md` scope). This spec's `CombatLogPanel` is written to degrade gracefully to aggregate-only if no log endpoint exists.
 2. **Battle result copy (loss and draw):** no copy.md key exists for any `report.result` outcome label — not a boss-fight loss message distinct from the general fight premise, and not an arena draw message (`combat.md:103-104`: round-100 timeout or simultaneous-defeat both resolve as `draw` in arena, vs. `loss` in PvE/boss). `BattleResultPanel` can render the server's structured win/loss/draw result without new copy (e.g. plain "Defeated"/"Draw" labels derived from `report.result`), but warmer, player-facing lines for all three outcomes — especially draw, which has no precedent elsewhere in the UI — would need a Narrative Designer addition. Not a blocker for M1-10 (the report's structured result is sufficient for correctness), but flagged for the copy owner before polish.
 3. **Cross-`rulesVersion` arena challenge:** no contract rule specifies whether a challenge against a snapshot published under an older `rulesVersion` needs a player-facing warning before confirming. This spec shows the version plainly (point 6 above) but does not add a blocking confirmation step, since `contracts.md` does not define different simulation behavior for this case.
+
+## 2026-10-23 amendment: skill inspection and recorded damage
+
+Owner: Systems Designer. Task `f90d1714-0d5f-4989-8bd5-f0603c0ad872`. This is an additive M2 UI contract; all preceding M1-09 text is preserved as historical specification. For this surface, [classes.md](classes.md) sections 4-6 replace the old specialization picker with skill loadouts; [contracts.md](../studio/contracts.md)'s dated damage-evidence decision owns the DTO. No new endpoint, combat rule or client calculation is introduced.
+
+### A. Company: inspect before selecting or saving
+
+- Each populated Active 1/2 and Passive 1/2 slot has a separately focusable skill-help button next to its select. It describes the currently displayed choice; changing a draft choice updates its help without saving. Empty slots retain their empty label and have no fictitious skill description.
+- An expandable **Inspect available skills** section lists the primary class Basic Attack plus the deduplicated unlocked active/passive pool from the hero's committed primary/secondary classes and level. Every listed alternative has the same help. Opening it, inspecting a skill or dismissing help never selects, equips or saves anything. A not-yet-committed secondary-class selection does not pretend its skills are already available.
+- Basic Attack occupies no loadout slot. Explain active priority: slot 1 if ready and with a legal target, otherwise slot 2 under the same conditions, otherwise Basic Attack. Unlock levels, cooldowns in rounds, targeting/row exceptions, numerical effects, status durations, passive conditions and conditional synergies follow classes.md. Reuse narrative names/descriptions; mechanical help is factual supplementary text. Do not promise a live remaining-cooldown counter or a numerical damage forecast.
+- During an active expedition/dungeon, mutation controls remain disabled with an inline lock reason, but selected-skill help and the alternatives disclosure remain enabled. Inspection does not bypass the server lock or queue a deferred change. Below unlock levels, unavailable skills are not offered as selectable alternatives; a full locked-skill/class encyclopedia is outside scope.
+
+### B. Shared help interaction and narrow layouts
+
+| Input/state | Required observable behavior |
+| --- | --- |
+| Pointer enters skill button | Open name, narrative description and mechanical help without selecting the skill. Moving into the help keeps it readable; leaving both closes it unless its trigger remains focused. A short close grace period is permitted. |
+| Tab focuses skill button | Open the same content, show visible focus and associate it using `aria-describedby` with a unique `role="tooltip"` element. Content is descriptive, with no nested actions or modal focus trap. |
+| Tap/click, Enter or Space | Open the same help; repeated activation may keep it open. No save/change/challenge request is sent. Moving focus to another control closes the previous help. On touch, tapping another focusable control supplies the dismissal path. |
+| Escape while help is visible | Dismiss it regardless of whether it was opened by hover, focus or tap; retain current focus and do not change selection or playback. Do not immediately reopen until a fresh hover/focus/activation occurs. |
+| Blur, navigation or removed event | Close obsolete help and remove its description association. Inspection must not leave a floating panel for a removed trigger. |
+| 1280x720 and 390x720 | Help stays within the viewport, clears clipping ancestors such as the log, wraps long text and does not create page-level horizontal overflow. If vertically constrained, all text must remain reachable by keyboard and touch as well as pointer. Scrolling must not strand help off-screen. |
+
+Native `<select>`/`<option>` titles are supplementary only. Skill-help buttons remain available when selects are disabled. Unknown/legacy/enemy skill IDs without authored mechanics retain a readable name/ID and no invented formula or empty help button. Generic skill help describes class rules; it is not proof that a conditional synergy or modifier applied in this historical event.
+
+### C. Battle views and authoritative evidence
+
+Reuse the same skill-help component in the shared BattleView current-action feed and expandable full text log for expedition, dungeon floor/boss, standalone boss and arena reports. Battle inspection describes the recorded action's skill, not alternative edits to a frozen fight; alternatives belong in Company. Preserve actor, target, signed amount, HP, critical/dodge/status/death labels and all replay controls. Help adds no automatic pause or replay-speed change. The full log remains the stable inspection surface if playback advances. A zero-cycle settlement has no invented fight.
+
+Render `damageBreakdown` as ordinary readable event text in both feed and full log, with no hover requirement. The browser formats recorded operands/results in `steps` order; it does not execute formulas, roll dice, infer missing stages or use current hero stats to explain a historical fight. For known step kinds, label the evaluated stat/modifier/base/roll/survival arithmetic. Unknown kinds may use a neutral **Recorded modifier** label with the recorded result, without guessing its operation.
+
+| Evidence/state | Display requirement |
+| --- | --- |
+| Direct hit | Show recorded evaluated stages, then **Resolved damage**, **HP before**, **actual HP loss**, **HP after**. `damage` is pre-clamp/pre-Vital-Surge damage; `hpLoss` is actual loss, equal to negative event `amount`; `hpBefore - hpLoss = hpAfter`. These are evidence consistency checks, not browser reconstruction rules. |
+| Overkill or survival | Keep resolved damage and actual loss distinct. Example fixture: resolved 20 against HP 7 loses 7 and ends at 0; with recorded Vital Surge it loses 6 and ends at 1. Show the recorded survival stage when present and a plain explanation that remaining HP or a survival effect limited damage. Never label all resolved damage as HP removed. |
+| Dodge | Recorded resolved damage and loss are zero. Show the recorded dodge outcome and explicitly say base damage and critical roll were not evaluated; do not fabricate those stages. Guaranteed-critical evidence instead states that dodge and critical rolls were skipped when the server recorded that path. |
+| Burn | Identify stacks, captured ATK and recorded tick result; explain no dodge/critical roll. Do not substitute the caster's current ATK. Keep direct-hit and tick events distinct. |
+| AoE or sequential hits | Keep each target/hit event's evidence separate, including its own HP before/after and evaluated rolls. Do not combine hits into one fictional calculation. |
+| Missing legacy evidence | For a damage/dodge event without the field, show **Damage breakdown unavailable in this older report.** Retain original amount, HP and readable log. This wording is a compatibility fallback, not proof of the report's age. Do not backfill from HP differences. Non-damage events without evidence need no damage-unavailable message. |
+
+### D. Observable acceptance checks
+
+These are verification targets, not a claim that every check has run. See the [evidence report](reports/skill-help-damage-ui-amendment.md) for status and mismatches.
+
+| ID | Procedure and expected observation |
+| --- | --- |
+| SH-01 | Inspect a selected skill, another eligible skill and the primary Basic Attack before saving. Same authored mechanics appear; no mutation request occurs. Empty slots and unknown IDs remain readable without invented help. Compare the 30 class skills against classes.md, including cooldown, target, effects and conditional synergy wording. |
+| SH-02 | Repeat inspection with an expedition and then a dungeon active. Selected and alternative help works while edit/save controls stay locked with an inline reason; no deferred edit is queued. |
+| SH-03 | Open by hover with focus elsewhere, focus by Tab, and activate by tap/keyboard. Escape dismisses in every case without moving focus; fresh activation reopens. Pointer transfer into help preserves it; blur closes it. Verify description association and readable keyboard/touch scrolling of long help. |
+| SH-04 | At 1280x720 and 390x720 inspect Company and battle-log help, including near viewport edges and after scroll. Text remains reachable with no clipped overlay or page-level horizontal overflow. |
+| SH-05 | In expedition, dungeon floor/boss, boss and arena reports inspect current action and full log. Same help/evidence appears, actor/target/status/death remain readable, and inspection/replay issues no progression mutation. Old reports and zero-cycle settlements degrade without inventing a fight. |
+| SH-06 | Use recorded direct-hit fixtures with Weaken/Fortify, critical damage, overkill and Vital Surge. Compare displayed operands and results with event data; actual loss reconciles with amount/hpAfter and differs visibly from resolved damage where appropriate. |
+| SH-07 | Inspect dodge, guaranteed critical, Burn, AoE and sequential-hit fixtures. Only evaluated stages appear; Burn uses captured ATK; separate hits keep separate evidence. |
+| SH-08 | Inspect a legacy damage/dodge event with no evidence and an unknown step kind. Missing evidence says unavailable while retaining original log; unknown steps show recorded results without invented arithmetic. |
+
+Scope excludes debug controls, balance changes, the M3 codex, mid-expedition edits and continuous-fight delivery. Their existing task dispositions are unchanged.
