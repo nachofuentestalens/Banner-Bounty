@@ -178,3 +178,18 @@ Checks this run:
 - `git diff --check c46a2d803445a21ba1020b1bc9788e380746faa5`: exit 0 before this report-only update.
 
 Earlier build, focused test, simulation parity and desktop/mobile browser results above remain the runtime evidence; they were not repeated without a runtime change. No command was refused. No unresolved issue remains within the assigned scope. Next: dashboard reviewer acceptance and automatic integration; no manual branch switch or merge.
+
+## Merge readiness and delivery status (2026-10-23, HEAD 14646f7)
+
+The owner requested integration for local testing. Implementation remains complete; no runtime files changed in this run. Reviewed the cumulative diff against assigned base `c46a2d803445a21ba1020b1bc9788e380746faa5` (17 files), prior acceptance evidence and the documented native delivery flow. Existing successful runtime checks were not repeated without a relevant code change.
+
+Commands/results:
+
+- `git status --short`: clean starting worktree.
+- `git branch --show-current`: assigned `agent/task-c5bd2700-b2bc-4995-8741-16f5521c9d7b` branch retained.
+- `git diff --check c46a2d803445a21ba1020b1bc9788e380746faa5`: passed.
+- `git ls-files --error-unmatch apps/web/src/components/BattleView.tsx apps/web/src/screens/Company.tsx apps/web/src/types.ts design/game/combat.md design/game/classes.md design/game/narrative/copy.md`: passed, all required inputs committed.
+- `Invoke-RestMethod -Uri 'http://127.0.0.1:5190/api/projects/c6faaeda-b5c2-4d67-b351-1e1dd9f594a7/delivery'`: succeeded. Delivery is not paused; prerequisite `ae4866f3-8c46-4142-bf70-c901d5d57d37` and contract amendment `195f2cb0-d2b9-4998-97e7-f1a1860bbc50` are integrated. This task is absent from the returned checkpoint/integration list: its integration is not confirmed.
+- `gh pr view agent/task-c5bd2700-b2bc-4995-8741-16f5521c9d7b --json number,url,state,mergeable,mergeStateStatus,statusCheckRollup,isDraft`: could not execute because `gh` is not installed/on PATH. This is an unavailable command, not a passing PR check or approval refusal.
+
+Next: report implementation complete so the dashboard can checkpoint, review, publish and automatically squash-merge after GitHub checks pass, as directed by the owner. No manual merge or live-checkout change was performed. Local launch after integration: `npm run dev` in the integrated checkout (default browser URL `http://127.0.0.1:5174`). Merge/GitHub-check completion remains external to this run and must not be represented as already successful.
