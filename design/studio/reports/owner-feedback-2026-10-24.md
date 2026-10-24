@@ -21,6 +21,12 @@ Status: **partial — role/task setup complete; game implementation outstanding*
 
 ## Outstanding work / next phase
 
+### GitHub delivery follow-up
+
+The owner authorized handling GitHub publication/integration. AgentDashboard had already published checkpoint `14e9a1c` as draft PR https://github.com/nachofuentestalens/Banner-Bounty/pull/55. GitHub reported it open, unmerged and mergeable, with zero check runs/statuses; the dashboard correctly refused to merge without successful checks. Added `.github/workflows/validate.yml` for pull requests and pushes to main, using the repository's pinned Node version on Windows, read-only repository permissions, a timeout and cancellation of superseded runs. It runs the existing plan tests plus full game validation; no check gate is bypassed.
+
+Local verification on Node 22.14.0: `npm ci --no-audit --no-fund` passed; `node --test scripts/dashboard.test.mjs` passed all 7 tests; `npm run validate` passed typechecking, all 213 tests in 27 files and production build. These checks establish automated validation, not gameplay acceptance. GitHub must run the workflow against the published commit before merge eligibility is established. The original gameplay requests remain unfinished and this task must not be marked complete merely to trigger auto-merge.
+
 1. Implement a Codex tab from shared class/skill content. Relevant files: `apps/web/src/App.tsx`, `components/NavBar.tsx`, `copy.ts`, `skillMechanics.ts`, `packages/content/src/v2/classes.ts`, `skills.ts`. Show all six classes, base stats, growth and skills regardless of roster/level/activity lock. Avoid another independent stat table. Reconcile the existing Codex planning record with the delivered result; do not mark it done without review.
 2. Design and implement shorter expedition pacing plus immediate viewing of the actual current authoritative fight. Read the existing feasibility report, current expedition service, pure progression code and contracts before changing anything. Preserve offline determinism, idempotent rewards, restart/reconnect behavior and old-save handling. Do not substitute replay after a wait for live viewing. Measure pacing and catch-up costs; verify rewards cannot be accelerated by client playback or repeated requests.
 3. Test relevant gameplay/server/UI paths, build/typecheck, and obtain real desktop/mobile evidence when a browser is available. Continue updating this report with results and limitations.
