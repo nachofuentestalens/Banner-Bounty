@@ -1,0 +1,19 @@
+﻿[simulate] reproducibility check (seed 1, same seed run twice): PASS
+[simulate] pacing sweep: 8 runs, seeds 1-8, max 100 cycles/run
+  win/loss totals: 96 wins / 0 losses
+  first drop (cycle, min/median/max): 1/2.5/6 (~1/2.5/6 min)
+  level-3 unlock (cycle, min/median/max): 12/12/12 (~12/12/12 min)
+  boss ready (cycle, min/median/max): 12/12/12 (~12/12/12 min); 0 of 8 runs never reached boss-ready within 100 cycles
+[simulate] combat v2 reproducibility (seed 1): PASS
+[simulate] crafting/reforge reproducibility (seed 1): PASS
+[simulate] team-building contrast (8 runs, Old Road v2, level 5): balanced win rate 1, avg rounds 3.25; glass-cannon win rate 1, avg rounds 3
+[simulate] dungeon_aqueduct_depths full-clear benchmark (8 runs, level 8): balanced clear rate 1 (avg floors 4); glass-cannon clear rate 1 (avg floors 4)
+[simulate] v2 ledger: 3-hero party, level 8, 7 days (60 Old Road cycles/day + 2 dungeon clears/day), starting gold 0
+  final balances: gold 5835, scrap 140, sigil 28, core 14, items 100, overflow-converted 28
+  old road wins/losses: 420/0; dungeon clears/fails: 14/0
+[simulate] catch-up benchmark: 10 reps of a 480-cycle (8h) settlement
+  duration ms (min/median/p95/max): 4.17/5.14/7.82/7.82
+  heap delta bytes (min/max): -1686328/3267760
+  recentCycles bound (<= 10) held: true
+  within provisional 2000 ms target (p95): true
+  hardware: Intel(R) Core(TM) i7-14700K x28, node v22.14.0, win32/x64
