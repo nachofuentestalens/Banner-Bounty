@@ -72,6 +72,35 @@ it("starts paused for reduced motion and falls back to a plain log for a legacy 
   expect(screen.getByText(/Full combat log/)).toBeTruthy();
 });
 
+it("groups units into front and back rows by slot index", () => {
+  const formationReport: BattleReportView = {
+    ...report,
+    reportId: "formation",
+    participantsSnapshot: {
+      units: [
+        { unitId: "vanguard", side: "A", kind: "hero", name: "Vanguard", classId: "class_vanguard", secondaryClassId: null, slotIndex: 0, maxHp: 100 },
+        { unitId: "ranger", side: "A", kind: "hero", name: "Ranger", classId: "class_ranger", secondaryClassId: null, slotIndex: 1, maxHp: 100 },
+        { unitId: "arcanist", side: "A", kind: "hero", name: "Arcanist", classId: "class_arcanist", secondaryClassId: null, slotIndex: 2, maxHp: 100 },
+        { unitId: "cleric", side: "A", kind: "hero", name: "Cleric", classId: "class_cleric", secondaryClassId: null, slotIndex: 3, maxHp: 100 },
+        { unitId: "herald", side: "A", kind: "hero", name: "Herald", classId: "class_herald", secondaryClassId: null, slotIndex: 4, maxHp: 100 },
+        { unitId: "boss", side: "B", kind: "enemy", name: "The Tollkeeper", classId: null, secondaryClassId: null, slotIndex: 0, maxHp: 200 },
+      ],
+    },
+    events: [],
+    result: { outcome: "loss", rounds: 1, finalHp: {} },
+  };
+  render(<BattleView report={formationReport} />);
+  const frontRow = screen.getByLabelText("Company front row");
+  const backRow = screen.getByLabelText("Company back row");
+  expect(frontRow.textContent).toMatch(/Vanguard/);
+  expect(frontRow.textContent).toMatch(/Ranger/);
+  expect(frontRow.textContent).toMatch(/Arcanist/);
+  expect(frontRow.textContent).not.toMatch(/Cleric/);
+  expect(backRow.textContent).toMatch(/Cleric/);
+  expect(backRow.textContent).toMatch(/Herald/);
+  expect(backRow.textContent).not.toMatch(/Vanguard/);
+});
+
 it("shows a status badge with a visible duration while a buff/debuff is active", () => {
   const withStatus: BattleReportView = {
     ...report,

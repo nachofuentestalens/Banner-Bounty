@@ -188,6 +188,8 @@ export function BattleView({ report, extra }: { report: BattleReportView; extra?
 
   const sideA = units.filter((u) => u.side === "A").sort((a, b) => a.slotIndex - b.slotIndex);
   const sideB = units.filter((u) => u.side === "B").sort((a, b) => a.slotIndex - b.slotIndex);
+  const frontRow = (list: BattleUnit[]) => list.filter((u) => u.slotIndex <= 2);
+  const backRow = (list: BattleUnit[]) => list.filter((u) => u.slotIndex > 2);
 
   return (
     <section className="battle-result-panel" aria-label="Battle replay">
@@ -209,16 +211,23 @@ export function BattleView({ report, extra }: { report: BattleReportView; extra?
             {([["A", sideA], ["B", sideB]] as const).map(([team, list]) => (
               <div className={`battle-team team-${team}`} key={team}>
                 <h4>{team === "A" ? "Your company" : "Opposition"}</h4>
-                {list.map((unit) => (
-                  <UnitPanel
-                    key={unit.unitId}
-                    unit={unit}
-                    hp={hpFinal[unit.unitId] ?? unit.maxHp}
-                    statuses={state.statuses[unit.unitId] ?? []}
-                    acting={!finished && event?.sourceId === unit.unitId}
-                    targeted={!finished && event?.targetId === unit.unitId}
-                  />
-                ))}
+                {([["front", frontRow(list)], ["back", backRow(list)]] as const).map(([rowName, rowUnits]) =>
+                  rowUnits.length > 0 ? (
+                    <div className={`battle-row row-${rowName}`} key={rowName} aria-label={`${team === "A" ? "Company" : "Opponent"} ${rowName} row`}>
+                      <span className="row-label">{rowName === "front" ? "Front row" : "Back row"}</span>
+                      {rowUnits.map((unit) => (
+                        <UnitPanel
+                          key={unit.unitId}
+                          unit={unit}
+                          hp={hpFinal[unit.unitId] ?? unit.maxHp}
+                          statuses={state.statuses[unit.unitId] ?? []}
+                          acting={!finished && event?.sourceId === unit.unitId}
+                          targeted={!finished && event?.targetId === unit.unitId}
+                        />
+                      ))}
+                    </div>
+                  ) : null,
+                )}
               </div>
             ))}
           </div>
