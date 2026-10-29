@@ -43,3 +43,17 @@ The owner authorized the recommended web/server approach and this milestone setu
 ## Done means
 
 A fresh local install can complete the acceptance walkthrough in `design/qa/acceptance.md`; real checks have evidence; no unresolved save-loss, reward-duplication, startup, or account-isolation blocker remains. QA certifies technical behavior and the Game Director records the playability verdict. The owner remains the final judge of enjoyment; a working build does not prove product-market fit.
+
+## M3 scope: readable choices and company competition
+
+M2's current verdict is withheld, with specific closure evidence in
+[reports/M2-30.md](reports/M2-30.md). The next bounded milestone is
+[milestones/M3.md](milestones/M3.md): reliable fight access, deferred next-fight loadouts,
+measured fight-length expedition pacing, an eight-class roster with specializations, three races,
+class reference/respec, one additional dungeon, and local asynchronous team seasons/tournaments.
+
+M3 extends the earlier unranked arena boundary to standings and a four-entry bracket. Team PvP
+means five-hero company snapshots controlled by one account per side, with labelled local fixture
+opponents for testing. It adds no public accounts, online matchmaking infrastructure, live human
+co-control, paid hosting or real-time combat. Existing exclusions otherwise remain. Production
+implementation follows M2 closure; this is scope direction, not a delivery claim.
