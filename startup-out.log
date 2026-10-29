@@ -1,0 +1,8 @@
+
+> banner-and-bounty@0.1.0 start
+> node apps/server/dist/main.js
+
+[server] listening on http://127.0.0.1:3141
+[server] save database: C:\Users\user\AppData\Local\Temp\bb-director-7ddb3c25.sqlite
+[server] debug tools (level/XP/gold menu): disabled
+[server] serving built client from C:\Users\user\AppData\Local\AgentDashboard\worktrees\7ddb3c25-6527-4725-af3d-be42d243b6fc\apps\web\dist at http://127.0.0.1:3141/
