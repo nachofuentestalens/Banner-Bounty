@@ -134,7 +134,7 @@ function HpBar({ hp, maxHp }: { hp: number; maxHp: number }) {
   );
 }
 
-function UnitPanel({ unit, hp, statuses, acting, targeted }: { unit: BattleUnit; hp: number; statuses: LiveStatus[]; acting: boolean; targeted: boolean }) {
+function UnitPanel({ unit, hp, statuses, currentRound, acting, targeted }: { unit: BattleUnit; hp: number; statuses: LiveStatus[]; currentRound: number; acting: boolean; targeted: boolean }) {
   const fallen = hp <= 0;
   return (
     <article
@@ -151,7 +151,7 @@ function UnitPanel({ unit, hp, statuses, acting, targeted }: { unit: BattleUnit;
             {statuses.map((s) => (
               <li key={s.statusId} className="status-badge">
                 {statusCopy(s.statusId).name}
-                {s.stacks && s.stacks > 1 ? ` x${s.stacks}` : ""} ({Math.max(0, s.duration - 1)}r)
+                {s.stacks && s.stacks > 1 ? ` x${s.stacks}` : ""} ({Math.max(0, s.duration - (currentRound - s.appliedRound))}r)
               </li>
             ))}
           </ul>
@@ -215,6 +215,7 @@ export function BattleView({ report, extra }: { report: BattleReportView; extra?
                     unit={unit}
                     hp={hpFinal[unit.unitId] ?? unit.maxHp}
                     statuses={state.statuses[unit.unitId] ?? []}
+                    currentRound={state.currentRound}
                     acting={!finished && event?.sourceId === unit.unitId}
                     targeted={!finished && event?.targetId === unit.unitId}
                   />
