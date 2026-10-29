@@ -1,0 +1,3 @@
+(node:1907120) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[server] port 3100 is already in use on 127.0.0.1. Set API_PORT to a free port and retry.

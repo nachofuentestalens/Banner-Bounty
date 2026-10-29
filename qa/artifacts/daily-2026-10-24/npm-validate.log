@@ -1,0 +1,77 @@
+﻿
+> banner-and-bounty@0.1.0 validate
+> npm run typecheck && npm run test && npm run build
+
+
+> banner-and-bounty@0.1.0 typecheck
+> tsc --build tsconfig.json && npm run typecheck --workspace=apps/web
+
+
+> @banner-and-bounty/web@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> banner-and-bounty@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/user/AppData/Local/AgentDashboard/worktrees/722ed8b3-7d98-4b4e-8040-5e67d7b92581
+
+node.exe : (node:1895240) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:1895240) ...nge at any time:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1907564) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1907536) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1908236) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1907876) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1908384) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  27 passed (27)
+      Tests  214 passed (214)
+   Start at  17:24:09
+   Duration  1.62s (transform 47%, environment 20%, import 17%, tests 15%, worker 1%)
+
+
+> banner-and-bounty@0.1.0 build
+> npm run build --workspace=packages/contracts --workspace=packages/game --workspace=packages/content --workspace=apps/server --workspace=apps/web
+
+
+> @banner-and-bounty/contracts@0.1.0 build
+> tsc --build tsconfig.json
+
+
+> @banner-and-bounty/game@0.2.0 build
+> tsc --build tsconfig.json
+
+
+> @banner-and-bounty/content@0.2.0 build
+> tsc --build tsconfig.json
+
+
+> @banner-and-bounty/server@0.1.0 build
+> tsc --build tsconfig.json
+
+
+> @banner-and-bounty/web@0.1.0 build
+> tsc --noEmit -p tsconfig.json && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 36 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.54 kB │ gzip:  0.35 kB
+dist/assets/index-CvqjcItZ.css   11.22 kB │ gzip:  3.16 kB
+dist/assets/index-DUj8rwrf.js   214.21 kB │ gzip: 65.65 kB
+
+✓ built in 73ms
