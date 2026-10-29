@@ -1,5 +1,11 @@
 # M1 delivery order (complete — M1 accepted, see `design/studio/release-verdict.md`)
 
+## Active owner feedback — 2026-10-24
+
+The owner has reiterated that roster tooltips, 60-second expeditions and post-collection battle replays do not meet the desired experience. The current owner-feedback work must deliver a discoverable Codex (all classes, base stats, per-level growth, skills and class combinations), substantially shorter active-play waits, and access to the current fight while it unfolds. Historical M3-candidate deferral below is not closure of these requests. Server-authoritative rewards, deterministic catch-up and save compatibility remain required; changing a timer label or playing the last credited fight does not satisfy live viewing.
+
+UI Designer and UI Engineer now exist in AgentDashboard, with a review/specification task and a dependent implementation task recorded in `planning/ui-improvement.json`. The review must measure the first-session experience and identify actionable engagement improvements, not merely restyle colors. These records do not claim the redesign or gameplay changes have shipped. Reuse the existing Codex planning record (`e6bc8b74-aff8-4130-9950-3f53573a28b4`) and cycle-duration feasibility work rather than creating duplicates. Current progress and outstanding implementation are recorded in `reports/owner-feedback-2026-10-24.md`.
+
 The task registry in `planning/milestone.json` is authoritative for dependency edges and acceptance criteria. Dashboard statuses track execution. Everything begins staged; planning completion is not game completion.
 
 M1 is accepted and closed; the gates and policy below are the historical record of how it shipped. Current priority is M2 — see `design/studio/milestones/M2.md` for scope and `## M2 delivery order` below for the task graph.
@@ -100,3 +106,22 @@ replay does not prove real-time advancement, and shorter cycles do not guarantee
 The existing M2-30 verdict/M3 planning task owns scheduling; these are planning recommendations,
 not newly authorized implementation tasks. See the triage report for owners, prerequisites and
 observable acceptance targets. The unrelated debug menu is outside this five-item scope.
+
+## M2 verdict and M3 delivery gate (2026-10-29)
+
+M2 full acceptance is withheld: see [M2-30](reports/M2-30.md). Finish the existing F01/F02
+fixes, then the focused QA closure pass; resume remaining M2-28 analysis with the integrated
+simulation matrix. No duplicate M2 implementation tasks. Director closes the evidence gate;
+approval of a partial report is not a pass for its failed checks.
+
+[M3](milestones/M3.md) supersedes the candidate scheduling notes above: reliable successive-fight
+access and deferred loadouts first (priority 8), then measured variable expedition timing and
+build understanding/respec (7), then the bounded classes/specializations/races/dungeon and local
+asynchronous season/tournament expansion (6). All are required M3 gates, not optional stretch work.
+Priority never replaces dependencies. The skill-help/UI amendment mentioned above is now integrated
+(task f90d1714-0d5f-4989-8bd5-f0603c0ad872); do not recreate it.
+
+Producer creates the real M3 task graph from the milestone's role/output/prerequisite table and
+resolves native IDs before dispatch. Director reviews scope and evidence gates. Specification may
+proceed while M2 closes; production feature work requires the M2 closure verdict and plan review.
+Never use M2-30 as a created task's prerequisite; require its committed plan/report paths instead.

@@ -1,0 +1,31 @@
+﻿
+> banner-and-bounty@0.1.0 walkthrough
+> node scripts/walkthrough.mjs
+
+node.exe : (node:1906496) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:1906496) ...nge at any time:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS 1 load built client from API; fresh data dir — GET / 200, health schemaVersion=4, db=C:\Users\user\AppData\Local\Temp\bnb-walkthrough-voWrQm\save.sqlite (959 ms)
+PASS 2 select company A; inspect roster; reorder formation — starters: Vanguard Lv 1 | Ranger Lv 1 | Arcanist Lv 1; formation slots 0/1 swapped and persisted (00000000-0000-4000-8000-0000000a0002, 00000000-0000-4000-8000-0000000a0001) (163 ms)
+PASS 3 start expedition on the selected area; lock explanations shown — lock note: "Loadout Locked: This hero is out on expedition. Gear and specialization are froz" (142 ms)
+PASS 4 collect progression; close/reopen the browser page; collect again — 5 then 3 cycles credited; gold=70, inventory=3 (312 ms)
+PASS 5 stop; equip a drop; reach level 3; assign a secondary class and loadout — equipped "Iron Band of Haste (Uncommon)" (compare 'Now' = "Empty"); levels Vanguard Lv 3, Ranger Lv 3, Arcanist Lv 3; dual-classed "Vanguard / Cleric Lv 3"; loadout persisted for 00000000-0000-4000-8000-0000000a0001 (352 ms)
+PASS 6 challenge boss; full battle view shows units/HP/statuses; reward granted only once — first=Victory, 4 unit panels, badge="Already Claimed", gold 280 -> 280 (220 ms)
+PASS 6b playback controls: step, pause, speed and skip-to-end stay in sync with HP/log shown — HP 44 / 44 HP -> 44 / 44 HP after one step; skip-to-end reached a final outcome ("tus fades. / Victory") (30115 ms)
+PASS 7 company B in a separate context publishes its team — published; cross-account secondary-class attempt -> 403 (317 ms)
+PASS 8 A challenges B; B alters team; A's saved report unchanged — outcome=win; report identical after B edit; B reading A's report -> 404 (364 ms)
+PASS 9 restart server; both saves and elapsed progression survive — revisions A=11 B=3 preserved; 4 cycles credited across downtime (288 ms)
+PASS 10 recruit a 4th hero; roster exceeds the 3-hero party cap — roster 3 -> 4 heroes (fielded: 3); gold now 20 (270 ms)
+PASS 11 select the second area; confirm at least two areas are listed — areas: The Old Road (selected) | The Sunken Aqueduct (39 ms)
+PASS 12 enter the multi-floor dungeon; settle several floors; full battle view renders a floor fight — floors processed: 4; outcome=cleared; boss floor 4 fight (win) rendered with 4 unit panels; materials now scrap=10 sigil=2 core=1 (146 ms)
+PASS 13 craft then reforge a gear item from dungeon materials — crafted item_trinket_whetstone (uncommon, 1 affix(es)); reforge attempted, server responded 400 (validation expected if under-resourced) (149 ms)
+PASS 14 keyboard operation and 390px narrow layout across every screen — focus outline=solid; scrollWidth {"Company":390,"Expedition":390,"Dungeon":390,"Inventory":390,"Boss":390,"Arena":390} (1792 ms)
+
+walkthrough: 15/15 steps passed; ACCELERATED clock
+console errors: A: Failed to load resource: the server responded with a status of 401 (Unauthorized) || B: Failed to load resource: the server responded with a status of 401 (Unauthorized) || A: Failed to load resource: the server responded with a status of 400 (Bad Request) || K: Failed to load resource: the server responded with a status of 401 (Unauthorized)
+screenshots: C:\Users\user\AppData\Local\AgentDashboard\worktrees\722ed8b3-7d98-4b4e-8040-5e67d7b92581\test-results\walkthrough

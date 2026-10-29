@@ -386,6 +386,11 @@ select {
 .battle-team { min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: .7rem; }
 .battle-team h4 { color: #c3dad6; font-size: .8rem; text-transform: uppercase; letter-spacing: .12em; margin: 0 0 .3rem; }
 .team-B h4 { color: #efbcad; }
+.battle-row { display: flex; flex-direction: column; gap: .5rem; padding: .5rem; border: 1px dashed #718e8d55; border-radius: 8px; }
+.battle-row.row-back { border-style: dotted; background: #0c1620a0; }
+.team-B .battle-row { border-color: #a3786955; }
+.row-label { font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: #8fa6a4; }
+.team-B .row-label { color: #d9ab9a; }
 .combatant { display: flex; align-items: center; gap: .6rem; min-height: 106px; padding: .5rem .7rem; border: 1px solid #718e8d66; border-radius: 10px; background: #111c26d9; transition: border-color .2s, background .2s; position: relative; }
 .team-B .combatant { border-color: #a3786966; }
 .fighter-stage { width: 78px; flex-shrink: 0; position: relative; color: #83c8be; }
