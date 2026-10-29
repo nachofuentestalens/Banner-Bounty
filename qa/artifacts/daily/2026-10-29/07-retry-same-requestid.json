@@ -1,0 +1,28 @@
+﻿{
+    "ok":  true,
+    "data":  {
+                 "creditedCycles":  0,
+                 "elapsedMs":  13439,
+                 "discardedMs":  0,
+                 "checkpointAt":  "2026-10-29T13:31:25.600Z",
+                 "rewards":  {
+                                 "xp":  0,
+                                 "gold":  0,
+                                 "items":  [
+
+                                           ]
+                             },
+                 "outcomes":  {
+                                  "wins":  0,
+                                  "losses":  0
+                              },
+                 "overflow":  {
+                                  "convertedCount":  0,
+                                  "convertedGold":  0
+                              },
+                 "recentCycles":  [
+
+                                  ]
+             },
+    "revision":  3
+}
