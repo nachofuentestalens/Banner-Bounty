@@ -100,3 +100,22 @@ replay does not prove real-time advancement, and shorter cycles do not guarantee
 The existing M2-30 verdict/M3 planning task owns scheduling; these are planning recommendations,
 not newly authorized implementation tasks. See the triage report for owners, prerequisites and
 observable acceptance targets. The unrelated debug menu is outside this five-item scope.
+
+## M2 verdict and M3 delivery gate (2026-10-29)
+
+M2 full acceptance is withheld: see [M2-30](reports/M2-30.md). Finish the existing F01/F02
+fixes, then the focused QA closure pass; resume remaining M2-28 analysis with the integrated
+simulation matrix. No duplicate M2 implementation tasks. Director closes the evidence gate;
+approval of a partial report is not a pass for its failed checks.
+
+[M3](milestones/M3.md) supersedes the candidate scheduling notes above: reliable successive-fight
+access and deferred loadouts first (priority 8), then measured variable expedition timing and
+build understanding/respec (7), then the bounded classes/specializations/races/dungeon and local
+asynchronous season/tournament expansion (6). All are required M3 gates, not optional stretch work.
+Priority never replaces dependencies. The skill-help/UI amendment mentioned above is now integrated
+(task f90d1714-0d5f-4989-8bd5-f0603c0ad872); do not recreate it.
+
+Producer creates the real M3 task graph from the milestone's role/output/prerequisite table and
+resolves native IDs before dispatch. Director reviews scope and evidence gates. Specification may
+proceed while M2 closes; production feature work requires the M2 closure verdict and plan review.
+Never use M2-30 as a created task's prerequisite; require its committed plan/report paths instead.

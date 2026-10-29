@@ -1,3 +1,30 @@
+# Current release verdict: M2 acceptance withheld
+
+Date: 2026-10-29 · Owner: Game Director · Task M2-30
+
+**REJECT full M2 acceptance on baseline `1cd836668a18f66e6ad5c3e34b0383b690f6b774`.**
+M2 adds watchable combat, dual-class builds, crafting and a multi-floor dungeon, but formation
+rows and status durations fail the frozen replay checks. Existing P2 fixes remain unverified;
+checks 8–10/12 also have evidence gaps. No new P0/P1 was established by this document review,
+and no claim that the build is P0/P1-free or enjoyable is made.
+
+The [M2-30 report](reports/M2-30.md) records all twelve checks, exact attributed commands,
+the later positive level-3 dungeon contrast evidence and the remaining pacing limits. Existing
+F01/F02 tasks must integrate before the requested QA closure pass. Director reviews that report
+and the remaining M2-28 evidence disposition before changing this verdict. Task approval alone
+is not milestone acceptance.
+
+[M3 scope](milestones/M3.md) authorizes specification and Producer planning now; production
+feature implementation waits for M2 closure and plan review. It covers reliable fight access,
+deferred loadouts, measured fight-length pacing, eight classes with specializations, three races,
+a second dungeon, and local asynchronous team arena seasons/tournaments. No feature is claimed
+implemented by this plan.
+
+The following M1 verdict is preserved as a dated historical decision; it is not M2 certification.
+Its playtest/process observations describe October 19. Subsequent owner dissatisfaction and the
+recorded level-3 boss decision are reflected in vision.md, decisions.md and the M2/M3 plans.
+
+---
 # M1 release verdict: accepted
 
 Date: 2026-10-19 · Owner: Game Director · Task M1-16
