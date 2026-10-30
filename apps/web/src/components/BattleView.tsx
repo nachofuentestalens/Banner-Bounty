@@ -196,9 +196,9 @@ export function BattleView({ report, extra }: { report: BattleReportView; extra?
       <div className="battle-heading">
         <div>
           <p className="battle-eyebrow">
-            {report.kind === "boss" || report.kind === "dungeon_boss" ? "Boss encounter" : report.kind === "arena" ? "Arena encounter" : report.kind === "dungeon_floor" ? "Dungeon floor" : "Expedition"}
+            {report.kind === "boss" ? "Boss encounter" : report.kind === "dungeon_boss" ? "Dungeon boss" : report.kind === "arena" ? "Arena encounter" : report.kind === "dungeon_floor" ? "Dungeon floor" : "Expedition"}
           </p>
-          <h3>{finished || units.length === 0 ? OUTCOME_LABEL[report.result.outcome] : "Battle in progress"}</h3>
+          <h3>{finished || units.length === 0 ? OUTCOME_LABEL[report.result.outcome] : "Replaying recorded fight"}</h3>
         </div>
         <span className="round-badge">
           Round {event?.round ?? 1} / {report.result.rounds}

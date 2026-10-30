@@ -115,6 +115,16 @@ it("shows a status badge with a visible duration while a buff/debuff is active",
   expect(screen.getByRole("list", { name: "Arcanist status effects" }).textContent).toMatch(/Weakened.*\(2r\)/);
 });
 
+it("FS-01: never calls a recorded report live or in progress, mid-replay or finished", () => {
+  render(<BattleView report={report} />);
+  expect(screen.getByRole("heading", { name: "Replaying recorded fight" })).toBeTruthy();
+  expect(screen.queryByText(/battle in progress/i)).toBeNull();
+  expect(screen.queryByText(/\blive\b/i)).toBeNull();
+  fireEvent.click(screen.getByText("Skip to end"));
+  expect(screen.getByRole("heading", { name: "Defeated" })).toBeTruthy();
+  expect(screen.queryByText(/\blive\b/i)).toBeNull();
+});
+
 it("decrements the status badge duration by one per round and clears it on expiry", () => {
   const withStatus: BattleReportView = {
     ...report,
