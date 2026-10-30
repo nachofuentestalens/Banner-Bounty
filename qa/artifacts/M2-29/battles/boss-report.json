@@ -1,7 +1,7 @@
 {
-  "reportId": "c933c984-dab4-4f02-aa70-7f0bcd76089d",
+  "reportId": "921bed4d-b255-418e-9a33-9b896d8318ea",
   "kind": "boss",
-  "seed": "80b073b3",
+  "seed": "ebda7769",
   "rulesVersion": 1,
   "createdAt": "2026-10-24T12:01:01.000Z",
   "participantsSnapshot": {
@@ -55,7 +55,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              52,
+              38,
               5
             ],
             "value": 0
@@ -63,10 +63,10 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              99,
+              2,
               25
             ],
-            "value": 0
+            "value": 1
           },
           {
             "kind": "attack",
@@ -85,20 +85,29 @@
               8
             ],
             "value": 23
+          },
+          {
+            "kind": "critical",
+            "inputs": [
+              23,
+              3,
+              2
+            ],
+            "value": 34
           }
         ],
-        "damage": 23,
+        "damage": 34,
         "hpBefore": 220,
-        "hpLoss": 23
+        "hpLoss": 34
       },
       "round": 1,
       "type": "aimed_shot",
       "sourceId": "00000000-0000-4000-8000-0000000a0002",
       "targetId": "boss_tollkeeper#0",
-      "amount": -23,
-      "hpAfter": 197,
+      "amount": -34,
+      "hpAfter": 186,
       "skillId": "aimed_shot",
-      "crit": false,
+      "crit": true,
       "dodged": false,
       "statusApplied": null,
       "statusExpired": null,
@@ -110,7 +119,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              83,
+              32,
               5
             ],
             "value": 0
@@ -118,7 +127,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              38,
+              16,
               10
             ],
             "value": 0
@@ -152,7 +161,7 @@
           }
         ],
         "damage": 26,
-        "hpBefore": 197,
+        "hpBefore": 186,
         "hpLoss": 26
       },
       "round": 1,
@@ -160,7 +169,7 @@
       "sourceId": "00000000-0000-4000-8000-0000000a0003",
       "targetId": "boss_tollkeeper#0",
       "amount": -26,
-      "hpAfter": 171,
+      "hpAfter": 160,
       "skillId": "firebolt",
       "crit": false,
       "dodged": false,
@@ -178,7 +187,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              58,
+              92,
               5
             ],
             "value": 0
@@ -186,7 +195,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              84,
+              62,
               10
             ],
             "value": 0
@@ -276,7 +285,7 @@
           }
         ],
         "damage": 9,
-        "hpBefore": 171,
+        "hpBefore": 160,
         "hpLoss": 9
       },
       "round": 1,
@@ -284,7 +293,7 @@
       "sourceId": null,
       "targetId": "boss_tollkeeper#0",
       "amount": -9,
-      "hpAfter": 162,
+      "hpAfter": 151,
       "skillId": null,
       "crit": false,
       "dodged": false,
@@ -298,7 +307,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              87,
+              99,
               5
             ],
             "value": 0
@@ -306,10 +315,10 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              1,
+              26,
               25
             ],
-            "value": 1
+            "value": 0
           },
           {
             "kind": "attack",
@@ -328,29 +337,20 @@
               8
             ],
             "value": 23
-          },
-          {
-            "kind": "critical",
-            "inputs": [
-              23,
-              3,
-              2
-            ],
-            "value": 34
           }
         ],
-        "damage": 34,
-        "hpBefore": 162,
-        "hpLoss": 34
+        "damage": 23,
+        "hpBefore": 151,
+        "hpLoss": 23
       },
       "round": 2,
       "type": "quick_shot",
       "sourceId": "00000000-0000-4000-8000-0000000a0002",
       "targetId": "boss_tollkeeper#0",
-      "amount": -34,
+      "amount": -23,
       "hpAfter": 128,
       "skillId": "quick_shot",
-      "crit": true,
+      "crit": false,
       "dodged": false,
       "statusApplied": null,
       "statusExpired": null,
@@ -362,7 +362,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              63,
+              6,
               5
             ],
             "value": 0
@@ -370,7 +370,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              40,
+              46,
               10
             ],
             "value": 0
@@ -430,7 +430,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              70,
+              8,
               5
             ],
             "value": 0
@@ -438,7 +438,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              86,
+              24,
               10
             ],
             "value": 0
@@ -494,7 +494,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              36,
+              63,
               5
             ],
             "value": 0
@@ -502,10 +502,10 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              5,
+              10,
               10
             ],
-            "value": 1
+            "value": 0
           },
           {
             "kind": "attack",
@@ -524,29 +524,20 @@
               8
             ],
             "value": 12
-          },
-          {
-            "kind": "critical",
-            "inputs": [
-              12,
-              3,
-              2
-            ],
-            "value": 18
           }
         ],
-        "damage": 18,
+        "damage": 12,
         "hpBefore": 102,
-        "hpLoss": 18
+        "hpLoss": 12
       },
       "round": 2,
       "type": "strike",
       "sourceId": "00000000-0000-4000-8000-0000000a0001",
       "targetId": "boss_tollkeeper#0",
-      "amount": -18,
-      "hpAfter": 84,
+      "amount": -12,
+      "hpAfter": 90,
       "skillId": "strike",
-      "crit": true,
+      "crit": false,
       "dodged": false,
       "statusApplied": null,
       "statusExpired": null,
@@ -565,7 +556,7 @@
           }
         ],
         "damage": 18,
-        "hpBefore": 84,
+        "hpBefore": 90,
         "hpLoss": 18
       },
       "round": 2,
@@ -573,7 +564,7 @@
       "sourceId": null,
       "targetId": "boss_tollkeeper#0",
       "amount": -18,
-      "hpAfter": 66,
+      "hpAfter": 72,
       "skillId": null,
       "crit": false,
       "dodged": false,
@@ -615,7 +606,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              21,
+              48,
               5
             ],
             "value": 0
@@ -623,7 +614,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              4,
+              8,
               25
             ],
             "value": 1
@@ -647,34 +638,25 @@
             "value": 23
           },
           {
-            "kind": "execute",
+            "kind": "critical",
             "inputs": [
               23,
               3,
               2
             ],
             "value": 34
-          },
-          {
-            "kind": "critical",
-            "inputs": [
-              34,
-              3,
-              2
-            ],
-            "value": 51
           }
         ],
-        "damage": 51,
-        "hpBefore": 66,
-        "hpLoss": 51
+        "damage": 34,
+        "hpBefore": 72,
+        "hpLoss": 34
       },
       "round": 3,
       "type": "aimed_shot",
       "sourceId": "00000000-0000-4000-8000-0000000a0002",
       "targetId": "boss_tollkeeper#0",
-      "amount": -51,
-      "hpAfter": 15,
+      "amount": -34,
+      "hpAfter": 38,
       "skillId": "aimed_shot",
       "crit": true,
       "dodged": false,
@@ -688,7 +670,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              30,
+              83,
               5
             ],
             "value": 0
@@ -696,7 +678,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              86,
+              76,
               10
             ],
             "value": 0
@@ -730,15 +712,15 @@
           }
         ],
         "damage": 26,
-        "hpBefore": 15,
-        "hpLoss": 15
+        "hpBefore": 38,
+        "hpLoss": 26
       },
       "round": 3,
       "type": "firebolt",
       "sourceId": "00000000-0000-4000-8000-0000000a0003",
       "targetId": "boss_tollkeeper#0",
-      "amount": -15,
-      "hpAfter": 0,
+      "amount": -26,
+      "hpAfter": 12,
       "skillId": "firebolt",
       "crit": false,
       "dodged": false,
@@ -748,6 +730,167 @@
         "stacks": 3
       },
       "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              21,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              38,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 14
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 17
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              14,
+              17
+            ],
+            "value": 6
+          },
+          {
+            "kind": "heavy_strike",
+            "inputs": [
+              6,
+              3,
+              2
+            ],
+            "value": 9
+          }
+        ],
+        "damage": 9,
+        "hpBefore": 76,
+        "hpLoss": 9
+      },
+      "round": 3,
+      "type": "toll_smash",
+      "sourceId": "boss_tollkeeper#0",
+      "targetId": "00000000-0000-4000-8000-0000000a0001",
+      "amount": -9,
+      "hpAfter": 67,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": {
+        "statusId": "status_weaken",
+        "duration": 2,
+        "stacks": 1
+      },
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "dodge_roll",
+            "inputs": [
+              81,
+              5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              69,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 16
+          },
+          {
+            "kind": "weaken",
+            "inputs": [
+              16,
+              70,
+              100
+            ],
+            "value": 11
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 8
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              11,
+              8
+            ],
+            "value": 7
+          }
+        ],
+        "damage": 7,
+        "hpBefore": 12,
+        "hpLoss": 7
+      },
+      "round": 3,
+      "type": "strike",
+      "sourceId": "00000000-0000-4000-8000-0000000a0001",
+      "targetId": "boss_tollkeeper#0",
+      "amount": -7,
+      "hpAfter": 5,
+      "skillId": "strike",
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "burn",
+            "inputs": [
+              3,
+              28
+            ],
+            "value": 27
+          }
+        ],
+        "damage": 27,
+        "hpBefore": 5,
+        "hpLoss": 5
+      },
+      "round": 3,
+      "type": "burn_tick",
+      "sourceId": null,
+      "targetId": "boss_tollkeeper#0",
+      "amount": -5,
+      "hpAfter": 0,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
       "death": true
     }
   ],
@@ -755,7 +898,7 @@
     "outcome": "win",
     "rounds": 3,
     "finalHp": {
-      "00000000-0000-4000-8000-0000000a0001": 76,
+      "00000000-0000-4000-8000-0000000a0001": 67,
       "00000000-0000-4000-8000-0000000a0002": 68,
       "00000000-0000-4000-8000-0000000a0003": 64,
       "boss_tollkeeper#0": 0

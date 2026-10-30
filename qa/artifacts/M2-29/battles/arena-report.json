@@ -1,7 +1,7 @@
 {
-  "reportId": "0a154761-b377-49f8-a443-e63db0e87c62",
+  "reportId": "d6874e5b-cebf-478b-aaa5-ad0906abf9d6",
   "kind": "arena",
-  "seed": "90ef506387410e26",
+  "seed": "20cacab791285df1",
   "rulesVersion": 1,
   "createdAt": "2026-10-24T12:13:01.000Z",
   "participantsSnapshot": {
@@ -75,7 +75,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              70,
+              5,
               5
             ],
             "value": 0
@@ -83,7 +83,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              82,
+              79,
               25
             ],
             "value": 0
@@ -130,7 +130,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              5,
+              52,
               5
             ],
             "value": 0
@@ -138,7 +138,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              1,
+              0,
               10
             ],
             "value": 1
@@ -208,7 +208,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              55,
+              31,
               5
             ],
             "value": 0
@@ -216,7 +216,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              42,
+              77,
               10
             ],
             "value": 0
@@ -276,7 +276,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              61,
+              37,
               5
             ],
             "value": 0
@@ -284,7 +284,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              64,
+              29,
               10
             ],
             "value": 0
@@ -331,51 +331,25 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              24,
+              1,
               5
             ],
-            "value": 0
-          },
-          {
-            "kind": "crit_roll",
-            "inputs": [
-              66,
-              25
-            ],
-            "value": 0
-          },
-          {
-            "kind": "attack",
-            "inputs": [],
-            "value": 27
-          },
-          {
-            "kind": "defense",
-            "inputs": [],
-            "value": 4
-          },
-          {
-            "kind": "base_damage",
-            "inputs": [
-              27,
-              4
-            ],
-            "value": 25
+            "value": 1
           }
         ],
-        "damage": 25,
+        "damage": 0,
         "hpBefore": 32,
-        "hpLoss": 25
+        "hpLoss": 0
       },
       "round": 2,
       "type": "quick_shot",
       "sourceId": "00000000-0000-4000-8000-0000000a0002",
       "targetId": "00000000-0000-4000-8000-0000000b0002",
-      "amount": -25,
-      "hpAfter": 7,
+      "amount": 0,
+      "hpAfter": 32,
       "skillId": "quick_shot",
       "crit": false,
-      "dodged": false,
+      "dodged": true,
       "statusApplied": null,
       "statusExpired": null,
       "death": false
@@ -386,25 +360,51 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              3,
+              15,
               5
+            ],
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              24,
+              10
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 9
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 20
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              9,
+              20
             ],
             "value": 1
           }
         ],
-        "damage": 0,
+        "damage": 1,
         "hpBefore": 101,
-        "hpLoss": 0
+        "hpLoss": 1
       },
       "round": 2,
       "type": "enemy_strike",
       "sourceId": "00000000-0000-4000-8000-0000000b0002",
       "targetId": "00000000-0000-4000-8000-0000000a0001",
-      "amount": 0,
-      "hpAfter": 101,
+      "amount": -1,
+      "hpAfter": 100,
       "skillId": null,
       "crit": false,
-      "dodged": true,
+      "dodged": false,
       "statusApplied": null,
       "statusExpired": null,
       "death": false
@@ -415,7 +415,7 @@
       "sourceId": "00000000-0000-4000-8000-0000000a0001",
       "targetId": "00000000-0000-4000-8000-0000000a0001",
       "amount": 0,
-      "hpAfter": 101,
+      "hpAfter": 100,
       "skillId": "bulwark_call",
       "crit": false,
       "dodged": false,
@@ -433,7 +433,7 @@
       "sourceId": "00000000-0000-4000-8000-0000000a0001",
       "targetId": "00000000-0000-4000-8000-0000000a0001",
       "amount": 0,
-      "hpAfter": 101,
+      "hpAfter": 100,
       "skillId": "bulwark_call",
       "crit": false,
       "dodged": false,
@@ -451,7 +451,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              53,
+              43,
               5
             ],
             "value": 0
@@ -459,7 +459,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              42,
+              55,
               10
             ],
             "value": 0
@@ -493,15 +493,15 @@
           }
         ],
         "damage": 28,
-        "hpBefore": 7,
-        "hpLoss": 7
+        "hpBefore": 32,
+        "hpLoss": 28
       },
       "round": 2,
       "type": "firebolt",
       "sourceId": "00000000-0000-4000-8000-0000000a0003",
       "targetId": "00000000-0000-4000-8000-0000000b0002",
-      "amount": -7,
-      "hpAfter": 0,
+      "amount": -28,
+      "hpAfter": 4,
       "skillId": "firebolt",
       "crit": false,
       "dodged": false,
@@ -511,7 +511,7 @@
         "stacks": 1
       },
       "statusExpired": null,
-      "death": true
+      "death": false
     },
     {
       "damageBreakdown": {
@@ -519,7 +519,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              34,
+              19,
               5
             ],
             "value": 0
@@ -527,7 +527,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              34,
+              76,
               10
             ],
             "value": 0
@@ -561,7 +561,7 @@
           }
         ],
         "damage": 1,
-        "hpBefore": 101,
+        "hpBefore": 100,
         "hpLoss": 1
       },
       "round": 2,
@@ -569,13 +569,42 @@
       "sourceId": "00000000-0000-4000-8000-0000000b0001",
       "targetId": "00000000-0000-4000-8000-0000000a0001",
       "amount": -1,
-      "hpAfter": 100,
+      "hpAfter": 99,
       "skillId": null,
       "crit": false,
       "dodged": false,
       "statusApplied": null,
       "statusExpired": null,
       "death": false
+    },
+    {
+      "damageBreakdown": {
+        "steps": [
+          {
+            "kind": "burn",
+            "inputs": [
+              1,
+              28
+            ],
+            "value": 9
+          }
+        ],
+        "damage": 9,
+        "hpBefore": 4,
+        "hpLoss": 4
+      },
+      "round": 2,
+      "type": "burn_tick",
+      "sourceId": null,
+      "targetId": "00000000-0000-4000-8000-0000000b0002",
+      "amount": -4,
+      "hpAfter": 0,
+      "skillId": null,
+      "crit": false,
+      "dodged": false,
+      "statusApplied": null,
+      "statusExpired": null,
+      "death": true
     },
     {
       "round": 2,
@@ -597,25 +626,51 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              4,
+              63,
               5
             ],
-            "value": 1
+            "value": 0
+          },
+          {
+            "kind": "crit_roll",
+            "inputs": [
+              46,
+              25
+            ],
+            "value": 0
+          },
+          {
+            "kind": "attack",
+            "inputs": [],
+            "value": 27
+          },
+          {
+            "kind": "defense",
+            "inputs": [],
+            "value": 6
+          },
+          {
+            "kind": "base_damage",
+            "inputs": [
+              27,
+              6
+            ],
+            "value": 24
           }
         ],
-        "damage": 0,
+        "damage": 24,
         "hpBefore": 40,
-        "hpLoss": 0
+        "hpLoss": 24
       },
       "round": 3,
       "type": "aimed_shot",
       "sourceId": "00000000-0000-4000-8000-0000000a0002",
       "targetId": "00000000-0000-4000-8000-0000000b0001",
-      "amount": 0,
-      "hpAfter": 40,
+      "amount": -24,
+      "hpAfter": 16,
       "skillId": "aimed_shot",
       "crit": false,
-      "dodged": true,
+      "dodged": false,
       "statusApplied": null,
       "statusExpired": null,
       "death": false
@@ -625,7 +680,7 @@
       "type": "mending_light",
       "sourceId": "00000000-0000-4000-8000-0000000a0001",
       "targetId": "00000000-0000-4000-8000-0000000a0001",
-      "amount": 2,
+      "amount": 3,
       "hpAfter": 102,
       "skillId": "mending_light",
       "crit": false,
@@ -640,7 +695,7 @@
           {
             "kind": "dodge_roll",
             "inputs": [
-              39,
+              10,
               5
             ],
             "value": 0
@@ -648,7 +703,7 @@
           {
             "kind": "crit_roll",
             "inputs": [
-              36,
+              22,
               10
             ],
             "value": 0
@@ -682,15 +737,15 @@
           }
         ],
         "damage": 27,
-        "hpBefore": 40,
-        "hpLoss": 27
+        "hpBefore": 16,
+        "hpLoss": 16
       },
       "round": 3,
       "type": "firebolt",
       "sourceId": "00000000-0000-4000-8000-0000000a0003",
       "targetId": "00000000-0000-4000-8000-0000000b0001",
-      "amount": -27,
-      "hpAfter": 13,
+      "amount": -16,
+      "hpAfter": 0,
       "skillId": "firebolt",
       "crit": false,
       "dodged": false,
@@ -700,100 +755,7 @@
         "stacks": 1
       },
       "statusExpired": null,
-      "death": false
-    },
-    {
-      "damageBreakdown": {
-        "steps": [
-          {
-            "kind": "dodge_roll",
-            "inputs": [
-              13,
-              5
-            ],
-            "value": 0
-          },
-          {
-            "kind": "crit_roll",
-            "inputs": [
-              94,
-              10
-            ],
-            "value": 0
-          },
-          {
-            "kind": "attack",
-            "inputs": [],
-            "value": 7
-          },
-          {
-            "kind": "defense",
-            "inputs": [],
-            "value": 20
-          },
-          {
-            "kind": "fortify",
-            "inputs": [
-              20,
-              130,
-              100
-            ],
-            "value": 26
-          },
-          {
-            "kind": "base_damage",
-            "inputs": [
-              7,
-              26
-            ],
-            "value": 1
-          }
-        ],
-        "damage": 1,
-        "hpBefore": 102,
-        "hpLoss": 1
-      },
-      "round": 3,
-      "type": "enemy_strike",
-      "sourceId": "00000000-0000-4000-8000-0000000b0001",
-      "targetId": "00000000-0000-4000-8000-0000000a0001",
-      "amount": -1,
-      "hpAfter": 101,
-      "skillId": null,
-      "crit": false,
-      "dodged": false,
-      "statusApplied": null,
-      "statusExpired": null,
-      "death": false
-    },
-    {
-      "damageBreakdown": {
-        "steps": [
-          {
-            "kind": "burn",
-            "inputs": [
-              1,
-              28
-            ],
-            "value": 9
-          }
-        ],
-        "damage": 9,
-        "hpBefore": 13,
-        "hpLoss": 9
-      },
-      "round": 3,
-      "type": "burn_tick",
-      "sourceId": null,
-      "targetId": "00000000-0000-4000-8000-0000000b0001",
-      "amount": -9,
-      "hpAfter": 4,
-      "skillId": null,
-      "crit": false,
-      "dodged": false,
-      "statusApplied": null,
-      "statusExpired": null,
-      "death": false
+      "death": true
     },
     {
       "round": 3,
@@ -801,7 +763,7 @@
       "sourceId": null,
       "targetId": "00000000-0000-4000-8000-0000000a0001",
       "amount": 0,
-      "hpAfter": 101,
+      "hpAfter": 102,
       "skillId": null,
       "crit": false,
       "dodged": false,
@@ -815,7 +777,7 @@
       "sourceId": null,
       "targetId": "00000000-0000-4000-8000-0000000a0001",
       "amount": 0,
-      "hpAfter": 101,
+      "hpAfter": 102,
       "skillId": null,
       "crit": false,
       "dodged": false,
@@ -836,91 +798,13 @@
       "statusApplied": null,
       "statusExpired": "status_burn",
       "death": false
-    },
-    {
-      "damageBreakdown": {
-        "steps": [
-          {
-            "kind": "dodge_roll",
-            "inputs": [
-              94,
-              5
-            ],
-            "value": 0
-          },
-          {
-            "kind": "crit_roll",
-            "inputs": [
-              13,
-              25
-            ],
-            "value": 1
-          },
-          {
-            "kind": "attack",
-            "inputs": [],
-            "value": 27
-          },
-          {
-            "kind": "defense",
-            "inputs": [],
-            "value": 6
-          },
-          {
-            "kind": "base_damage",
-            "inputs": [
-              27,
-              6
-            ],
-            "value": 24
-          },
-          {
-            "kind": "critical",
-            "inputs": [
-              24,
-              3,
-              2
-            ],
-            "value": 36
-          }
-        ],
-        "damage": 36,
-        "hpBefore": 4,
-        "hpLoss": 4
-      },
-      "round": 4,
-      "type": "quick_shot",
-      "sourceId": "00000000-0000-4000-8000-0000000a0002",
-      "targetId": "00000000-0000-4000-8000-0000000b0001",
-      "amount": -4,
-      "hpAfter": 0,
-      "skillId": "quick_shot",
-      "crit": true,
-      "dodged": false,
-      "statusApplied": null,
-      "statusExpired": null,
-      "death": true
-    },
-    {
-      "round": 4,
-      "type": "status_expire",
-      "sourceId": null,
-      "targetId": "00000000-0000-4000-8000-0000000b0001",
-      "amount": 0,
-      "hpAfter": 0,
-      "skillId": null,
-      "crit": false,
-      "dodged": false,
-      "statusApplied": null,
-      "statusExpired": "status_burn",
-      "death": false
     }
   ],
   "result": {
     "outcome": "win",
-    "rounds": 4,
+    "rounds": 3,
     "finalHp": {
-      "00000000-0000-4000-8000-0000000a0001": 101,
+      "00000000-0000-4000-8000-0000000a0001": 102,
       "00000000-0000-4000-8000-0000000a0002": 68,
       "00000000-0000-4000-8000-0000000a0003": 64,
       "00000000-0000-4000-8000-0000000b0001": 0,
