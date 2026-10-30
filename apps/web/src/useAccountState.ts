@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError, NetworkError, get } from "./api.js";
 import type { AccountState } from "./types.js";
+import type { SpoilsData } from "./components/SpoilsPanel.js";
 
 export interface Toast {
   id: number;
@@ -21,6 +22,9 @@ export interface AccountStateController {
   refetch: () => Promise<AccountState | null>;
   applyLocal: (next: AccountState) => void;
   pushToast: (toast: Omit<Toast, "id">) => void;
+  /** first-session-redesign.md section 7: held here (not screen-local state) so Spoils survives navigating to another screen and back. */
+  spoils: SpoilsData | null;
+  setSpoils: (spoils: SpoilsData | null) => void;
   /** Called by a mutation on a `conflict` error: refetches state, then returns. */
   handleConflict: () => Promise<void>;
   /** Called by a mutation on `validation`/`forbidden`/`not_found`. */
@@ -40,6 +44,7 @@ export function useAccountState(sessionReady: boolean, pollMs = 5000): AccountSt
   const [loading, setLoading] = useState(true);
   const [offline, setOffline] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [spoils, setSpoils] = useState<SpoilsData | null>(null);
   const inFlight = useRef(false);
 
   const pushToast = useCallback((toast: Omit<Toast, "id">) => {
@@ -112,5 +117,5 @@ export function useAccountState(sessionReady: boolean, pollMs = 5000): AccountSt
     [pushToast],
   );
 
-  return { state, loading, offline, toasts, dismissToast, refetch: fetchOnce, applyLocal, pushToast, handleConflict, handleRejected, handleServerError };
+  return { state, loading, offline, toasts, dismissToast, refetch: fetchOnce, applyLocal, pushToast, handleConflict, handleRejected, handleServerError, spoils, setSpoils };
 }
