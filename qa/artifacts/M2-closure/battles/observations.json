@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "label": "expedition",
+      "kind": "pve",
+      "seed": "",
+      "events": 34,
+      "deaths": 4,
+      "heals": 0,
+      "statuses": 8,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "boss",
+      "kind": "boss",
+      "seed": "01429f20",
+      "events": 18,
+      "deaths": 1,
+      "heals": 0,
+      "statuses": 6,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "two-areas",
+      "result": "PASS both unlocked areas selected through browser and persisted to server state"
+    },
+    {
+      "label": "dungeon-floor-1",
+      "kind": "dungeon_floor",
+      "seed": "",
+      "events": 15,
+      "deaths": 2,
+      "heals": 1,
+      "statuses": 3,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "dungeon-floor-2",
+      "kind": "dungeon_floor",
+      "seed": "",
+      "events": 17,
+      "deaths": 2,
+      "heals": 1,
+      "statuses": 4,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "dungeon-floor-3",
+      "kind": "dungeon_floor",
+      "seed": "",
+      "events": 18,
+      "deaths": 2,
+      "heals": 2,
+      "statuses": 4,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "dungeon-boss",
+      "kind": "dungeon_boss",
+      "seed": "",
+      "events": 27,
+      "deaths": 1,
+      "heals": 1,
+      "statuses": 9,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "arena",
+      "kind": "arena",
+      "seed": "d1952ab8b7a5ef33",
+      "events": 18,
+      "deaths": 3,
+      "heals": 2,
+      "statuses": 5,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    }
+  ],
+  "findings": []
+}

@@ -6,7 +6,7 @@ import { chromium, expect } from '@playwright/test';
 import { buildServer } from '../../apps/server/dist/app.js';
 import { makeManualClock } from './lib/server.mjs';
 
-const out = fileURLToPath(new URL('../../qa/artifacts/M2-29/battles/', import.meta.url));
+const out = process.env.QA_BATTLE_OUT || fileURLToPath(new URL('../../qa/artifacts/M2-29/battles/', import.meta.url));
 fs.mkdirSync(out, { recursive: true });
 const { clock, advanceMs } = makeManualClock('2026-10-23T12:00:00Z');
 const app = buildServer({ clock, dbPath: ':memory:', webDistDir: fileURLToPath(new URL('../../apps/web/dist', import.meta.url)) });

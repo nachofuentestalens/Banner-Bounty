@@ -1,0 +1,20 @@
+[
+  "Round 1 / Ranger uses Aimed Shot on Depths Broodling for 25 damage.Dodge roll 48, chance 5%: hit; Critical roll 42, chance 25%: normal; Battle-start ATK 27; Battle-start DEF 5; Base damage: max(1, 27 ATK − floor(5 DEF / 2)) = 25. Resolved damage 25; HP before 55; actual HP loss 25; HP after 30. / 30 HP remaining",
+  "Round 1 / Depths Broodling uses Brood surge on Arcanist for 12 damage.Dodge roll 12, chance 5%: hit; Critical roll 99, chance 10%: normal; Battle-start ATK 14; Battle-start DEF 12; Base damage: max(1, 14 ATK − floor(12 DEF / 2)) = 8; Brood Surge: floor(8 × 3/2) = 12. Resolved damage 12; HP before 64; actual HP loss 12; HP after 52. / 52 HP remaining",
+  "Round 1 / Depths Broodling uses Brood surge on Arcanist for 12 damage.Dodge roll 89, chance 5%: hit; Critical roll 19, chance 10%: normal; Battle-start ATK 14; Battle-start DEF 12; Base damage: max(1, 14 ATK − floor(12 DEF / 2)) = 8; Brood Surge: floor(8 × 3/2) = 12. Resolved damage 12; HP before 52; actual HP loss 12; HP after 40. / 40 HP remaining",
+  "Round 1 / Vanguard uses Mending Light on Arcanist, healing 16 HP. / 56 HP remaining",
+  "Round 1 / Arcanist uses Firebolt on Depths Broodling for 28 damage. (Burning applied, 2 round(s))Dodge roll 83, chance 5%: hit; Critical roll 47, chance 10%: normal; Battle-start ATK 28; Battle-start DEF 5; Base damage: max(1, 28 ATK − floor(5 DEF / 2)) = 26; Overload: floor(26 × 11/10) = 28. Resolved damage 28; HP before 30; actual HP loss 28; HP after 2. / 2 HP remaining",
+  "Round 1 / Depths Broodling takes 2 damage from Burn tick. Depths Broodling falls.Burn: 1 stacks × floor(28 captured ATK / 3) = 9 (no dodge/critical roll). Resolved damage 9; HP before 2; actual HP loss 2; HP after 0. Damage limited by remaining HP or survival effect. / 0 HP remaining",
+  "Round 2 / Ranger attacks Depths Broodling with Quick Shot — dodged!Dodge roll 3, chance 5%: dodged; base damage and critical roll not evaluated. Resolved damage 0; HP before 55; actual HP loss 0; HP after 55. / 55 HP remaining",
+  "Round 2 / Depths Broodling uses Enemy strike on Arcanist for 8 damage.Dodge roll 76, chance 5%: hit; Critical roll 24, chance 10%: normal; Battle-start ATK 14; Battle-start DEF 12; Base damage: max(1, 14 ATK − floor(12 DEF / 2)) = 8. Resolved damage 8; HP before 56; actual HP loss 8; HP after 48. / 48 HP remaining",
+  "Round 2 / Vanguard uses Bulwark Call on Vanguard. (Taunting applied, 2 round(s)) / 102 HP remaining",
+  "Round 2 / Vanguard uses Bulwark Call on Vanguard. (Fortified applied, 2 round(s)) / 102 HP remaining",
+  "Round 2 / Arcanist uses Firebolt on Depths Broodling for 28 damage. (Burning applied, 2 round(s))Dodge roll 18, chance 5%: hit; Critical roll 55, chance 10%: normal; Battle-start ATK 28; Battle-start DEF 5; Base damage: max(1, 28 ATK − floor(5 DEF / 2)) = 26; Overload: floor(26 × 11/10) = 28. Resolved damage 28; HP before 55; actual HP loss 28; HP after 27. / 27 HP remaining",
+  "Round 2 / Depths Broodling takes 9 damage from Burn tick.Burn: 1 stacks × floor(28 captured ATK / 3) = 9 (no dodge/critical roll). Resolved damage 9; HP before 27; actual HP loss 9; HP after 18. / 18 HP remaining",
+  "Round 2 / Depths Broodling's burning status fades. / 0 HP remaining",
+  "Round 3 / Ranger uses Aimed Shot on Depths Broodling for 18 damage. Depths Broodling falls.Dodge roll 51, chance 5%: hit; Critical roll 62, chance 25%: normal; Battle-start ATK 27; Battle-start DEF 5; Base damage: max(1, 27 ATK − floor(5 DEF / 2)) = 25. Resolved damage 25; HP before 18; actual HP loss 18; HP after 0. Damage limited by remaining HP or survival effect. / 0 HP remaining",
+  "Round 3 / Vanguard uses Mending Light on Arcanist, healing 16 HP. / 64 HP remaining",
+  "Round 3 / Vanguard's fortified status fades. / 102 HP remaining",
+  "Round 3 / Vanguard's taunting status fades. / 102 HP remaining",
+  "Round 3 / Depths Broodling's burning status fades. / 0 HP remaining"
+]
