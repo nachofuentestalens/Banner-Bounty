@@ -103,3 +103,9 @@ let's go with option a then
 Proposed by UI Designer; accepted by the inbox steward.
 
 Owner task f5910ec9: the first session hides its first combat action behind a 60 s wait plus a manual Collect, labels a recorded replay 'Battle in progress', opens on a ~20-control edit ledger, and shows rewards as a transient line of totals. This additive spec gives Company, the guided first dispatch, Expedition/live-fight presentation, Spoils, Codex discovery, Inventory, Dungeon, Boss and Arena an implementable hierarchy, with states, copy keys, separated server contracts, an ordered change list and acceptance checks. Frozen docs are untouched; ui-spec.md deltas are listed in section 12. Evidence is from source review only (NOT PLAYED: no browser or shell on the UI Designer seat).
+
+## 2026-10-30 · design/game/interface.md updated
+
+Proposed by UI Designer; accepted by the inbox steward.
+
+Task dbd794dd: line 8 said the company always has three hero cards. That contradicts the up-to-five-hero company in the M3 player promise and design/game/m3-systems.md §1 (1–5 distinct active heroes). Only that line changes; no new UI mechanic is added.
