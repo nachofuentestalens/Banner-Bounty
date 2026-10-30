@@ -1,5 +1,7 @@
 # Content tables (M1-02 freeze)
 
+> **M3-03 precedence (2026-10-30):** For M3, [m3-systems.md](m3-systems.md) sections 4-9 add exactly two base classes, sixteen new primary specialization IDs, three race IDs, Cinder Archive (one four-floor dungeon), and labelled local competition fixtures. Both existing expedition areas and Aqueduct Depths remain unchanged. Cinder Archive binds the existing reward_dungeon_2 profile; server catalog/unlock behavior is defined there. Retired M1 spec IDs below are not M3 choices.
+
 Stable content IDs, stats, slot restrictions, enemy compositions and boss behavior for `packages/content`. IDs here are permanent once referenced by `ItemInstance.definitionId`/`affixId` or a `BattleReport`; renaming requires a recorded decision. All stat bonuses are flat integers consumed by `combat.md` 1.2. No drop rates, prices, or gold values are specified here — those are the economy table's responsibility (M1-04); this document only defines *what* exists, not how often or for how much.
 
 ## 1. Classes and specializations (IDs)
