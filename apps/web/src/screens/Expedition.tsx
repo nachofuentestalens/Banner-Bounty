@@ -1,11 +1,15 @@
 import { BattleView } from "../components/BattleView.js";
+import { SpoilsPanel, type SpoilsData } from "../components/SpoilsPanel.js";
+import { NextStep } from "../components/NextStep.js";
 import { useEffect, useRef, useState } from "react";
 import { post, mutationPayload } from "../api.js";
 import { runMutation } from "../runMutation.js";
 import type { AccountStateController } from "../useAccountState.js";
-import type { AccountState, SettlementResult } from "../types.js";
-import { COPY, areaCopy, itemCopy, rarityLabel } from "../copy.js";
-import { isActivityActive, isFormationComplete } from "../rules.js";
+import type { AccountState, EquipmentSlot, Hero, ItemInstance, SettlementResult } from "../types.js";
+import { COPY, areaCopy } from "../copy.js";
+import { isActivityActive, isFormationComplete, heroOrdinalLabel } from "../rules.js";
+import { itemSlot } from "../frozenIds.js";
+import type { Screen } from "../App.js";
 
 const CYCLE_MS = 60_000;
 
@@ -19,62 +23,57 @@ function CountdownNote({ checkpointAt }: { checkpointAt: string }) {
   const sinceMs = Math.max(0, now - checkpointMs);
   const remainingMs = Math.max(0, CYCLE_MS - (sinceMs % CYCLE_MS));
   const remainingSec = Math.ceil(remainingMs / 1000);
-  return (
-    <p aria-live="polite">
-      Estimated next cycle in ~{remainingSec}s (display estimate only; the server settles the real result).
-    </p>
-  );
+  return <p aria-live="polite">{COPY.expedition_next_fight_estimate.replace("{seconds}", String(remainingSec))}</p>;
 }
 
-function SettlementResultPanel({ result }: { result: SettlementResult }) {
+/** first-session-redesign.md section 7: builds the caller-normalized Spoils view model from a SettlementResult plus a before/after hero snapshot diff (level-ups and secondary-class unlocks aren't in the response itself). */
+function buildSpoils(result: SettlementResult, heroesBefore: readonly Hero[], heroesAfter: readonly Hero[]): SpoilsData {
+  const levelUps = heroesAfter
+    .map((after) => {
+      const before = heroesBefore.find((h) => h.heroId === after.heroId);
+      return before && after.level > before.level ? { heroId: after.heroId, heroLabel: heroOrdinalLabel(heroesAfter, after.heroId), level: after.level } : null;
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null);
+  const unlocks = heroesAfter
+    .map((after) => {
+      const before = heroesBefore.find((h) => h.heroId === after.heroId);
+      return before && !before.secondaryClassId && after.secondaryClassId ? { heroId: after.heroId, heroLabel: heroOrdinalLabel(heroesAfter, after.heroId), what: "a secondary class" } : null;
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null);
+
+  return {
+    wins: result.outcomes.wins,
+    losses: result.outcomes.losses,
+    levelUps,
+    unlocks,
+    items: result.rewards.items,
+    gold: result.rewards.gold,
+    xp: result.rewards.xp,
+    elapsedMs: result.elapsedMs,
+    discardedMs: result.discardedMs,
+    overflowCount: result.overflow.convertedCount,
+    overflowGold: result.overflow.convertedGold,
+    ledger: result.recentCycles.map((c) => ({ key: String(c.cycle), label: `Cycle ${c.cycle}`, result: c.result })),
+  };
+}
+
+function PartySummary({ state }: { state: AccountState }) {
+  const slots = state.formation?.slots ?? [null, null, null, null, null];
+  const rowOf = (i: number) => (i < 3 ? "Front" : "Back");
   return (
-    <div className="settlement-result" aria-live="polite">
-      <h3>Settlement result</h3>
-      <p>Elapsed: {Math.round(result.elapsedMs / 1000)}s</p>
-      <p>Credited cycles: {result.creditedCycles}</p>
-      {result.discardedMs > 0 ? (
-        <p className="inline-note">
-          {COPY.expedition_offline_cap.title}: {COPY.expedition_offline_cap.body} ({Math.round(result.discardedMs / 1000)}s discarded)
-        </p>
-      ) : null}
-      <p>
-        Rewards: {result.rewards.xp} XP, {result.rewards.gold} gold, {result.rewards.items.length} item(s)
-      </p>
-      <p>
-        Outcomes: {result.outcomes.wins} win(s), {result.outcomes.losses} loss(es)
-      </p>
-      {result.overflow.convertedCount > 0 ? (
-        <p className="inline-note">
-          {COPY.inventory_overflow.title}: {result.overflow.convertedCount} drop(s) converted to {result.overflow.convertedGold} gold.
-        </p>
-      ) : null}
-      {result.recentCycles.length > 0 ? (
-        <div role="region" aria-label="Recent cycle log" tabIndex={0} className="combat-log-scroll">
-          <table className="combat-log-table">
-            <thead>
-              <tr>
-                <th scope="col">Cycle</th>
-                <th scope="col">Result</th>
-                <th scope="col">Rounds</th>
-                <th scope="col">Gold</th>
-                <th scope="col">Drop</th>
-              </tr>
-            </thead>
-            <tbody>
-              {result.recentCycles.map((cycle) => (
-                <tr key={cycle.cycle}>
-                  <td>{cycle.cycle}</td>
-                  <td>{cycle.result}</td>
-                  <td>{cycle.rounds}</td>
-                  <td>{cycle.gold}</td>
-                  <td>{cycle.drop ? `${itemCopy(cycle.drop.definitionId).name} (${rarityLabel(cycle.drop.rarityId)})${cycle.converted ? " (converted to gold)" : ""}` : "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : null}
-    </div>
+    <ul className="party-summary-list" aria-label="Party summary">
+      {slots.map((heroId, i) =>
+        heroId ? (
+          <li key={i}>
+            {rowOf(i)}: {heroOrdinalLabel(state.heroes, heroId)}
+          </li>
+        ) : (
+          <li key={i} className="disabled-note">
+            {rowOf(i)}: empty
+          </li>
+        ),
+      )}
+    </ul>
   );
 }
 
@@ -97,7 +96,7 @@ function AreaSelector({ state, controller }: { state: AccountState; controller: 
         <li key={area.areaId}>
           <button type="button" disabled={pending || locked || !area.unlocked || area.isSelected} onClick={() => select(area.areaId)} aria-pressed={area.isSelected}>
             {areaCopy(area.areaId).name}
-            {area.isSelected ? " (selected)" : !area.unlocked ? " (locked)" : ""}
+            {area.isSelected ? " (selected)" : !area.unlocked ? ` (${COPY.area_locked_reason})` : ""}
           </button>
         </li>
       ))}
@@ -105,14 +104,26 @@ function AreaSelector({ state, controller }: { state: AccountState; controller: 
   );
 }
 
-export function ExpeditionScreen({ state, controller }: { state: AccountState; controller: AccountStateController }) {
+export function ExpeditionScreen({
+  state,
+  controller,
+  onNavigate,
+  onOpenInventorySlot,
+  onFocusHero,
+}: {
+  state: AccountState;
+  controller: AccountStateController;
+  onNavigate: (screen: Screen) => void;
+  onOpenInventorySlot: (slot?: EquipmentSlot) => void;
+  onFocusHero: (heroId: string) => void;
+}) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     headingRef.current?.focus();
   }, []);
 
   const [pending, setPending] = useState<"start" | "settle" | "stop" | null>(null);
-  const [lastResult, setLastResult] = useState<SettlementResult | null>(null);
+  const [lastReport, setLastReport] = useState<SettlementResult["latestBattleReport"] | null>(null);
   const partyComplete = isFormationComplete(state);
   const activityActive = isActivityActive(state);
   const selectedArea = areaCopy(state.selectedAreaId);
@@ -128,15 +139,19 @@ export function ExpeditionScreen({ state, controller }: { state: AccountState; c
 
   async function settle(keepRunning: boolean) {
     setPending(keepRunning ? "settle" : "stop");
+    const heroesBefore = state.heroes;
     await runMutation(async () => {
+      let result: SettlementResult;
       if (keepRunning) {
         const { data } = await post<SettlementResult>("/expedition/settle", mutationPayload(state.revision, {}));
-        setLastResult(data);
+        result = data;
       } else {
         const { data } = await post<{ finalSettlement: SettlementResult }>("/expedition/stop", mutationPayload(state.revision, {}));
-        setLastResult(data.finalSettlement);
+        result = data.finalSettlement;
       }
-      await controller.refetch();
+      setLastReport(result.latestBattleReport ?? null);
+      const after = await controller.refetch();
+      controller.setSpoils(buildSpoils(result, heroesBefore, after?.heroes ?? heroesBefore));
     }, controller);
     setPending(null);
   }
@@ -146,51 +161,64 @@ export function ExpeditionScreen({ state, controller }: { state: AccountState; c
       <h1 ref={headingRef} tabIndex={-1}>
         Expedition
       </h1>
-      <div className="expedition-columns">
-        <section aria-labelledby="area-summary-heading" className="area-summary-card">
-          <h2 id="area-summary-heading">{selectedArea.name}</h2>
-          <p>{selectedArea.desc}</p>
-          <h3>Areas</h3>
-          <AreaSelector state={state} controller={controller} />
-          {activityActive ? <p className="disabled-note">Area choice is locked while an expedition or dungeon run is active.</p> : null}
-          {state.expedition.status === "active" ? <CountdownNote checkpointAt={state.expedition.checkpointAt} /> : null}
-        </section>
-        <section aria-labelledby="expedition-controls-heading" className="expedition-controls-column">
-          <h2 id="expedition-controls-heading">Controls</h2>
-          {state.expedition.status === "active" ? (
+      <section aria-labelledby="expedition-status-heading" className="expedition-status-card">
+        <h2 id="expedition-status-heading">{selectedArea.name}</h2>
+        {state.expedition.status === "none" ? (
+          <>
+            <p>{selectedArea.desc}</p>
+            <h3>Party</h3>
+            <PartySummary state={state} />
+            <button type="button" className="expedition-primary-action" onClick={start} disabled={pending !== null || !partyComplete || activityActive}>
+              {pending === "start" ? COPY.state_action_pending.label : COPY.action_start_expedition}
+            </button>
+            {!partyComplete ? <p className="disabled-note">{COPY.disabled_party_incomplete}</p> : null}
+            {activityActive && partyComplete ? <p className="disabled-note">A dungeon run is already active; only one progression activity may run at a time.</p> : null}
+          </>
+        ) : (
+          <>
+            <p aria-live="polite">Fights credited so far: {state.expedition.cyclesCompletedSinceStart}</p>
+            <div className="expedition-controls">
+              <button type="button" className="expedition-primary-action" onClick={() => settle(true)} disabled={pending !== null}>
+                {pending === "settle" ? COPY.state_action_pending.label : COPY.action_collect}
+              </button>
+              <button type="button" className="expedition-secondary-action" onClick={() => settle(false)} disabled={pending !== null}>
+                {pending === "stop" ? COPY.state_action_pending.label : COPY.action_stop_expedition}
+              </button>
+            </div>
+            <CountdownNote checkpointAt={state.expedition.checkpointAt} />
             <p className="inline-note">
               {COPY.expedition_loadout_locked.title}: {COPY.expedition_loadout_locked.body}
             </p>
-          ) : null}
-          <div className="expedition-controls">
-            {state.expedition.status === "none" ? (
-              <>
-                <button type="button" onClick={start} disabled={pending !== null || !partyComplete || activityActive}>
-                  {pending === "start" ? COPY.state_action_pending.label : COPY.action_start_expedition}
-                </button>
-                {!partyComplete ? <p className="disabled-note">{COPY.disabled_party_incomplete}</p> : null}
-                {activityActive && partyComplete ? <p className="disabled-note">A dungeon run is already active; only one progression activity may run at a time.</p> : null}
-              </>
-            ) : (
-              <>
-                <button type="button" onClick={() => settle(true)} disabled={pending !== null}>
-                  {pending === "settle" ? COPY.state_action_pending.label : COPY.action_collect}
-                </button>
-                <button type="button" onClick={() => settle(false)} disabled={pending !== null}>
-                  {pending === "stop" ? COPY.state_action_pending.label : COPY.action_stop_expedition}
-                </button>
-              </>
-            )}
-          </div>
-          {lastResult ? <SettlementResultPanel result={lastResult} /> : null}
-        </section>
-      </div>
-      {lastResult?.latestBattleReport ? (
-        <>
-          <h2>Latest expedition fight</h2>
-          <BattleView report={lastResult.latestBattleReport} />
-        </>
+          </>
+        )}
+      </section>
+
+      <section aria-labelledby="expedition-fight-heading">
+        <h2 id="expedition-fight-heading">{lastReport ? "Latest expedition fight" : COPY.fight_replay_heading}</h2>
+        {lastReport ? <BattleView report={lastReport} /> : <p>{COPY.fight_none_yet}</p>}
+      </section>
+
+      {controller.spoils ? (
+        <SpoilsPanel
+          spoils={controller.spoils}
+          onDismiss={() => controller.setSpoils(null)}
+          onOpenItem={(item: ItemInstance) => onOpenInventorySlot(itemSlot(item.definitionId))}
+          onFocusHero={onFocusHero}
+        />
       ) : null}
+
+      <NextStep
+        state={state}
+        onNavigate={onNavigate}
+        onOpenInventorySlot={(slot) => onOpenInventorySlot(slot)}
+        onFocusHeroBuild={onFocusHero}
+      />
+
+      <section aria-labelledby="expedition-areas-heading" className="expedition-areas-card">
+        <h3 id="expedition-areas-heading">Areas</h3>
+        <AreaSelector state={state} controller={controller} />
+        {activityActive ? <p className="disabled-note">Area choice is locked while an expedition or dungeon run is active.</p> : null}
+      </section>
     </main>
   );
 }
