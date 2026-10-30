@@ -4,7 +4,7 @@ import { runMutation } from "../runMutation.js";
 import type { AccountStateController } from "../useAccountState.js";
 import type { AccountState, EquipmentSlot, Hero, ItemInstance } from "../types.js";
 import { COPY, affixCopy, classCopy, composeItemName, itemCopy, rarityLabel } from "../copy.js";
-import { isActivityActive } from "../rules.js";
+import { isActivityActive, fieldedHeroIds } from "../rules.js";
 import { ITEM_DEFINITION_IDS, itemSlot } from "../frozenIds.js";
 
 type SlotFilter = "all" | EquipmentSlot;
@@ -126,6 +126,7 @@ function ItemRow({
   controller,
   selected,
   onSelect,
+  fitsEmptySlot,
 }: {
   item: ItemInstance;
   heroes: Hero[];
@@ -134,6 +135,7 @@ function ItemRow({
   controller: AccountStateController;
   selected: boolean;
   onSelect: () => void;
+  fitsEmptySlot: boolean;
 }) {
   const [pending, setPending] = useState(false);
   const equippedHero = item.equippedBy ? heroes.find((h) => h.heroId === item.equippedBy) : undefined;
@@ -167,12 +169,13 @@ function ItemRow({
       </span>
       <span className="item-desc">{itemCopy(item.definitionId).desc}</span>
       <span className="item-owner">{ownerLabel(item, heroes)}</span>
+      {!item.equippedBy && fitsEmptySlot ? <span className="fits-slot-badge">Fits an empty slot</span> : null}
       {item.equippedBy ? (
-        <button type="button" onClick={unequip} disabled={pending || expeditionActive} title={expeditionActive ? COPY.disabled_equip_locked_expedition : undefined}>
+        <button type="button" onClick={unequip} disabled={pending || expeditionActive}>
           {pending ? COPY.state_action_pending.label : COPY.action_unequip}
         </button>
       ) : (
-        <button type="button" onClick={onSelect} aria-expanded={selected} disabled={expeditionActive} title={expeditionActive ? COPY.disabled_equip_locked_expedition : undefined}>
+        <button type="button" onClick={onSelect} aria-expanded={selected} disabled={expeditionActive}>
           {COPY.action_equip}
         </button>
       )}
@@ -248,15 +251,19 @@ function CraftingPanel({ state, controller }: { state: AccountState; controller:
   );
 }
 
-export function InventoryScreen({ state, controller }: { state: AccountState; controller: AccountStateController }) {
+export function InventoryScreen({ state, controller, initialSlotFilter }: { state: AccountState; controller: AccountStateController; initialSlotFilter?: EquipmentSlot | null }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     headingRef.current?.focus();
   }, []);
 
-  const [slotFilter, setSlotFilter] = useState<SlotFilter>("all");
+  const [slotFilter, setSlotFilter] = useState<SlotFilter>(initialSlotFilter ?? "all");
   const [ownerFilter, setOwnerFilter] = useState<OwnerFilter>("all");
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(() => {
+    if (!initialSlotFilter) return null;
+    const fits = state.inventory.find((i) => !i.equippedBy && itemSlot(i.definitionId) === initialSlotFilter);
+    return fits?.itemInstanceId ?? null;
+  });
 
   const expeditionActive = isActivityActive(state);
   const unequippedCount = state.inventory.filter((i) => !i.equippedBy).length;
@@ -269,12 +276,15 @@ export function InventoryScreen({ state, controller }: { state: AccountState; co
   });
 
   const selectedItem = selectedItemId ? state.inventory.find((i) => i.itemInstanceId === selectedItemId) ?? null : null;
+  const fielded = fieldedHeroIds(state);
+  const fitsEmptySlot = (item: ItemInstance) => !item.equippedBy && state.heroes.some((h) => fielded.includes(h.heroId) && h.equipment[itemSlot(item.definitionId)] === null);
 
   return (
     <main className="screen screen-inventory">
       <h1 ref={headingRef} tabIndex={-1}>
         Inventory
       </h1>
+      {expeditionActive ? <p className="inline-note">{COPY.disabled_equip_locked_expedition}</p> : null}
       <CraftingPanel state={state} controller={controller} />
       <div className="inventory-filter-bar">
         <label htmlFor="slot-filter">Slot</label>
@@ -313,6 +323,7 @@ export function InventoryScreen({ state, controller }: { state: AccountState; co
               controller={controller}
               selected={selectedItemId === item.itemInstanceId}
               onSelect={() => setSelectedItemId(item.itemInstanceId === selectedItemId ? null : item.itemInstanceId)}
+              fitsEmptySlot={fitsEmptySlot(item)}
             />
           ))}
         </ul>
