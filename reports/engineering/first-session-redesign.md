@@ -147,12 +147,65 @@ time — see the method note in `scripts/fs-redesign-check.mjs`):
   one). Full `git diff eb45cb46eb962069655b4eeab90b2b683ab6281b` is available for direct review in
   the worktree; this report doesn't reproduce it to stay within committed-evidence scope.
 
+## Follow-up run: resolved the Codex base-stats/growth review finding
+
+A later review pass flagged `Codex.tsx`'s `codex_unavailable` stub for "base stats/growth per
+level" as plausible-but-worth-confirming, since section 8.1 says this data should come from
+shared static class content, not be treated as unavailable. Checked: `apps/web` had no dependency
+on `@banner-and-bounty/content` at all (only `react`/`react-dom`); the "shared content" the old
+comment pointed to (`frozenIds.ts`/`copy.ts`) never carried stats. But `packages/content/src/v2/classes.ts`
+already exports `CLASS_BASE_STATS_V2` (hpBase/hpGrowth/atkBase/atkGrowth/defBase/defGrowth/spd for
+all six classes) and `SYNERGY_PAIRS` (the six documented class pairings) as validated static
+content — exactly the kind of data `architecture.md` assigns to `packages/content` ("stable IDs
+and validated numeric definitions"), and the same package `apps/server`/`packages/game` already
+depend on. This is reference-table display, not computing a hero's live stats client-side, so it
+doesn't conflict with architecture.md's "no client-authoritative ... stats" rule.
+
+Fix: added `@banner-and-bounty/content` as an `apps/web` dependency (matching the existing
+server/game workspace reference), imported `getClassBaseStatsV2` and `SYNERGY_PAIRS` in
+`Codex.tsx`, and replaced the `codex_unavailable` stub with a real base-stats/growth table (HP,
+ATK, DEF, SPD) and a real pairing-help list (synergy name, partner class as a cross-link that
+selects that class, and the synergy's description), replacing the old "not duplicated client-side"
+disabled note. `codex_unavailable` itself is left in `copy.ts` (still a valid generic key; nothing
+else was removed).
+
+Also added `apps/web/src/screens/Codex.test.tsx` (new file, 2 tests): one renders `CodexScreen`
+with Vanguard selected and asserts the real `hpBase`/`hpGrowth` numbers from
+`getClassBaseStatsV2("class_vanguard")` appear and `codex_unavailable`'s text does not; the other
+clicks the Vanguard→Herald "Banner Bearer" pairing link and asserts focus/heading lands on the
+Herald detail — automated evidence for FS-08's "pairings... deep links focus the class" check,
+not just a source read.
+
+Commands re-run after the change:
+- `npm run typecheck` (root, builds all packages plus `apps/web`) — clean.
+- `npm test` (root) — **28 test files, 228 tests, all passed** (1.22s) — up from 27/226; the 2 new
+  tests are the `Codex.test.tsx` cases above, no existing test asserted the old stub text so none
+  needed updating.
+- `npm run build` — all five workspace packages typecheck and build clean.
+- `node scripts/fs-redesign-check.mjs` — 14/14 steps passed again, including FS-08 (Codex: six
+  classes, skills table, works under activity lock); contrast table unchanged (CSS untouched).
+  Timings this run: `{"toCompanyRender":171,"toFormationDecision":368,"toDispatch":473,"toFirstSpoils":536}`
+  (run-to-run variance from the earlier run is normal local timing noise, not a regression).
+  Screenshots in `reports/engineering/first-session-redesign-evidence/` were refreshed from this
+  run; only `fs-390-expedition.png` differs byte-for-byte from the prior run (unrelated timing-label
+  text, not a Codex change) — `fs-390-codex.png` is unchanged because the 390px Codex screenshot is
+  taken before any class is selected (list view only), so the new stats table isn't visible in it;
+  that state is instead covered by the new `Codex.test.tsx` above.
+
+This closes the "worth confirming with the owner" note from the review finding without needing to
+ask: the spec (section 8.1) already said this data should come from shared static class content,
+and that content already existed in `packages/content`, just not wired into `apps/web`. No
+design-direction question remained open.
+
 ## Unresolved issues
 
-- FS-08's deep-link-to-class-focus and the stat/growth/cooldown/pairing numeric match against
-  `content.md` were not independently re-verified beyond the automated class-count/skills-table
-  check in this run (see FS-08 above). Low risk: `Codex.tsx` reads directly from the shared
-  `content`/`frozenIds` data, so it cannot diverge from the frozen tables without a compile error.
+- FS-08's base-stats/growth and pairing gaps are now resolved (see "Follow-up run" above):
+  `Codex.tsx` reads `CLASS_BASE_STATS_V2`/`SYNERGY_PAIRS` from `@banner-and-bounty/content`
+  directly, so it cannot diverge from the frozen tables without a compile error, and the pairing
+  cross-link's focus behavior is covered by a new `Codex.test.tsx` case. The skill
+  unlock-level/cooldown numeric match against `content.md` still relies on `CLASS_SKILLS`
+  (`frozenIds.ts`) matching `SKILL_DEFINITIONS` and was not independently re-diffed cell-by-cell
+  against `content.md` in this run — low risk, same reasoning as before, but not re-verified.
 - FS-09's lock-reason text pattern was spot-checked on Dungeon only, not on every other locked nav
   entry, in this run's automated check.
 - FS-11 remains correctly undone pending server contract S1 (live-fight data). No action needed
