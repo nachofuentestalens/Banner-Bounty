@@ -1,5 +1,7 @@
 # UI spec (M1-09 freeze)
 
+> **M3-03 precedence (2026-10-30):** For M3, [m3-systems.md](m3-systems.md) sections 2-10 supersede the old last-fight-only feed, fixed-cycle countdown, six-class/locked-codex scope and blanket expedition skill-edit lock. Use its pre-pick codex, deferred editor, respec preview, two-dungeon catalog, season/bracket flows and accessible states. The 2026-10-23 skill help/damage evidence rules remain, except that M3 allows deferred expedition slot edits and full locked-skill inspection. Existing M1 exactly-three-hero and retired specialization copy is historical; use 1-5 heroes and the M3 primary specialization layer.
+
 Implementation-ready screen/state map for the first-playable loop. `interface.md` sets direction; this document fixes the exact endpoints, copy keys, and states M1-10 implements. No new game system or mandatory art dependency is introduced; all visuals use text/CSS (system fonts, color tokens from `interface.md`'s palette).
 
 ## Global conventions

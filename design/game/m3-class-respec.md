@@ -1,5 +1,7 @@
 # M3 candidate: class/secondary-class respec at level-scaled cost
 
+> **M3-03 precedence (2026-10-30):** This candidate is now reconciled by [m3-systems.md](m3-systems.md) sections 4-6 (M3-03). Eight classes replace six; primary respec is barred during any active expedition or dungeon, clears the new primary specialization and resets exactly four shared slots. Same-primary requests cannot charge/reset; secondary-only switching remains free and preserves valid slots, clearing only invalid ones. Server preview supplies exact cost/reset; candidate prices/cooldown remain provisional for M3-04. The candidate wording about two secondary slots and secondary-only combined reset is superseded.
+
 Player feedback captured by this task (Game Director task `1427c61d-83e2-4d18-84c8-19e178ce53ff`):
 it is currently unclear/unavailable how a hero's primary/secondary class, chosen once via the M2-22
 build/recruitment flow, can later be changed. **Status: specification only — not scheduled, not
