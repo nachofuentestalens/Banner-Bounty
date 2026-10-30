@@ -255,3 +255,64 @@ implement the first-session-redesign spec. Checked directly rather than assumed:
 None required from this task. If the owner wants FS-08/FS-09's remaining spot-checks closed, or
 S1 drafted so FS-11 can start, those are separate scoped tasks (S1 belongs to Systems
 Designer/CTO per `design/studio/contracts.md`, not this task).
+
+## Re-verification pass (this run): the three named review findings
+
+This run re-checked all three findings named in the task prompt against current repository
+state. No product code changed as a result — each finding was already correctly resolved by the
+prior run's work, and this pass re-verified with fresh evidence rather than assuming the prior
+report's claims still held.
+
+**1. `design/studio/reports/ui-improvement.md` is unwritten.** Confirmed still true, and still
+correct: this task's write scope (stated in every run's task block, unchanged this run) excludes
+`design/studio/` alongside `design/game/`, `qa/`, `tests/e2e/`, `design/qa/`,
+`design/decisions.md`. `reports/engineering/first-session-redesign.md` (this file) is this task's
+actual deliverable path, inside scope, and already carries every piece of evidence the task
+prompt's item 1 asks for (commands/results below, screenshots, FS-12 timings, keyboard-only run,
+reduced-motion run, contrast table — all present above, re-run fresh this pass, see next item).
+Re-ran `npm run validate` fresh this pass: **typecheck clean (5 workspace packages + `apps/web`,
+cached/incremental `tsc --build`) → `vitest run`: 28 test files, 228 tests, all passed (1.28s,
+`Start at 14:47:04`) → build clean, `apps/web/dist` emitted (Vite build, 70ms), no failures.**
+This matches the 28/28/228 figures already recorded above; no regression since the last run on
+this branch.
+
+**2. Duplicate-work check against UI implementation task `79d1a3c4-0e94-44a2-a344-c8194857e768`.**
+Re-checked directly this pass, not reused from the prior run's claim:
+- `git fetch --all` then `git branch -a | grep 79d1a3c4` and `git log --all --oneline | grep
+  79d1a3c4` both returned **zero matches** — no local or remote branch, and no commit anywhere in
+  the fetched history, references that task ID. `git show main:design/studio/reports/ui-improvement.md`
+  fails with "path does not exist in 'main'" — that task's own named deliverable does not exist on
+  `main` either.
+- Conclusion: `79d1a3c4` has **no branch and no commits anywhere** — it was never started, let
+  alone actively building a competing `Codex.tsx`. This is a stronger result than the prior run's
+  role-based reasoning (UI Engineer is read-only) and independently confirms the same outcome: no
+  second implementation exists to rebase onto or drop in favor of. This task's `Codex.tsx` (the
+  only one in the repository — `grep -r "CodexScreen" apps/web/src` still shows a single
+  definition) is kept as-is.
+
+**3. Server contract S1 and the section 6.3 replay fallback.** Re-checked this pass:
+- `design/game/first-session-redesign.md` section 10 defines **S1** as "a read-only endpoint or
+  state field exposing the active cycle's authoritative fight, its start time, server `now` and
+  event pacing," owned by task `bbdb7310` (owner-feedback item 2), and explicitly says this doc
+  "does not choose pacing" for it.
+- Checked `packages/contracts/src/index.ts` (the frozen wire contract both `apps/server` and
+  `apps/web` build against): it exposes `latestBattleReport?: BattleReport` described in its own
+  comment as "additive: last credited cycle only" — this is **S2** (last settlement), not S1.
+  There is no `startedAt`/`serverNow`/in-progress-cycle field anywhere in that file. `grep -r
+  "currentFight|liveFight|S1" packages/` returns no matches. **S1 is not integrated in the current
+  baseline.**
+- Checked `design/studio/reports/inbox-stall-ratification-2026-10-30.md`: task `bbdb7310` (cited
+  by `first-session-redesign.md` as S1's owner) is the owner-feedback chat that produced the UI
+  Designer/UI Engineer roles and `planning/ui-improvement.json` — it is not a server contract
+  implementation. No other task or commit implements S1.
+- Checked `apps/web/src/components/BattleView.tsx`: heading logic reads `finished ||
+  units.length === 0 ? OUTCOME_LABEL[...] : "Replaying recorded fight"` (line 201) — the section
+  6.3 recorded/replay wording, never "live" or "in progress" (confirmed by grep: no `live`/`in
+  progress`/`LIVE` text in the file outside code comments and the word "replay" itself). Checked
+  `apps/web/src/App.tsx`: `grep -i "live|in progress|replay|S1"` returns **no matches at all** —
+  no premature live-fight wiring exists there either.
+- Conclusion: the section 6.3 replay-only fallback is correctly kept, because S1 is confirmed
+  unintegrated by direct inspection of the contracts package (not assumed from the design doc
+  alone). FS-11 remains correctly undone. No code change was needed or made.
+
+No files outside this report changed in this pass.
