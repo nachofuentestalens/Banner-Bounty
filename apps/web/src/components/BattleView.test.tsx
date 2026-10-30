@@ -112,5 +112,25 @@ it("shows a status badge with a visible duration while a buff/debuff is active",
   };
   render(<BattleView report={withStatus} />);
   fireEvent.click(screen.getByText("Step"));
+  expect(screen.getByRole("list", { name: "Arcanist status effects" }).textContent).toMatch(/Weakened.*\(2r\)/);
+});
+
+it("decrements the status badge duration by one per round and clears it on expiry", () => {
+  const withStatus: BattleReportView = {
+    ...report,
+    reportId: "status-rounds",
+    events: [
+      { round: 1, type: "shield_bash", sourceId: "boss", targetId: "hero", amount: -10, hpAfter: 90, skillId: "shield_bash", crit: false, dodged: false, statusApplied: { statusId: "status_weaken", duration: 2 }, statusExpired: null, death: false },
+      { round: 2, type: "toll_strike", sourceId: "boss", targetId: "hero", amount: -5, hpAfter: 85, skillId: null, crit: false, dodged: false, statusApplied: null, statusExpired: null, death: false },
+      { round: 2, type: "status_expire", sourceId: null, targetId: "hero", amount: 0, hpAfter: 85, skillId: null, crit: false, dodged: false, statusApplied: null, statusExpired: "status_weaken", death: false },
+    ],
+    result: { outcome: "loss", rounds: 2, finalHp: { hero: 85, boss: 200 } },
+  };
+  render(<BattleView report={withStatus} />);
+  fireEvent.click(screen.getByText("Step"));
+  expect(screen.getByRole("list", { name: "Arcanist status effects" }).textContent).toMatch(/Weakened.*\(2r\)/);
+  fireEvent.click(screen.getByText("Step"));
   expect(screen.getByRole("list", { name: "Arcanist status effects" }).textContent).toMatch(/Weakened.*\(1r\)/);
+  fireEvent.click(screen.getByText("Step"));
+  expect(screen.queryByRole("list", { name: "Arcanist status effects" })).toBeNull();
 });
