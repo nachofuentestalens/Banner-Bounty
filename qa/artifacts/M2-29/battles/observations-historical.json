@@ -1,0 +1,571 @@
+{
+  "results": [
+    {
+      "label": "expedition",
+      "kind": "pve",
+      "seed": "",
+      "events": 34,
+      "deaths": 4,
+      "heals": 0,
+      "statuses": 8,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "boss",
+      "kind": "boss",
+      "seed": "80b073b3",
+      "events": 15,
+      "deaths": 1,
+      "heals": 0,
+      "statuses": 5,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "two-areas",
+      "result": "PASS both unlocked areas selected through browser and persisted to server state"
+    },
+    {
+      "label": "dungeon-floor-1",
+      "kind": "dungeon_floor",
+      "seed": "",
+      "events": 15,
+      "deaths": 2,
+      "heals": 1,
+      "statuses": 3,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "dungeon-floor-2",
+      "kind": "dungeon_floor",
+      "seed": "",
+      "events": 17,
+      "deaths": 2,
+      "heals": 1,
+      "statuses": 4,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "dungeon-floor-3",
+      "kind": "dungeon_floor",
+      "seed": "",
+      "events": 18,
+      "deaths": 2,
+      "heals": 2,
+      "statuses": 4,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "dungeon-boss",
+      "kind": "dungeon_boss",
+      "seed": "",
+      "events": 27,
+      "deaths": 1,
+      "heals": 1,
+      "statuses": 9,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    },
+    {
+      "label": "arena",
+      "kind": "arena",
+      "seed": "90ef506387410e26",
+      "events": 22,
+      "deaths": 3,
+      "heals": 2,
+      "statuses": 5,
+      "speedCounts": [
+        1,
+        4
+      ],
+      "hpAndSteps": "pass",
+      "feed": "actor/target/skill names, exact amounts, healing and deaths pass"
+    }
+  ],
+  "findings": [
+    {
+      "type": "status-duration",
+      "label": "expedition",
+      "eventIndex": 3,
+      "round": 1,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "expedition",
+      "eventIndex": 4,
+      "round": 1,
+      "applied": {
+        "statusId": "status_taunt",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "expedition",
+      "eventIndex": 5,
+      "round": 1,
+      "applied": {
+        "statusId": "status_fortify",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)\nFortified (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "expedition",
+      "eventIndex": 10,
+      "round": 2,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "expedition",
+      "eventIndex": 19,
+      "round": 3,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 2
+      },
+      "displayed": "Burning x2 (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "expedition",
+      "eventIndex": 23,
+      "round": 4,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "expedition",
+      "eventIndex": 24,
+      "round": 4,
+      "applied": {
+        "statusId": "status_weaken",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Weakened (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "expedition",
+      "eventIndex": 28,
+      "round": 5,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 2
+      },
+      "displayed": "Burning x2 (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "boss",
+      "eventIndex": 1,
+      "round": 1,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "boss",
+      "eventIndex": 3,
+      "round": 1,
+      "applied": {
+        "statusId": "status_taunt",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "boss",
+      "eventIndex": 4,
+      "round": 1,
+      "applied": {
+        "statusId": "status_fortify",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)\nFortified (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "boss",
+      "eventIndex": 7,
+      "round": 2,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 2
+      },
+      "displayed": "Burning x2 (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "boss",
+      "eventIndex": 14,
+      "round": 3,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 3
+      },
+      "displayed": "Burning x3 (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-1",
+      "eventIndex": 4,
+      "round": 1,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-1",
+      "eventIndex": 6,
+      "round": 2,
+      "applied": {
+        "statusId": "status_taunt",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-1",
+      "eventIndex": 7,
+      "round": 2,
+      "applied": {
+        "statusId": "status_fortify",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)\nFortified (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-2",
+      "eventIndex": 3,
+      "round": 1,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-2",
+      "eventIndex": 6,
+      "round": 2,
+      "applied": {
+        "statusId": "status_taunt",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-2",
+      "eventIndex": 7,
+      "round": 2,
+      "applied": {
+        "statusId": "status_fortify",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)\nFortified (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-2",
+      "eventIndex": 8,
+      "round": 2,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-3",
+      "eventIndex": 4,
+      "round": 1,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-3",
+      "eventIndex": 8,
+      "round": 2,
+      "applied": {
+        "statusId": "status_taunt",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-3",
+      "eventIndex": 9,
+      "round": 2,
+      "applied": {
+        "statusId": "status_fortify",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)\nFortified (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-floor-3",
+      "eventIndex": 10,
+      "round": 2,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-boss",
+      "eventIndex": 3,
+      "round": 1,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-boss",
+      "eventIndex": 6,
+      "round": 2,
+      "applied": {
+        "statusId": "status_taunt",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-boss",
+      "eventIndex": 7,
+      "round": 2,
+      "applied": {
+        "statusId": "status_fortify",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)\nFortified (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-boss",
+      "eventIndex": 8,
+      "round": 2,
+      "applied": {
+        "statusId": "status_weaken",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)\nFortified (1r)\nWeakened (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-boss",
+      "eventIndex": 9,
+      "round": 2,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 2
+      },
+      "displayed": "Burning x2 (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-boss",
+      "eventIndex": 14,
+      "round": 3,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 3
+      },
+      "displayed": "Burning x3 (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-boss",
+      "eventIndex": 21,
+      "round": 4,
+      "applied": {
+        "statusId": "status_weaken",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Weakened (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-boss",
+      "eventIndex": 22,
+      "round": 4,
+      "applied": {
+        "statusId": "status_weaken",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Weakened (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "dungeon-boss",
+      "eventIndex": 23,
+      "round": 4,
+      "applied": {
+        "statusId": "status_weaken",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Weakened (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "arena",
+      "eventIndex": 3,
+      "round": 1,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "arena",
+      "eventIndex": 7,
+      "round": 2,
+      "applied": {
+        "statusId": "status_taunt",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "arena",
+      "eventIndex": 8,
+      "round": 2,
+      "applied": {
+        "statusId": "status_fortify",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Taunting (1r)\nFortified (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "arena",
+      "eventIndex": 9,
+      "round": 2,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    },
+    {
+      "type": "status-duration",
+      "label": "arena",
+      "eventIndex": 14,
+      "round": 3,
+      "applied": {
+        "statusId": "status_burn",
+        "duration": 2,
+        "stacks": 1
+      },
+      "displayed": "Burning (1r)"
+    }
+  ]
+}

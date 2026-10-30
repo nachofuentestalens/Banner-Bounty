@@ -1,0 +1,66 @@
+# M2-29 independent acceptance evidence
+
+Task: a867fc75-35b7-4c84-aeec-c83e9510d66f
+Date: 2026-10-23 (consolidated correction)
+Result: **partial; acceptance withheld**. Ten of twelve checks have PASS/FAIL results from real builds and browser runs; two P2 defects are open and unfixed; checks 7–10 and 12 have scoping caveats. This supersedes the "blocked" result previously recorded at this path — that result was stale and ignored work already completed and committed in the same task under `qa/reports/M2-29-resume.md` and `qa/artifacts/M2-29/`.
+
+## Correction note
+
+### F02 retest pending — resolved 2026-10-30
+
+F02 went through repeated review-gate blocks (2026-10-29) while its fix, Gameplay Programmer task `952bfce2-c546-4460-915f-4a7c84da33d1`, had not yet reached this line's execution baseline; each check confirmed `apps/web/src/components/BattleView.tsx:154` still rendered the unconditional `Math.max(0, s.duration - 1)`. That prerequisite has since cleared review and been integrated. Task `f502e33d-1203-4fa8-8222-4957b79b5dea` ran the full review-gate retest against the integrated fix on 2026-10-30 and closed F02 as fixed. Full evidence: `qa/reports/M2-29-F02-retest.md`.
+
+An earlier revision of this file reported the task as fully blocked by `npm ci`/`npm run build` EPERM failures, with "no claim is made" about any of the twelve checks. That blocker was real at the time it was hit, but the task was resumed multiple times after the environment allowed a clean install/build, and substantial verification work was actually performed and committed on this branch:
+
+- `qa/reports/M2-29-resume.md` — four resumed phases: environment/build success, `tests/e2e/api-attacks.mjs`, `tests/e2e/five-hero-formation.mjs`, `tests/e2e/browser-ui.mjs`, `tests/e2e/combat-replay.mjs`, `tests/e2e/restart-unaccelerated.mjs`, `tests/e2e/m2-identical-retries.mjs`, `tests/e2e/m2-roster-browser.mjs`, `tests/e2e/m2-battle-browser.mjs`, `tests/e2e/m2-mechanics-browser.mjs`.
+- `qa/artifacts/M2-29/` — screenshots (`browser/`, `roster/`), per-fight reports and DOM observations (`battles/`), and mechanics check outputs (`mechanics/check7-outcomes.json`, `check8-boss-report.json`, `check9-crafts.json`, `inventory-rarity.png`, `observations.json`).
+
+This revision replaces the false "blocked" summary with the actual consolidated ledger from `M2-29-resume.md`. Readers wanting full command-by-command detail should read that file; this file gives the authoritative current status.
+
+## Consolidated acceptance ledger
+
+| Check | Outcome | Notes |
+| --- | --- | --- |
+| 1 Recruitment | PASS | Six-class selector; three browser recruits produce six hero cards. |
+| 2 Dual class/loadout | PASS | Primary+secondary chosen, one active/passive from each selected and saved; survives navigation and same-save server restart (in-process lifecycle, not OS-level). |
+| 3 Formation | **FAIL — P2 M2-29-F01, open** | Five slots save/persist correctly, but battle view shows no front/back row distinction. See defect below. |
+| 4 Battle completeness | **FAIL — P2 M2-29-F02, open** | Names/HP/classes correct; status-duration badge is off-by-one vs. the feed text. See defect below. |
+| 5 Feed | PASS | 148 events checked across 7 fight reports: actor/target names, exact nonzero amounts, skill-ID-to-label mapping, death notices. |
+| 6 Playback | PASS for HP/control sync; F02 affects status correctness | Step/pause/speed/skip verified against authoritative HP at every point. |
+| 7 Tactics | PASS (directional) | One fixed boss encounter, two builds (balanced vs. no-healer/no-tank); balanced build won/held more HP in both runs. Not a statistically robust study. |
+| 8a Mechanics (cooldown, buff) | PASS | Cooldown and buff-feeds-into-damage checked against real skill data from two boss runs. |
+| 8b Mechanics (taunt/threat redirect) | PASS | Dedicated seeded repro against `packages/game`'s engine directly (`tests/e2e/taunt-redirect.mjs`, seed `777001`): a taunting front-row Vanguard forced the boss's non-taunt-aware single-target attack to redirect to it instead of its normal lowest-position pick. Full command/seed/event-log evidence in `qa/reports/M2-29-resume.md` ("Check 8b"). |
+| 9 Gear | PASS | Two same-item/same-rarity crafts produced different randomized affixes; rarity tag visible in browser Inventory. |
+| 10 Crafting | PASS | Real gold/materials spent; reforge correctly blocked while equipped, succeeded once unequipped; equipped stats carry into the next fight's snapshot (exact delta not isolated). |
+| 11 Content | PASS | Both areas and the 4-floor Sunken Aqueduct dungeon (incl. boss) played and replayed through the shared battle view. |
+| 12 M1 regression | PASS (scoped) | Full default starter party: expedition → settle → collect → XP gain, zero page errors. A literal single-hero formation reliably loses Old Road's unchanged content; not scored as a regression since M1's accepted release never fielded fewer than a full party. Contrast re-audit not repeated this phase. |
+
+Additional non-check evidence: account isolation, concurrent/identical-retry handling, and abrupt-process restart were all verified via `tests/e2e/api-attacks.mjs`, `tests/e2e/m2-identical-retries.mjs`, and `tests/e2e/restart-unaccelerated.mjs` (see `M2-29-resume.md` for exact assertions). Keyboard-driven actions were exercised in `tests/e2e/browser-ui.mjs`. Offline/catch-up settlement is covered by the accelerated-clock expedition/dungeon runs in the same suites; no dedicated multi-day-offline scenario beyond those bounded settlements was run.
+
+## Open defects
+
+- **M2-29-F01** (P2): battle view does not visually distinguish formation front/back rows. Reproduction, DOM coordinates and screenshots in `M2-29-resume.md` ("Second resumed phase") and `qa/artifacts/M2-29/roster/`. **Handed off to Gameplay Programmer in this step** (see task block below).
+- **M2-29-F02** (P2): status-duration badge (`UnitPanel`) reads one round lower than the just-applied duration stated in the feed text, for Burning/Taunting/Fortified/Weakened. Reproduction and source pointer in `M2-29-resume.md` ("Third resumed phase") and `qa/artifacts/M2-29/battles/observations.json`. **Handed off to Gameplay Programmer in this step** (see task block below).
+
+Both defects were handed off to Gameplay Programmer as dashboard task blocks in this step. Neither is fixed or retested yet. No P0/P1 defect was found or excluded by this task.
+
+## Production-code provenance check (review finding response)
+
+A review flagged that this branch's diff contains substantial Engineering-owned production code — a debug level/XP/gold menu (`apps/server/src/services/debugService.ts`, `apps/web/src/screens/Debug.tsx`, `apps/server/src/app.ts`/`config.ts`/`main.ts`), and UI changes (`DamageDetails.tsx`, `SkillLabel.tsx`, `BattleView.tsx`) — with no explanation of why QA would have written it directly.
+
+Verified: **QA did not write any of this code.** All of it predates this task:
+
+- `git log --oneline --follow -- apps/web/src/screens/Debug.tsx` shows a single commit, `1278d90` ("Update apps/server/src/app.ts, apps/server/src/config.ts and 8 more files").
+- `git merge-base --is-ancestor 1278d90 a74070a4dae416d3384652f5755fb12eb0c18135` succeeds — `1278d90` is already an ancestor of this task's approved baseline commit, brought in by a prior "Receive approved project baseline" merge, not authored on this branch.
+- `DamageDetails.tsx`/`SkillLabel.tsx`/`BattleView.tsx` similarly trace to `a5370ba` ("Update apps/web/src/components/BattleView.test.tsx...") and `f5cd8cd` ("Add accessible skill tooltips to loadouts and battle feeds"), both also ancestors of `a74070a`.
+- `git diff --stat a74070a4dae416d3384652f5755fb12eb0c18135 HEAD -- apps/ packages/` is **empty**: nothing under `apps/` or `packages/` changed between this task's approved baseline and the current HEAD. The code the review found only shows up when diffing against an older fork point (`42c6443`, before several main-line baseline merges landed), not against the task's actual base.
+
+The apparent "QA wrote production code" diff is an artifact of comparing against the wrong base commit. This task's own commits touch only `qa/` and `tests/e2e/`, consistent with the write restriction. No task block to Gameplay Programmer was needed for this finding; F01 and F02 above are the actual QA-identified defects requiring Engineering fixes, and are called out for the Game Director/Gameplay Programmer below.
+
+## Next step
+
+- F01 and F02 are now handed off to Gameplay Programmer (task blocks filed this step); retest both once integrated.
+- Check 8's taunt/threat-redirect rule is closed (PASS, dedicated repro above); no further taunt work is open.
+- M2-30's playability verdict remains gated on F01/F02 disposition and the Game Director's call on whether the two open P2s are acceptable as known issues.
+- No duplicate backlog task created; no game-source file edited by QA.
+
