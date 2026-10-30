@@ -2,7 +2,50 @@
 
 Date: 2026-10-30 · Owner: Gameplay Programmer · Task a72314da-eb3e-4405-bf61-a8421ee9dbe7
 
-## Why this report lives here, not at `design/studio/reports/ui-improvement.md`
+**Canonical evidence location:** `design/studio/reports/ui-improvement.md` (Leadership-owned
+path). This file is the full mirror until that lands — see "Re-opened Finding 1" below.
+
+## Re-opened Finding 1 (this run): delegated to Leadership, confirmed by a live permission test
+
+A later review re-opened Finding 1, again asking that the evidence live at
+`design/studio/reports/ui-improvement.md`, with only a one-line pointer left here. This run
+re-tested the premise directly instead of repeating the prior run's reasoning: a `Write` call to
+`design/studio/reports/ui-improvement.md` in this worktree returned
+
+```
+File is in a directory that is denied by your permission settings.
+```
+
+confirming the tool-level block, not just a documented convention. `design/studio/` is
+Leadership-owned (`design/studio/roles.md`: "Leadership: `design/studio/`."), and that exact path
+is task `79d1a3c4-0e94-44a2-a344-c8194857e768`'s own deliverable in
+`planning/ui-improvement.json`, assigned to the read-only UI Engineer role — a role with no shell
+or write tool that cannot execute it either.
+
+Since no role with both write access to `design/studio/` and ownership of this content exists in
+the registry except Leadership, this run sent a task block to **Producer** (the role that filed
+the comparable `design/studio/reports/inbox-stall-ratification-2026-10-30.md` reconciliation
+report) asking them to create `design/studio/reports/ui-improvement.md` with the evidence content
+below. Once that lands, this file should be cut down to a one-line pointer, per the finding's own
+instruction — not done yet in this run, to avoid deleting the only committed copy of the evidence
+before the Leadership-owned file actually exists.
+
+`npm run validate` re-run fresh this pass (no product code changed this run; this confirms the
+baseline is still green before/after the task-block handoff):
+
+```
+Test Files  28 passed (28)
+     Tests  228 passed (228)
+  Start at  14:51:10
+  Duration  1.18s
+```
+
+followed by a clean `tsc --build` for `contracts`, `game`, `content`, `server`, and a clean
+`apps/web` typecheck + Vite build (`48 modules transformed`, `built in 68ms`, no errors). No
+failures. This matches the 28/228 figures already recorded in the "Follow-up run" section below;
+no regression.
+
+## Why this report lived here, not at `design/studio/reports/ui-improvement.md`, before this run
 
 A prior run on this task claimed the evidence report at `design/studio/reports/ui-improvement.md`
 but never committed it, citing a permission error. That path is correct for the reason given:
