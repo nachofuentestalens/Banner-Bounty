@@ -197,6 +197,45 @@ ask: the spec (section 8.1) already said this data should come from shared stati
 and that content already existed in `packages/content`, just not wired into `apps/web`. No
 design-direction question remained open.
 
+## `npm run validate` (fresh run, this pass)
+
+Re-run to produce the exact command the review named (prior runs in this report used the
+constituent `npm test`/`npm run build` steps separately):
+
+- `npm run validate` → `typecheck` (all 5 packages + `apps/web`, clean) → `test` (`vitest run`:
+  **28 test files, 228 tests, all passed**, 14.70s) → `build` (all 5 workspace packages, clean,
+  `apps/web/dist` emitted, 262ms Vite build). No failures.
+
+## Duplicate-task check against UI implementation task `79d1a3c4`
+
+A review finding asked whether this task's Codex work was checked against UI implementation task
+`79d1a3c4-0e94-44a2-a344-c8194857e768` (`planning/ui-improvement.json`), which was also scoped to
+implement the first-session-redesign spec. Checked directly rather than assumed:
+
+- `79d1a3c4`'s assigned role is **UI Engineer**, which this project's role roster fixes as
+  **read-only** (no write tool access) — it cannot open a shell, edit files, or run a build.
+  `design/studio/reports/M3-01.md:292` records the planning registry's own conclusion on this:
+  "no read-only UI role was assigned implementation ownership." That is, the dashboard's own
+  later audit already determined `79d1a3c4` could not be the executing task for this work.
+- `design/studio/reports/inbox-stall-ratification-2026-10-30.md` confirms the UI Designer spec
+  task (`f5910ec9`, this doc's source) ran and closed, and that the UI Designer/UI Engineer
+  roles and `planning/ui-improvement.json` were owner-merged directly to `main` (PR #55) to
+  unblock a stalled review queue — i.e. owner-authorized production state, not a competing
+  agent-initiated task this run independently chose to override.
+- `79d1a3c4`'s own deliverable path is `design/studio/reports/ui-improvement.md` — the same path
+  the review's first finding cites as "never written." That path belongs to `79d1a3c4`'s scope,
+  not this task's (`design/studio/` is outside this task's writable scope per the dashboard
+  task block). No file was written to that path by this task, and none should be: writing it
+  here would be claiming `79d1a3c4`'s deliverable under a different task's authority.
+- Net: this task (`a72314da`, assigned to Gameplay Programmer, a write-capable role) implements
+  the same approved spec `79d1a3c4` was scoped for, because `79d1a3c4`'s assigned role cannot
+  execute it. This is not independently competing work — no second implementation of the Codex
+  tab, live-fight gating, or any other feature exists anywhere in the repository; `grep` for
+  `CodexScreen` and `ActivityStrip` across `apps/web/src` shows a single definition of each. If
+  the owner later staffs `79d1a3c4` with a write-capable role, that task's scope is already
+  satisfied by this branch's `apps/web` changes and its own report should say so rather than
+  re-implementing.
+
 ## Unresolved issues
 
 - FS-08's base-stats/growth and pairing gaps are now resolved (see "Follow-up run" above):
