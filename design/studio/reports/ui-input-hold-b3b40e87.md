@@ -3,6 +3,18 @@
 Date: 2026-10-29. Repair task: `b3b40e87-28d0-4369-a024-17ccc9a1083d`.
 Target: `f5910ec9-59da-44cd-97fc-0448643177d0` (Review current UI and specify an engaging first-session redesign).
 
+## Resolution — 2026-11-06
+
+The investigated UI input hold has cleared. This repair investigation is complete; the dated findings below are historical, not current scheduling instructions.
+
+- The permitted project tasks GET now reports the UI review as `stage: closed`, `stepState: complete`, at base `714f93280e8021448470a0a39252c47ef98d72b6`. Its requiredPaths remain intact.
+- `git -C ../.. ls-tree -r --name-only HEAD -- <six required paths>` returned all six committed inputs in this assigned worktree, including the formerly missing planning JSON and owner-feedback report. No inputs were copied or manufactured by this repair.
+- The redesign deliverable `design/game/first-session-redesign.md` is also committed. The 2026-10-29 entry in `design/decisions.md` records acceptance of that proposal. The document explicitly describes source review only, NOT PLAYED.
+- The source task now has `git: merged`, although its status is idle and its old handoff still describes unfinished gameplay work. This investigation does not interpret merge metadata as gameplay acceptance or mark that task complete.
+- Commands succeeded without permission refusals. Initial task output was truncated by a large review message; a second GET projected only the necessary status fields. The cumulative diff against task base `aa6c374336d7feac0772792aa8fe7535d0297baf` contains only this investigation report. No dashboard mutations, branch changes, dependency edits or new tasks were needed.
+
+Acceptance evidence for closing this repair is the completed target review, the committed accepted redesign, and presence of all six intended inputs. This is not a claim that every dashboard queue or later UI implementation task is ready. No build or playtest was run for this report-only change. Next: continue existing implementation and acceptance work under its own task gates; do not keep polling this obsolete UI-review hold.
+
 ## Finding and disposition
 
 The required input is an existing committed deliverable awaiting integration, not erroneous metadata. Preserve the task and its requiredPaths. No prerequisite file was manufactured, no duplicate task created, and no dashboard state changed.
