@@ -1,31 +1,40 @@
-# Current release verdict: M2 acceptance still withheld; M3 production stays blocked
+# Current release verdict: G0 Economy conditional pass; M3 sequencing permitted
 
-Date: 2026-11-06 · Owner: Game Director · Task M3-02 (`5dc6371a-c0a0-4393-9404-4497720246f4`)
+Date: 2026-11-06 · Owner: Game Director · Re-disposition task `9b78d00a-504d-4b20-8b9e-bc1e51545679`
 
-**M2 full acceptance remains withheld; M3-02 stays unfinished so M3-07 onward stay blocked.**
-The [M3-02 report](reports/M3-02.md) reviews M2 closure gate-by-gate: QA's replay-fix retest,
-checks 8–10/12, and check-7 reconciliation now all have evidence and are dispositioned, with no
-P0/P1 and no silently waived watchability failure. QA's own `qa/reports/M2-closure.md` recommends
-withholding full M2 acceptance, citing the unmet literal solo-improvement criterion and missing
-enemy/opponent identification (both P2, both documented, neither waived).
+**M3-02 G0 Economy: CONDITIONAL PASS. Fresh-versus-migrated save progression is explicitly
+accepted as a deferral to M3-08 server work, not a blocker to starting M3 production and not a
+verified pass. Full M2 acceptance remains withheld.**
 
-The one gate item that still fails is the Economy disposition: `design/game/reports/M2-28.md` is
-unchanged since 2026-10-21 and was already read together with the separate simulation-matrix
-report by the M2-30 verdict below — no new Economy evidence exists to disposition. Full M2
-acceptance needs Economy's existing task (`7f1bf5c6-fc85-4105-a67f-03ee624161ee`) resumed with the
-fresh/migrated progression matrix (1/3/5 heroes × 30/84/480 credited minutes/day, purchases,
-overflow, failure recovery) that `gear.md` section 7 and M2-30 both call for, before this gate can
-pass. No duplicate Economy task is created for this.
+The [M3-02 appended review](reports/M3-02.md#update-2026-11-06-g0-economy-re-disposition-from-the-completed-rerun)
+supersedes the earlier Economy FAIL and stale-evidence hold. It reviews both November 6 updates
+in [M2-28](../game/reports/M2-28.md) and the
+[ledger-spend/offline report](../../reports/engineering/ledger-spend-offline.md).
+Spending, offline partition simulation and guaranteed-material failure recovery now pass within
+the pure-engine harness's scope. Existing fixed-level matrix, overflow, material constraints
+and level-3 team-building contrast evidence remain bounded; no universal class-balance or
+fresh/migrated progression pass is claimed.
 
-Separately, the Producer's M3 execution graph (`design/studio/reports/M3-01.md`) passes plan
-review: all 12 native tasks exist exactly once, verified live against the dashboard; dependency
-edges correctly chain every production task (M3-07 onward) back to this gate; scope matches
-`design/studio/priorities.md` and `milestones/M3.md`; acceptance checks are observable and
-testable. That half of this gate is ready; only the M2 closure half is not.
+M3-08 already owns server migrations/services, so it must supply the missing isolated SQLite
+fresh/legacy progression evidence with real migrations, controlled time/RNG, preservation checks
+and reopen/retry behavior in `reports/engineering/M3-08.md`. Starting gold and mocked migrations
+cannot satisfy this obligation. M3-11 independently verifies it; M3-12 cannot claim full
+progression acceptance without it. The report states the exact exit evidence and reason for deferral.
 
-The verdict below, from the prior Director review (M2-30, 2026-10-29), is preserved as the
-record of what was already fixed and resolved since. It is not superseded in substance, only
-extended by the evidence above.
+The other G0 dispositions and M3 plan-review PASS are unchanged. G0 is conditionally satisfied
+for production sequencing. Existing P2 enemy/opponent identification and literal solo-improvement
+gaps remain recorded and unwaived; this decision does not certify full M2 acceptance or enjoyment.
+
+**M3-07 may proceed under this verdict after integration and normal prerequisite checks.**
+However, its live required path `design/studio/reports/M3-02-accepted.md` is absent from this
+baseline: the existing gate/Producer workflow must reconcile that marker hold before execution.
+Its `in_progress` stage alone does not establish readiness. **M3-08 may proceed after its
+M3-07/M3-05 prerequisites, carrying the explicit server-evidence obligation; M3-09 may proceed
+after its M3-08/M3-06 prerequisites.** All native dependencies and committed-input requirements
+still apply. No task was started or dependency bypassed by this review.
+
+Historical verdicts below are preserved; the current G0 Economy disposition above controls the
+production gate. Full M2 acceptance is not granted by this update.
 
 ---
 # Prior release verdict: M2 acceptance withheld
