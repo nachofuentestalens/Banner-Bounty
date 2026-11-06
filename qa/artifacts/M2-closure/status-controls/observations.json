@@ -1,0 +1,169 @@
+{
+  "scope": "Current component with historical real reports; not fresh server-generated fights",
+  "results": [
+    {
+      "label": "expedition",
+      "events": 34,
+      "positions": 46,
+      "expiryChecks": 6,
+      "refreshChecks": 2,
+      "enemies": [
+        {
+          "name": "Road Brigand",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        },
+        {
+          "name": "Road Wolf",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        },
+        {
+          "name": "Road Cutpurse",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        }
+      ]
+    },
+    {
+      "label": "boss",
+      "events": 18,
+      "positions": 30,
+      "expiryChecks": 2,
+      "refreshChecks": 2,
+      "enemies": [
+        {
+          "name": "The Tollkeeper",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        }
+      ]
+    },
+    {
+      "label": "dungeon-floor-1",
+      "events": 15,
+      "positions": 27,
+      "expiryChecks": 3,
+      "refreshChecks": 0,
+      "enemies": [
+        {
+          "name": "Aqueduct Husk",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        },
+        {
+          "name": "Aqueduct Husk",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        }
+      ]
+    },
+    {
+      "label": "dungeon-floor-2",
+      "events": 17,
+      "positions": 29,
+      "expiryChecks": 4,
+      "refreshChecks": 0,
+      "enemies": [
+        {
+          "name": "Drowned Warden-Thrall",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        },
+        {
+          "name": "Aqueduct Husk",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        }
+      ]
+    },
+    {
+      "label": "dungeon-floor-3",
+      "events": 18,
+      "positions": 30,
+      "expiryChecks": 4,
+      "refreshChecks": 0,
+      "enemies": [
+        {
+          "name": "Depths Broodling",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        },
+        {
+          "name": "Depths Broodling",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        }
+      ]
+    },
+    {
+      "label": "dungeon-boss",
+      "events": 27,
+      "positions": 39,
+      "expiryChecks": 4,
+      "refreshChecks": 2,
+      "enemies": [
+        {
+          "name": "The Drowned Warden",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        }
+      ]
+    },
+    {
+      "label": "arena",
+      "events": 18,
+      "positions": 30,
+      "expiryChecks": 4,
+      "refreshChecks": 0,
+      "enemies": [
+        {
+          "name": "00000000-0000-4000-8000-0000000b0001",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        },
+        {
+          "name": "00000000-0000-4000-8000-0000000b0002",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        },
+        {
+          "name": "00000000-0000-4000-8000-0000000b0003",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        }
+      ]
+    },
+    {
+      "label": "five-party",
+      "events": 32,
+      "positions": 44,
+      "expiryChecks": 2,
+      "refreshChecks": 7,
+      "enemies": [
+        {
+          "name": "The Tollkeeper",
+          "kind": "enemy",
+          "classId": null,
+          "displayedClass": []
+        }
+      ]
+    }
+  ],
+  "findings": [],
+  "errors": []
+}
