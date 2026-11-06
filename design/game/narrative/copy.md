@@ -261,7 +261,317 @@ with their own key per event — exact feed sentence assembly is M2-27's UI impl
 | `boss_drowned_warden.desc` | — | A towering, waterlogged guardian. Strikes the weak, then the whole line, on a steady cycle. |
 | `boss_drowned_warden.intro` | body | The locks groan open on their own. Something vast rises out of the flooded dark — the Warden never left its post. |
 
-## 9. Assumptions and open items (recorded per `AGENTS.md` rule 4)
+---
+
+## 10. M3-06 additions: M3 classes, races, dungeon, codex, respec and competition copy
+
+Fulfils `design/studio/milestones/M3.md`'s M3-06 scope against `design/game/m3-systems.md` (M3-03
+freeze) and `design/game/economy/m3.md` (M3-04 provisional targets). All text below is original,
+written for Banner & Bounty, matching this document's existing style: short label (~24 chars), short
+description (~110 chars), body (~220 chars, onboarding/result/confirmation copy only). No entry
+restates a number that `m3-systems.md`/`economy/m3.md` mark as provisional or tunable (e.g. respec
+gold/scrap/sigil cost, cooldown hours, specialization thresholds/target counts) — those render from
+server-supplied values via `{placeholder}` tokens. The one exception is the **180-second floor
+timing**, which `m3-systems.md` §3/§7 freezes as a production constant rather than a tunable, and
+which the milestone explicitly requires copy to communicate.
+
+### 10.1 New classes (`m3-systems.md` §4)
+
+| key | label | desc |
+| --- | --- | --- |
+| `class_warder.name` | Warder | Defensive support who braces allies and mends what the front line takes. |
+| `class_weaver.name` | Weaver | Control-minded striker who saps an enemy's edge before cutting it down. |
+
+### 10.2 New class skills
+
+| key | label | desc |
+| --- | --- | --- |
+| `skill_warder_tap.name` | Shieldtap | A short, disciplined knock with the shield's rim — enough to keep the line honest. |
+| `skill_warder_brace.name` | Brace | — |
+| `skill_warder_brace.desc` | — | Steps between whoever's hurting worst and the next hit, bracing their guard. |
+| `skill_warder_repair.name` | Repair | — |
+| `skill_warder_repair.desc` | — | Patches up whichever ally needs it most, full health or not. |
+| `skill_warder_rooted.name` | Rooted Stance | — |
+| `skill_warder_rooted.desc` | — | Plants firm at the front of the line, harder to move the longer this Warder holds it. |
+| `skill_warder_aftercare.name` | Aftercare | — |
+| `skill_warder_aftercare.desc` | — | Leaves a lingering comfort on whoever Repair just patched up. |
+| `skill_weaver_thread.name` | Threadcast | — |
+| `skill_weaver_thread.desc` | — | A thin filament of force, flicked out to find a weak point. |
+| `skill_weaver_snare.name` | Snare | — |
+| `skill_weaver_snare.desc` | — | A binding strike that saps the target's own strength along with the hit. |
+| `skill_weaver_unravel.name` | Unravel | — |
+| `skill_weaver_unravel.desc` | — | Strips a braced enemy's shielding bare before the strike lands. |
+| `skill_weaver_tension.name` | Tension | — |
+| `skill_weaver_tension.desc` | — | Pulls a little harder on a target already caught sapped and weakened. |
+| `skill_weaver_slip.name` | Slip | — |
+| `skill_weaver_slip.desc` | — | A practiced sidestep, honed since the first thread was cast. |
+
+### 10.3 Primary specializations — all eight classes, two choices each (`m3-systems.md` §4)
+
+One optional primary specialization per hero; choosing, clearing, or switching is free outside active
+runs. Without its named skill slotted, a specialization has no effect — the codex (10.6) warns rather
+than auto-equipping.
+
+| key | label | desc |
+| --- | --- | --- |
+| `m3spec_vanguard_sentinel.name` | Sentinel | — |
+| `m3spec_vanguard_sentinel.desc` | — | Bulwark Call also shields the ally who needs it most, not just this Vanguard. |
+| `m3spec_vanguard_breaker.name` | Breaker | — |
+| `m3spec_vanguard_breaker.desc` | — | Shield Bash punches straight through row cover, though a taunting target still comes first. |
+| `m3spec_ranger_tracker.name` | Tracker | — |
+| `m3spec_ranger_tracker.desc` | — | Aimed Shot finishes wounded enemies earlier than usual. |
+| `m3spec_ranger_scatter.name` | Scatter | — |
+| `m3spec_ranger_scatter.desc` | — | Volley's spread reaches further across the enemy line. |
+| `m3spec_arcanist_ember.name` | Ember | — |
+| `m3spec_arcanist_ember.desc` | — | Firebolt turns from the weakest enemy to the strongest, burning whoever can take it. |
+| `m3spec_arcanist_quench.name` | Quench | — |
+| `m3spec_arcanist_quench.desc` | — | Meteor's fire snuffs out every struck enemy's hastened step before the damage falls. |
+| `m3spec_cleric_triage.name` | Triage | — |
+| `m3spec_cleric_triage.desc` | — | Mending Light heals hardest on whoever is closest to falling, then still calls on Devotion if slotted. |
+| `m3spec_cleric_shelter.name` | Shelter | — |
+| `m3spec_cleric_shelter.desc` | — | Sanctuary's ward now braces every living ally's guard as well as their wounds. |
+| `m3spec_rogue_duelist.name` | Duelist | — |
+| `m3spec_rogue_duelist.desc` | — | Backstab turns from the frontline target to whichever enemy swings hardest, wherever they stand. |
+| `m3spec_rogue_pursuer.name` | Pursuer | — |
+| `m3spec_rogue_pursuer.desc` | — | If Flurry's first cut drops its target, the second cut finds someone else instead of going to waste. |
+| `m3spec_herald_cadence.name` | Cadence | — |
+| `m3spec_herald_cadence.desc` | — | War Hymn clears the company's saps before it quickens their step. |
+| `m3spec_herald_dissonance.name` | Dissonance | — |
+| `m3spec_herald_dissonance.desc` | — | Discordant Verse turns from the frontline target to whichever enemy swings hardest, wherever they stand. |
+| `m3spec_warder_anchor.name` | Anchor | — |
+| `m3spec_warder_anchor.desc` | — | Brace's shield now draws every eye as well, holding the fight on this Warder's chosen ally. |
+| `m3spec_warder_mender.name` | Mender | — |
+| `m3spec_warder_mender.desc` | — | Repair reaches two of the company's neediest at once, for a gentler mend each. |
+| `m3spec_weaver_fray.name` | Fray | — |
+| `m3spec_weaver_fray.desc` | — | A landed Snare now saps its target's step along with its guard. |
+| `m3spec_weaver_sever.name` | Sever | — |
+| `m3spec_weaver_sever.desc` | — | Unravel reaches first for whichever braced enemy swings hardest, before falling back to its usual mark. |
+
+### 10.4 Races and comparison/migration copy (`m3-systems.md` §5)
+
+Race is chosen once at recruitment and never changes afterward; no race restricts any class, gear, or
+content.
+
+| key | label | desc |
+| --- | --- | --- |
+| `race_vesper.name` | Vesperkin | Hardier blood, but their strikes land a touch softer. |
+| `race_cairn.name` | Cairnfolk | Built like old stone — tougher to move, slower to get there. |
+| `race_serein.name` | Serein | Quick on their feet, thinner for it. |
+
+| key | type | text |
+| --- | --- | --- |
+| `race.compare.title` | label | Compare Races |
+| `race.compare.body` | body | Every recruit picks one race for good. Each trades one strength for one weakness — review all three before you confirm. |
+| `race.no_default.desc` | — | No race is chosen for you — pick one explicitly before recruiting. |
+| `race.migration_notice.title` | label | Assigned: Vesperkin |
+| `race.migration_notice.body` | body | Heroes recruited before races existed are set to Vesperkin by default. Nothing else about their build, level, or gear changed. |
+
+### 10.5 Cinder Archive — second dungeon, enemies, boss, floors (`m3-systems.md` §7)
+
+| key | label | desc |
+| --- | --- | --- |
+| `dungeon_cinder_archive.name` | Cinder Archive | Four floors of records and ash, held by something that still keeps the catalog. |
+| `dungeon_cinder_archive.desc` | — | A four-floor descent through a ruined archive, ending in its keeper. Opens once Sunken Aqueduct Depths is cleared. |
+| `dungeon_cinder_archive.locked.desc` | — | Clear Sunken Aqueduct Depths first to unlock the Cinder Archive. |
+| `enemy_archive_binder.name` | Archive Binder | Bound tight in old leather, it still enforces whatever order it was left to keep. |
+| `enemy_archive_spark.name` | Archive Spark | A quick flare of old magic, drawn straight to whoever's hurt worst. |
+| `boss_archive_custodian.name` | The Custodian | What's left of the archive's keeper, still sweeping the floor clean of anyone who doesn't belong. |
+| `boss_archive_custodian.desc` | — | A towering, methodical guardian. Cycles between bracing itself, singling out the weak, and striking the whole line at once. |
+| `boss_archive_custodian.intro` | body | Dust stirs along the shelves. Something old and precise steps out from between them — the Archive never stopped being kept. |
+| `floor_cinder_archive_1.desc` | — | A binder and a spark guard the entrance, same as any ordinary record room. |
+| `floor_cinder_archive_2.desc` | — | The binder holds the door while two sparks circle the room. |
+| `floor_cinder_archive_3.desc` | — | Two binders stand together, with one spark still darting between them. |
+| `floor_cinder_archive_4.desc` | — | The Custodian itself, with one spark still keeping watch. |
+
+| key | type | text |
+| --- | --- | --- |
+| `dungeon.floor_timing.desc` | — | Each floor takes 180 seconds to resolve, whatever happens in it. A full four-floor clear takes up to 12 minutes. |
+| `dungeon.loadout_frozen.title` | label | Loadout Locked for This Run |
+| `dungeon.loadout_frozen.body` | body | Stats, race, specialization, skills, gear, and formation are frozen the moment this dungeon starts. Finish or abandon this run before changing any of them. |
+| `dungeon.between_floors_locked.desc` | — | No loadout changes between floors — this run keeps the build it started with. |
+| `dungeon.abandon_confirm.title` | label | Abandon This Run? |
+| `dungeon.abandon_confirm.body` | body | Floors you've already cleared keep their rewards. Anything in progress on this floor is lost, and there's no refund for stopping early. |
+| `dungeon.retry.desc` | — | Starting again begins at floor 1 with a fresh run — nothing carries over from the last attempt. |
+| `dungeon.catalog_stale.desc` | — | This dungeon's listing changed since you opened it. Refreshing before you start. |
+
+### 10.6 Codex — read-only build reference (`m3-systems.md` §6)
+
+| key | type | text |
+| --- | --- | --- |
+| `codex.title` | label | Company Codex |
+| `codex.body` | body | Every class, race, and specialization choice — stats, skills, and tradeoffs — before you commit to one. Looking something up here changes nothing about your build. |
+| `codex.inspect.label` | label | Inspect |
+| `codex.inspect.hint` | — | Press Enter or Space, or tap, to open this. Nothing shown here is equipped until you confirm elsewhere. |
+| `codex.locked_skill.desc` | — | Unlocks at level {level}. Shown here so you know what's coming, not as something to equip yet. |
+| `codex.secondary_preview.desc` | — | Looking at a class you haven't chosen as secondary doesn't unlock it — recruit or switch into it first. |
+| `codex.return_draft_preserved.desc` | — | Your unsaved pick is still here when you come back from the codex. |
+| `codex.stale_catalog.desc` | — | The codex updated since you opened it. Refreshing before you continue. |
+
+### 10.7 Deferred loadout — pending, applied, superseded, discarded (`m3-systems.md` §3)
+
+| key | type | text |
+| --- | --- | --- |
+| `loadout.pending.label` | label | Pending |
+| `loadout.pending.desc` | — | Queued for your next eligible fight. The fight already in progress still uses the old build. |
+| `loadout.applied.label` | label | Applied |
+| `loadout.applied.desc` | — | This selection is now live and governs every fight from here on, until you change it again. |
+| `loadout.superseded.label` | label | Replaced |
+| `loadout.superseded.desc` | — | A later change took its place before this one ever took effect. |
+| `loadout.discarded.label` | label | Discarded |
+| `loadout.discarded.desc` | — | This queued change never applied and was cleared when the run stopped. |
+| `loadout.frozen_level.title` | label | Frozen at Level {level} |
+| `loadout.frozen_level.body` | body | This expedition started at level {level}, so only skills already unlocked then are selectable. A skill from a later level needs a new expedition. |
+| `loadout.cancel_pending.label` | label | Cancel Pending Change |
+| `loadout.cancel_already_applied.desc` | — | Too late — this change already applied. Nothing was cancelled. |
+| `loadout.save_confirm.label` | label | Save for Next Eligible Fight |
+| `loadout.legacy_run_locked.desc` | — | This run started under the old rules. Finish it before queuing a new skill loadout. |
+| `loadout.dungeon_locked.desc` | — | Dungeon runs never accept loadout changes, even between floors. |
+| `loadout.invalid_slot.desc` | — | That skill doesn't belong in this slot, isn't unlocked yet, or is already slotted elsewhere. Nothing was saved. |
+
+### 10.8 Respec — primary class and free secondary switching (`m3-systems.md` §6)
+
+| key | type | text |
+| --- | --- | --- |
+| `respec.title` | label | Respec Primary Class |
+| `respec.preview.body` | body | Changing primary class clears your current specialization and resets your four skill slots to the new class's basics. Secondary class, level, race, and gear are unchanged. |
+| `respec.cost.label` | label | Cost |
+| `respec.cooldown.desc` | — | One respec per hero on a daily cooldown. The clock starts the moment this one confirms. |
+| `respec.next_eligible.desc` | — | Next respec available {timestamp}. |
+| `respec.confirm.label` | label | Confirm Respec |
+| `respec.cancel.label` | label | Cancel |
+| `respec.blocked_active_run.desc` | — | Respec is unavailable while an expedition or dungeon is running. Stop or finish it first. |
+| `respec.insufficient_funds.desc` | — | Not enough resources for this respec. Nothing was spent. |
+| `respec.cooldown_active.desc` | — | This hero respecced recently. Try again after {timestamp}. |
+| `respec.same_primary_rejected.desc` | — | That's already this hero's primary class — pick a different one to respec. |
+| `respec.stale_preview.desc` | — | Costs changed since you opened this. Review the new preview before confirming. |
+| `respec.success.desc` | — | Respec complete. Pick new active and passive skills whenever you're ready. |
+| `respec.secondary_free.label` | label | Free; No Cooldown |
+| `respec.secondary_free.body` | body | Switching only your secondary class costs nothing and has no cooldown. Slotted skills stay put unless the new pool drops them. |
+| `respec.secondary_confirm.label` | label | Confirm Secondary Switch |
+| `respec.secondary_noop.desc` | — | This is already your secondary class — nothing to change. |
+
+### 10.9 Season — entry, fixtures, standings, titles (`m3-systems.md` §8)
+
+| key | type | text |
+| --- | --- | --- |
+| `competition.disclosure.title` | label | Local Prototype Season |
+| `competition.disclosure.body` | body | This season runs entirely on your own machine. Open seats fill with labelled server fixtures, never other players — there's no online matchmaking here. |
+| `competition.entry_window.desc` | — | Entry closes 24 hours after this season opened: {deadline}. |
+| `competition.entry_confirm.label` | label | Confirm Entry |
+| `competition.entry_confirm.body` | body | Entering locks your company exactly as it stands right now — levels, class, race, gear, and formation. Later changes to your roster never reach this snapshot. |
+| `competition.entry_closed.title` | label | Entry Closed |
+| `competition.entry_closed.desc` | — | This season's entry window has passed. Next season opens {date}. |
+| `competition.withdraw_confirm.title` | label | Withdraw From This Season? |
+| `competition.withdraw_confirm.body` | body | Withdrawing before lock leaves this season with no matches and no rank. This can't be undone, and there's no re-entering later. |
+| `competition.locked.title` | label | Snapshot Locked |
+| `competition.locked.desc` | — | This company is locked in for the season and tournament. Matches resolve automatically — there's nothing left to confirm. |
+| `competition.fixture.label` | label | Server Fixture |
+| `competition.fixture.desc` | — | A company built by the server to fill an open seat, not a real player. Standings and matches against it are real, but no one is behind it. |
+| `competition.fixture_only.title` | label | Fixture-Only Demonstration |
+| `competition.fixture_only.desc` | — | No local accounts entered this season. Every seat is a labelled server fixture — this is a demonstration bracket, not a contest. |
+| `competition.standings.title` | label | Season Standings |
+| `competition.standings.points_label` | label | Points |
+| `competition.standings.tiebreak.desc` | — | Ties break by wins, then by entry ID — never by a hidden stat. |
+| `competition.recognition_only.desc` | — | Standings and brackets award a title only — no gold, items, materials, or lasting stat changes come from competing. |
+| `competition.season_title.label` | label | Season Champion |
+| `competition.match_draw.desc` | — | Combat draw. The match still has a winner, decided by surviving strength, not a rewritten kill. |
+| `competition.no_rank.desc` | — | No matches played this season — no rank to show. |
+| `competition.archive.label` | label | View Archived Season |
+| `competition.archive.desc` | — | This season has ended. Standings and results are preserved; individual fight replays aren't guaranteed. |
+| `competition.new_season.desc` | — | A new season has started. Enter again within its first 24 hours — nothing carries over automatically. |
+
+### 10.10 Tournament — bracket, byes, draws, titles (`m3-systems.md` §9)
+
+| key | type | text |
+| --- | --- | --- |
+| `tournament.disclosure.body` | body | One four-seat bracket per season, using the same locked company as your season entry. No separate entry, and no team changes once it locks. |
+| `tournament.bracket.title` | label | Tournament Bracket |
+| `tournament.seed.desc` | — | Seeded by entry ID, not season standings — seat order decides who faces whom. |
+| `tournament.bye.label` | label | Bye |
+| `tournament.bye.desc` | — | This seat couldn't field a usable company. Its opponent advances without a match — no reward beyond moving forward. |
+| `tournament.vacant_seat.desc` | — | This seat is vacant for this bracket while recovery is in progress. No match was played here. |
+| `tournament.no_champion.desc` | — | No match was played in this bracket — there's no champion to crown. |
+| `tournament.champion.label` | label | Tournament Champion |
+| `tournament.champion.bye_only.desc` | — | Advancing on byes alone doesn't earn the champion's title — a played final does. |
+| `tournament.withdraw_unavailable.desc` | — | Snapshot locked; matches finish automatically. |
+| `tournament.history_restored.desc` | — | Bracket and results are unchanged from before — reopening never alters a finished match. |
+
+### 10.11 Reports, eviction, and offline summaries (`m3-systems.md` §2)
+
+| key | type | text |
+| --- | --- | --- |
+| `feed.eviction.title` | label | Fight No Longer Retained |
+| `feed.eviction.body` | body | This report aged out of the retained window. Pick an open ordinal below, or jump back to the latest fight. |
+| `feed.eviction.open_oldest.label` | label | Open Oldest Available |
+| `feed.eviction.return_latest.label` | label | Return to Latest |
+| `feed.retention_warning.desc` | — | Unread fights are piling up. Catch up soon or the oldest will leave the retained window. |
+| `feed.missing_range.desc` | — | Fights {from}–{to} are no longer retained. Everything after is still here. |
+| `feed.offline_summary.title` | label | While You Were Away |
+| `feed.offline_summary.body` | body | A settlement summary for the time you were offline: wins, losses, elapsed and credited time, and what was actually granted. Fight-by-fight reports beyond the retained window aren't replayable. |
+| `feed.summary_retention.desc` | — | The most recent 20 settlement summaries are kept; older ones are no longer available. |
+| `feed.account_switch.desc` | — | Switched accounts — this feed now shows only the signed-in company's own fights. |
+| `feed.reconnect_restored.desc` | — | Reconnected. Picking up right where you left off. |
+| `feed.follow_on.label` | label | Follow Latest |
+| `feed.follow_off.desc` | — | Follow is off while you're viewing history — new fights won't steal your place. |
+
+### 10.12 Cross-cutting accessible and error states
+
+| key | type | text |
+| --- | --- | --- |
+| `a11y.hover_hint.desc` | — | Press Enter or Space, or tap, to see this explanation — it isn't hidden behind hover alone. |
+| `a11y.reduced_motion.desc` | — | Battle animation is off and playback starts paused. Turn this off in settings to resume normal playback. |
+| `a11y.focus_restore.desc` | — | Closing this returns focus to whatever opened it. |
+| `state.validation_rejected.desc` | — | That selection isn't valid right now — check the highlighted slot and try again. |
+| `state.conflict_stale.desc` | — | This changed on the server since you loaded it. Refreshing the preview before you continue. |
+
+### 10.13 Coverage table (acceptance evidence)
+
+| Required surface (milestone/M3-06 scope) | Copy keys |
+| --- | --- |
+| Two added classes (Warder, Weaver) | 10.1, 10.2 |
+| All eight classes' specialization choices (16) | 10.3 |
+| Three races and their tradeoffs | 10.4 |
+| One new four-floor dungeon and final boss | 10.5 |
+| Codex/build comparisons | 10.6, `race.compare.*` (10.4) |
+| Pending/applied loadouts | 10.7 |
+| Respec cost/reset/cooldown | 10.8 |
+| Season standings | 10.9 |
+| Tournament states | 10.10 |
+| Keyboard/tap equivalents for hover explanations | `codex.inspect.hint` (10.6), `a11y.hover_hint.desc` (10.12) |
+| Report eviction/offline summaries | 10.11 |
+| Recognition-only competition rewards (no currency/item promise) | `competition.recognition_only.desc`, `competition.season_title.label`, `tournament.champion.label` |
+| Immutable competition entries | `competition.entry_confirm.body`, `competition.locked.*`, `competition.withdraw_confirm.*` |
+| Clearly labelled server fixture opponents | `competition.fixture.*`, `competition.fixture_only.*` |
+| Frozen dungeon loadouts and 180-second floor timing | `dungeon.floor_timing.desc`, `dungeon.loadout_frozen.*`, `dungeon.between_floors_locked.desc` |
+| Locked/empty/error/confirmation text per flow | present throughout 10.5-10.12 (e.g. `dungeon_cinder_archive.locked.desc`, `competition.no_rank.desc`, `respec.insufficient_funds.desc`, `*_confirm.*` pairs) |
+| Stale exactly-three-heroes copy | Verified: no instance of a fixed three-hero-company claim exists in this document (`grep -i "three.hero\|exactly three\|party of three" design/game/narrative/copy.md` returns no matches). The only "three hero" line in the repository is `design/game/interface.md:8` ("Company: three hero cards..."), which is UI Designer-owned, outside this document and this task's write scope; flagged in the evidence report for that owner, not edited here. |
+
+### 10.14 Assumptions and open items (M3-06)
+
+- Respec gold/scrap/sigil cost and the 24-hour cooldown are provisional per `economy/m3.md` §7/
+  `m3-systems.md` §6 and may be amended before M3-05 freezes contracts. Copy above never states
+  these numbers directly; it renders them from server-supplied values via `{cost}`/`{timestamp}`-style
+  placeholders so no copy text needs to change if the formula is amended.
+- The G3 duration model (combat-length-only vs. a retained floor, `economy/m3.md` §2.3) is explicitly
+  undecided. No copy here states an expedition nominal duration in minutes/seconds; only the frozen
+  180-second **dungeon** floor timing (a production constant, not a duration-model candidate) is
+  named, per the milestone's explicit instruction to communicate it.
+- Specialization descriptions (10.3) name effects in flavor terms only and omit exact thresholds/
+  target counts (e.g. Ranger Tracker's execute-threshold change, Ranger Scatter's extra target),
+  consistent with this document's existing rule that descriptions never restate a number that could
+  drift from the frozen mechanical table in `m3-systems.md` §4.
+- No skill/specialization/race/dungeon copy key above introduces an ID not already present in
+  `m3-systems.md`; no new mechanic, stat, or reward is implied beyond what that document and
+  `economy/m3.md` already freeze.
+- `competition.season_title.label`/`tournament.champion.label` are generic title labels; the exact
+  display composition (e.g. whether a season number is interpolated, such as "Season 3 Champion")
+  is UI assembly, not fixed here, matching this document's existing precedent (section 8.3's note on
+  M2-27 owning exact feed-sentence assembly).
+- This section does not duplicate or restate 8.3's combat-feed verbs, status names, or synergy-copy
+  rules; those remain unchanged and already cover M3 combat (`m3-systems.md` §1 reuses combat.md §8
+  and the existing status set, adding no new status type).
+
+## 11. Assumptions and open items (M1-03/M2-24, recorded per `AGENTS.md` rule 4)
 
 - No stable `skillId` string scheme exists yet anywhere in the frozen surface (`classes.md`,
   `content.md`, `contracts.md` only type the field as `string`/`string | null`). Section 8.2 adopts

@@ -722,3 +722,804 @@ introduced and no existing import edge changes.
   further contract decision is anticipated for playback (pause/step/speed/skip are pure client-side
   replay over an already-fetched `events` array, per `gear.md` section 4: "playback ... is purely
   presentation and cannot advance timers or rewards").
+
+---
+
+## M3-05 addition: variable-duration settlement, deferred skills, races/specializations, respec,
+## dungeon catalog, seasons and tournament (M3 amendment)
+
+Date: 2026-10-30. Owner: CTO. Task `9946dd81-92ca-4c88-907d-06ebd2528f25`. Inputs:
+`design/game/m3-systems.md` (M3-03 freeze), `design/game/economy/m3.md` (M3-04), the cycle-duration
+feasibility report, this document's M1/M2 sections above. Everything through the M2-25 addition is
+**unchanged** except where stated. No implementation occurs in this task; `packages/*`/`apps/*` are
+untouched. Production remains gated by M3-02's explicit M2 acceptance per the milestone.
+
+### 0. Precedence and the one open economy question this resolves
+
+`economy/m3.md` §2.3 left open whether `nominalDurationMs` carries a wall-clock floor in addition to
+`resolvedRounds * msPerRound` ("Scenario A" vs "Scenario B"), and explicitly deferred that decision
+to this task. **Decision: no floor (Scenario A).** `m3-systems.md` §3/§12 — the already-frozen,
+higher-precedence Systems spec — states the formula as "a deterministic positive integer function of
+resolved combat length" with no floor term; adding one here would contradict a frozen Design document
+rather than implement it. This is a reversible CTO technical call, not a game-direction question: the
+milestone text explicitly assigns it ("CTO resolves partial cycles, persisted RNG, rules version,
+bounded work/resume, report retention and migration before code... M3-05 must decide whether a floor
+exists"). Consequence, carried forward explicitly rather than hidden: `baseline.md`/`tuning.md`'s
+minute-band text (built on a fixed 60s/cycle) will read wrong in wall-clock terms once this ships —
+cycle-*count* milestones (12 cycles to level 3, etc.) are unaffected, only their minute conversion is.
+**Required follow-up, already anticipated by `economy/m3.md` §10 item 1 and the milestone's M3-10
+row:** Economy re-derives the minute-band text from measured `resolvedRounds` distributions once
+M3-07 ships the new content, and re-runs the §5 catch-up benchmark against the resulting event volume
+(flagged below as a required gate before this contract's `MAX_BATTLES_PER_SETTLEMENT` value is
+accepted as final). This is not a blocker to freezing the schema below, since the schema is written to
+be correct under either eventual volume.
+
+### 1. New global/account-wide primitives
+
+```ts
+ServerClock { highWaterMs: number }   // single global row; never decreases
+```
+
+Every command that reads "now" for a persisted timestamp or elapsed-time computation (expedition
+settle/stop, dungeon settle/stop, respec cooldown, season/tournament boundary checks) computes
+`effectiveNow = max(rawServerNow(), ServerClock.highWaterMs)`, uses `effectiveNow` everywhere M1/M2
+used `serverNow()`, and persists `ServerClock.highWaterMs = effectiveNow` in the **same transaction**.
+This strengthens, without changing the externally observed behavior of, every existing worked example
+in this document's Offline settlement algorithm (clock rollback already clamped `elapsedMs` to zero
+per-call; the high-water mark additionally guarantees no persisted computation anywhere in the system
+can ever observe time moving backwards across *separate* commands, including commands for different
+accounts, which a per-call clamp alone does not guarantee). `apps/server` owns this table exactly like
+`SchemaVersion`; `packages/game` still never reads a clock directly.
+
+`MAX_BATTLES_PER_SETTLEMENT = 500` (provisional; replaces `480`, see §4). `480` was derived purely
+from `28,800,000 ms / 60,000 ms`; once cycle length is variable there is no fixed derivation, so this
+is a named CPU-time safety valve, re-measured the same way `480` originally was (`economy/m3.md` §5):
+**before this value is treated as final, M3-07/M3-08 must rerun the catch-up benchmark shape from
+`economy/m3.md` §5 against the real M3 settlement loop and confirm p95 settlement latency stays under
+2000 ms at 500 battles/call on stated hardware; if it does not, lower this constant — never change a
+reward table to compensate (the same non-reward-table-fix rule `tuning.md`/`economy/m3.md` already
+apply to balance findings applies here to performance findings).**
+
+`msPerRound` is a versioned numeric constant in `packages/content`, keyed by `rulesVersion` exactly
+like combat formulas already are (`architecture.md`'s "stable IDs and validated numeric definitions").
+Provisional value for the current rules version: `2000` (ms/round, per `m3-systems.md` §3's explicit
+"measurement candidate, not a production constant" — the *value* stays open for Economy/QA tuning via
+a future rules-version bump; the *mechanism* (frozen per-expedition at start, read-only thereafter) is
+fixed here).
+
+### 2. Changed entities
+
+```ts
+Hero {
+  // ...existing M2-25 fields unchanged (primaryClassId, secondaryClassId, level, xp, skillLoadout,
+  // equipment)...
+  raceId: string,                        // NEW — one of race_vesper|race_cairn|race_serein; set once
+                                          // at recruitment, immutable thereafter (M3-05/m3-systems.md
+                                          // §5: "Race changes are out of scope")
+  primarySpecializationId: string | null,  // NEW — replaces the M1 specializationId concept the
+                                            // M2-25 migration already dropped; null is the default and
+                                            // a fully legal permanent state (m3-systems.md §4)
+  lastRespecAt: string | null,           // NEW — null means cooldown-eligible immediately (migration
+                                          // default for every existing hero, m3-systems.md §5)
+}
+
+Expedition {
+  // ...existing fields unchanged (accountId, status, startedAt, checkpointAt, frozenLoadout,
+  // rulesVersion, rngState, cyclesCompleted)...
+  msPerRound: number,                    // NEW — copied from the content-defined constant at
+                                          // `/expedition/start`, frozen for the run exactly like
+                                          // rulesVersion/areaId already are; a later rules-version
+                                          // bump never changes an in-flight run's pacing mid-run
+  pendingBattleReportId: ReportId | null,  // NEW — at most one precomputed-but-uncredited battle per
+                                            // expedition; see §4
+  battlesCompleted: number,               // NEW — renames/generalizes `cyclesCompleted`; "cycle" is
+                                           // retired terminology once cycle length is variable.
+                                           // `cyclesCompleted` is dropped, not kept dual-named, since
+                                           // M1 is pre-release (same acceptable-break precedent the
+                                           // M2-25 addition already used for PartyOrder/affixId).
+  lastFeedSequence: number,               // NEW — this account's own high-water completionSequence
+                                           // (see §6); redundant with querying BattleReport but kept
+                                           // on the row to make eviction a cheap comparison, not a scan
+}
+
+BattleReport {
+  // ...existing fields unchanged (reportId, kind, participantsSnapshot, seed, rulesVersion, events,
+  // result, createdAt)...
+  // Additive, and valid ONLY for kind="pve":
+  ordinal: number | null,                 // NEW — 1-based, scoped to this battle's `runId`; assigned
+                                           // at resolution (precompute) time, not credit time
+  runId: string | null,                   // NEW — identifies the expedition run (the `Expedition`
+                                           // row's own lifetime is not stable across start/stop/
+                                           // restart, so `runId` is a separate UUID assigned at
+                                           // `/expedition/start` and frozen into the run like
+                                           // `rulesVersion`)
+  completionSequence: number | null,      // NEW — account-global monotonic, assigned at resolution
+                                           // time; used for feed pagination (§6); never reused, never
+                                           // decreases, survives run boundaries
+  creditedAt: string | null,              // NEW — null while precomputed-but-uncredited (see §4);
+                                           // set exactly once, after which this field and `rewards`
+                                           // below never change again
+  rewards: { xp, gold, items, overflow: { convertedCount, convertedGold } } | null,  // NEW — null
+                                           // until `creditedAt` is set; this is the ONE field group
+                                           // this document permits to be written by an UPDATE rather
+                                           // than only at INSERT (see §4's "one-time transition" rule)
+}
+```
+
+**The one-time-update exception, stated precisely:** every other `BattleReport` field (`events`,
+`result`, `seed`, `participantsSnapshot`, `ordinal`, `runId`, `completionSequence`) is fixed at INSERT
+and never changes, preserving the existing "immutable once created" invariant for combat *outcomes*.
+Only `creditedAt`/`rewards` may transition exactly once, from `null` to a set value, in the single
+transaction that credits the battle (§4). A second credit attempt on an already-`creditedAt`-set row
+is rejected as a no-op (idempotency-receipt path, not a new write) — this is the mechanism that
+satisfies `m3-systems.md`'s "precomputation may reveal a planned battle but never grants future
+rewards": revealing (`events`/`result` visible) and crediting (`rewards` granted) are deliberately two
+separate, independently timed writes to the same immutable-except-this row.
+
+### 3. New entities
+
+```ts
+SettlementAggregate {
+  aggregateId, accountId, runId,
+  fromOrdinal: number, toOrdinal: number,          // battle range this aggregate covers
+  fromSequence: number, toSequence: number,        // completionSequence range (feed pagination)
+  wins: number, losses: number,
+  elapsedMs: number, creditedMs: number, discardedMs: number,
+  rewards: { xp, gold, items, overflow },           // sum across the covered battles
+  createdAt,
+}
+// Written once per settlement call that credits >=1 battle while evicting underlying full reports
+// out of the 50-report window (see §6); retained latest 20/account by createdAt, oldest evicted on
+// the 21st insert. Never updated after insert.
+
+PendingSkillChange {
+  accountId, heroId, requestId, acceptedAt,
+  boundaryOrdinal: number,        // the ordinal of the first not-yet-rolled battle this will apply to
+  active: [string, string], passive: [string, string],
+  status: "pending" | "applied" | "discarded",
+  appliedAt: string | null,
+}
+// At most one row per (accountId, heroId) with status="pending" at a time; a new queue request for
+// the same hero while one is still pending overwrites it in place (§5) rather than inserting a
+// second row. A row transitions to "applied" or "discarded" exactly once and is then immutable
+// history (kept for the idempotency-receipt / "already applied" response in §5, not pruned here).
+
+DungeonClearRecord { accountId, dungeonId, clearedAt }
+// One row per (accountId, dungeonId) that has ever reached outcome="cleared"; insert-only, written
+// in the same transaction as the clearing floor's settlement. This is the "persisted clear fact from
+// a server outcome, never inventory inference" m3-systems.md §7 requires for Cinder Archive's unlock.
+
+CompetitionEpoch { epoch: string }
+// Single global row, set once on the first competition-surface request after this contract ships
+// (lazily, not via a startup migration step that would require a wall-clock read outside a command).
+// Never updated again; "epoch never resets on restart" per m3-systems.md §8.
+
+SeasonEntry {
+  entryId, accountId: AccountId | null,    // null for a fixture seat
+  isFixture: boolean, fixtureId: string | null,   // "fixture_m3_01".."04" when isFixture
+  seasonIndex: number,                      // floor((effectiveNow - epoch) / 7d) at entry time
+  snapshot: FrozenCompanySnapshotDTO,       // levels/classes/race/specialization/slots/gear/formation/
+                                             // derivedStats/rulesVersion, copied by value at entry —
+                                             // same by-value-copy pattern as the existing M1
+                                             // `TeamSnapshot`, extended with race/specialization/
+                                             // skillLoadout fields
+  enteredAt, withdrawnAt: string | null,
+  optedIntoTournament: boolean,             // always true for a human entry per m3-systems.md §9
+                                             // ("entry preview explicitly opts into both"); true for
+                                             // every fixture seat too
+}
+// Insert-only except `withdrawnAt`, which may be set exactly once, only before the season's 24h entry
+// lock, by the owning account. After lock, no field on this row ever changes again — this is the
+// "immutable entry snapshot" the milestone requires.
+
+SeasonMatch {
+  matchId, seasonIndex, entryAId, entryBId, leg: 1 | 2,
+  seed: string, resolvedAt: string | null, reportId: ReportId | null,
+  result: "A" | "B" | "draw" | null,
+}
+// Exactly 12 rows per season with >=2 locked entries (4 entries * 3 opponents * 2 legs / 2, i.e. the
+// double round robin's 6-matches-per-entry = 24 entry-match slots = 12 matches), created at the 24h
+// lock in one transaction with their seeds, `resolvedAt`/`result`/`reportId` all null. A season that
+// locks with fewer than 4 distinct entries still fills to 4 via fixtures (m3-systems.md §8), so this
+// row count is constant per season regardless of human participation.
+
+SeasonArchive { seasonIndex, standings: SeasonStandingRowDTO[], titleEntryId: string | null, archivedAt }
+// SeasonStandingRowDTO = { entryId, points, wins, losses, draws, rank, isFixture }
+// Written exactly once per season, the first time any request observes `effectiveNow` past that
+// season's end boundary (lazy finalize, §10). Never updated after insert.
+
+TournamentBracket {
+  seasonIndex, seatEntryIds: [string, string, string, string],  // ascending stable entryId seed order
+  semifinal1MatchId: string, semifinal2MatchId: string, finalMatchId: string | null,
+  byeReasons: Record<string, string>,     // seatEntryId -> persisted vacancy reason, only for recovery
+  championEntryId: string | null, status: "pending" | "in_progress" | "complete" | "no_champion",
+  createdAt,
+}
+// Reuses `SeasonMatch`'s shape for its three matches (an `isTournament: true` / `round: "semi1" |
+// "semi2" | "final"` pair of additive fields on SeasonMatch distinguishes them from the season's own
+// round-robin matches; both share the same resolution mechanics in §11).
+```
+
+### 4. Variable-duration settlement algorithm (replaces the fixed-60,000ms walk for `kind="pve"`)
+
+This **replaces** the Offline settlement algorithm above for expeditions once an account's
+`Expedition.rulesVersion` is the M3 rules version; an expedition still running under a pre-M3
+`rulesVersion` keeps using the fixed-60,000ms algorithm verbatim until it next settles/stops under the
+existing `unsupported_rules_version` guard logic reinterpreted as "keep the old algorithm for the old
+version," not "reject it" (§13 Migration). Dungeon floor settlement (180,000 ms fixed) is **unchanged**
+— `m3-systems.md` §3/§7 and `economy/m3.md` §2.1 both keep floors fixed-duration; this section does
+not touch `POST /dungeon/settle`/`/dungeon/stop`.
+
+Inputs: `checkpointAt`, `rngState`, `pendingBattleReportId`, `msPerRound` (frozen at start),
+`effectiveNow` (§1), 8-hour cap, `MAX_BATTLES_PER_SETTLEMENT = 500` (§1).
+
+```
+elapsedMs = effectiveNow - checkpointAt                 // never negative; effectiveNow is monotonic
+cappedMs  = min(elapsedMs, 28_800_000)
+discardedMs = elapsedMs - cappedMs
+windowMs = cappedMs
+processedMs = 0
+creditedBattles = []
+battlesThisCall = 0
+
+loop:
+  if battlesThisCall >= MAX_BATTLES_PER_SETTLEMENT: break        // resumable: next settle continues
+
+  if pendingBattleReportId is set:
+    battle = that report (already simulated, uncredited)
+    if windowMs - processedMs >= battle.nominalDurationMs:
+      set battle.creditedAt = effectiveNow, battle.rewards = computed reward (same tables as M1/M2)
+      processedMs += battle.nominalDurationMs
+      creditedBattles.push(battle); clear pendingBattleReportId; battlesThisCall += 1
+      continue
+    else:
+      break    // not enough window yet; battle stays cached, pending, revealed-not-credited
+
+  else:
+    roll a new battle from rngState (combat.md §8, using frozenLoadout as currently in effect —
+      see §5 for how a pending skill change updates "currently in effect" before this roll);
+      nominalDurationMs = resolvedRounds * msPerRound; advance rngState; insert BattleReport with
+      ordinal = last ordinal + 1, runId, completionSequence = account's next global sequence,
+      creditedAt = null, rewards = null   // this INSERT happens regardless of whether it will be
+                                            // creditable this call — "precomputation may reveal a
+                                            // planned battle" (m3-systems.md §3)
+    if windowMs - processedMs >= battle.nominalDurationMs:
+      set creditedAt/rewards now (same as above); processedMs += duration; creditedBattles.push;
+      battlesThisCall += 1; continue
+    else:
+      set pendingBattleReportId = battle.reportId; break   // cached for a later call
+
+checkpointAt_new = checkpointAt + discardedMs + processedMs    // same "re-add discarded" rule as the
+                                                                 // M1 algorithm; processedMs, not the
+                                                                 // full windowMs, is what actually
+                                                                 // advanced — see worked example W5
+persist checkpointAt_new, rngState, pendingBattleReportId, all touched BattleReport rows,
+battlesCompleted += len(creditedBattles), rewards, revision bump, idempotency receipt — one transaction
+```
+
+**No-op rule, generalized:** if `creditedBattles` is empty AND `pendingBattleReportId` is unchanged
+from before the call (either it was already set and still isn't creditable, or none was rolled because
+`windowMs=0` and one was already cached), revision does not increment, matching the existing zero-
+credit no-op precedent. If a *new* `pendingBattleReportId` was rolled this call even though nothing was
+credited, that **does** bump revision (a persisted field changed — the cached battle is now visible)
+even though `creditedBattles` is empty; this is the one place this algorithm's no-op rule diverges from
+the fixed-duration one, precisely because "reveal" is now a distinct persisted event from "credit."
+
+`SettlementResultDTO` gains (additive, same convention as the existing M1-08 additive fields):
+`pendingBattle: { reportId, ordinal, resolvedRounds, nominalDurationMs, result, events, credited: false } | null`
+and `creditedBattles: CreditedBattleDTO[]` (replaces `recentCycles`, same 10-entries-per-response cap,
+same this-call-scoped semantics, each entry gaining `resolvedRounds`/`nominalDurationMs`). Clients
+distinguish pending/in-progress from credited exactly as `m3-systems.md` §3 requires by checking which
+field a given `reportId` appears in.
+
+#### Worked examples (connected polling, offline batch and retry yield identical authoritative state)
+
+All examples start from a freshly started M3-rules expedition, `checkpointAt = T0`, `msPerRound=2000`,
+fresh `rngState = S0` whose deterministic stream happens to produce battle round counts 5, 8, 6, ... in
+order (illustrative fixed sequence, not a claim about actual combat balance).
+
+- **W1 — connected, frequent small polls.**
+  1. `settle()` at `T0+0ms`: `elapsedMs=0`. No pending cached: roll battle #1 (5 rounds →
+     `nominalDurationMs=10,000`). `windowMs(0) < 10,000` → cache as pending, `creditedBattles=[]`,
+     `checkpointAt` stays `T0`. Revision bumps (a pending battle is now visible) even though nothing
+     credited.
+  2. `settle()` at `T0+6,000ms`: pending battle needs 10,000; `windowMs=6,000 < 10,000` → unchanged,
+     same pending battle returned, **no** RNG roll, **no** revision bump (true no-op).
+  3. `settle()` at `T0+10,000ms`: `windowMs=10,000 >= 10,000` → credit battle #1,
+     `checkpointAt_new = T0+10,000`, `processedMs` so far `=10,000`. Loop continues: roll battle #2
+     (8 rounds → `16,000ms`); remaining window this call is `10,000-10,000=0 < 16,000` → cache as new
+     pending. Response: `creditedBattles=[#1]`, `pendingBattle=#2 (uncredited)`.
+
+- **W2 — offline, one call at an equivalent elapsed time.** First-ever `settle()` at `T0+26,000ms`
+  (nothing precomputed yet): `elapsedMs=26,000`, `windowMs=26,000`. Roll #1 (5r/10,000ms) — fits
+  (`26,000>=10,000`) — credit, `processedMs=10,000`. Roll #2 (8r/16,000ms) — fits
+  (`26,000-10,000=16,000>=16,000`) — credit, `processedMs=26,000`. Roll #3 (6r/12,000ms) — does not fit
+  (`26,000-26,000=0<12,000`) — cache as pending. `checkpointAt_new = T0+26,000`.
+  **Result: identical two credited battles, identical rewards, identical checkpoint, identical cached
+  pending battle #3** as continuing W1 with a fourth call at `T0+26,000ms` would produce (W1's call 3
+  left `rngState` positioned to roll exactly W2's battle #2 next, then battle #3) — this is the
+  partition-invariance guarantee (A06's equivalent) restated for variable duration: the walk is a pure
+  function of `(checkpointAt, rngState, pendingBattleReportId, windowMs)` regardless of how many calls
+  partition the same total elapsed time.
+
+- **W3 — retry.** Client calls `settle()` with `requestId=R1` at `T0+10,000ms` (W1 step 3), it commits.
+  Network drops the response; client retries with the same `R1`. Server finds the receipt, returns the
+  **stored** result (same credited battle #1, same cached pending #2, same revision) without re-rolling
+  battle #2's RNG a second time — unchanged from the existing canonical protocol (§ above), which this
+  algorithm does not alter.
+
+- **W4 — 8-hour cap with resumable catch-up (`MAX_BATTLES_PER_SETTLEMENT` reached before the cap).**
+  Away 10 hours: `elapsedMs=36,000,000`. `cappedMs=28,800,000`, `discardedMs=7,200,000`. Suppose the
+  deterministic stream's battles average `~15,000ms`; the loop credits battles until either
+  `processedMs` exhausts `windowMs=28,800,000` (~1,920 battles) or `battlesThisCall` hits `500` first
+  — the latter happens first here. `processedMs ≈ 500*15,000=7,500,000`. `checkpointAt_new =
+  checkpointAt + 7,200,000 (discarded, applied once) + 7,500,000 (processed) = checkpointAt +
+  14,700,000`. The remaining `28,800,000-7,500,000=21,300,000ms` of the **already-capped** window is
+  **not** discarded — it is simply not yet processed, and remains fully creditable. A second `settle()`
+  call made immediately after (no further real time passing) recomputes `elapsedMs = effectiveNow -
+  checkpointAt_new ≈ 36,000,000-14,700,000=21,300,000`, which is now **under** the 8h cap
+  (`cappedMs=21,300,000`, `discardedMs=0` this time — the true discard already happened exactly once on
+  the first call), and continues crediting another batch of up to 500 battles. Repeating this resumes
+  catch-up across as many calls as needed until the originally-capped 28,800,000 ms is fully processed,
+  matching `m3-systems.md`'s "work may resume in bounded batches." The one-time `discardedMs=7,200,000`
+  (time beyond the 8-hour cap, permanently lost) is identical to what the fixed-duration algorithm would
+  have discarded for the same absence — only the *processing*, not the *cap*, is now resumable in
+  bounded batches instead of always fitting in one call.
+
+- **W5 — clock rollback.** Identical in effect to the existing worked example 7 above:
+  `effectiveNow = max(rawServerNow(), ServerClock.highWaterMs)` never decreases, so a raw clock
+  regression (NTP correction, VM pause) produces `elapsedMs <= 0` relative to the high-water mark for
+  that call (`windowMs=0`, nothing credited, nothing discarded, no roll beyond an already-cached
+  pending battle), and once the raw clock catches back up past the high-water mark, the next call's
+  `elapsedMs` is exactly the genuinely-unprocessed real time — no double-loss, no double-credit, and
+  (new guarantee over the per-call clamp alone) no *other* command for this or any account can ever
+  observe a `serverNow()` earlier than one already persisted via `ServerClock.highWaterMs`.
+
+### 5. Deferred skill-change protocol (G2) — exact transaction steps
+
+Two new endpoints, both session-only, both requiring an active expedition:
+
+#### `POST /hero/loadout/queue`
+- Payload: `{ requestId, expectedRevision, heroId, active: [string,string], passive: [string,string] }`.
+- Precondition (step 3, in order): ownership (`forbidden` if foreign heroId) → an active expedition
+  must exist for the account (`validation`, `details.reason="no_active_expedition"` — mirrors
+  `expedition/settle`'s precedent of using `validation` rather than `active_expedition` for an endpoint
+  that *requires* the locked state rather than being blocked by it) → **run the full settlement walk
+  from §4 first, in this same transaction, using `effectiveNow` at acceptance time T as the cutoff** —
+  this is the "settle every eligible battle ending at or before T under the prior build" step
+  (`m3-systems.md` §3 item 1); whatever battle ends up cached as `pendingBattleReportId` after this
+  walk (if any) was rolled under the pre-change loadout and stays that way → validate each non-empty
+  `active`/`passive` entry against the hero's **frozen expedition-start level and class pool**
+  (`frozenLoadout`, not the hero's live level/classes — `validation`, `details.reason="not_unlocked"` /
+  `"wrong_kind"` / `"duplicate_skill"`), empty slots legal, Basic Attack never a legal entry.
+- Transaction (continuing after the walk and validation both pass): `boundaryOrdinal` = the ordinal of
+  the next battle that has **not yet been rolled** at this point — i.e. `(last assigned ordinal) + 1`
+  if `pendingBattleReportId` is set (that battle is already locked to the old build), or the same value
+  if none is set and no battle has been rolled yet this call either (the very next roll, whenever it
+  happens, is the boundary). Upsert the account's `(accountId, heroId)` `PendingSkillChange` row
+  (overwriting any prior still-`"pending"` row for the same hero — "last committed edit wins per hero")
+  with `status="pending"`, the new `active`/`passive`, `boundaryOrdinal`, `acceptedAt=effectiveNow`.
+- Response: `{ ok: true, data: { pendingChange: PendingSkillChangeViewDTO, settlement: SettlementResultDTO }, revision }`
+  — the settlement portion lets the client see what the walk-first step already credited/cached.
+- Errors: `unauthenticated`, `validation` (no active expedition, frozen-level/class lock violation,
+  duplicate/Basic-Attack slot), `forbidden` (foreign heroId), `conflict`, `internal`.
+- **Applying at the boundary:** in §4's "roll a new battle" branch, immediately before rolling, check
+  for any `PendingSkillChange` rows with `status="pending"` and `boundaryOrdinal <= (ordinal about to be
+  assigned)`. If any exist, apply them all in this same transaction first: write each affected hero's
+  live `skillLoadout`, set `status="applied"`, `appliedAt=effectiveNow`, recompute passive-derived stats
+  from the hero's original class/gear/race baselines (never by accumulating modifiers on an already-
+  modified effective-stat value — `m3-systems.md` §3 item 4) — only then roll the new battle, which now
+  uses the updated `skillLoadout`. This is the exact "apply all heroes' pending selections before the
+  next battle's snapshot" requirement.
+
+#### `POST /hero/loadout/cancel-pending`
+- Payload: `{ requestId, expectedRevision, heroId }`.
+- Precondition: ownership → active expedition exists → **run the §4 walk first**, exactly as above
+  (a cancel request can itself cross a boundary if enough time elapsed since it was queued).
+- Transaction: if a `PendingSkillChange` row for this hero is still `status="pending"` after the walk,
+  set `status="discarded"`; response confirms cancellation. If the walk's boundary-apply step already
+  flipped it to `"applied"` before this command reached step 3, this is **not** an error — respond with
+  `{ alreadyApplied: true, currentSkillLoadout: hero.skillLoadout }` and make no further change (`m3-
+  systems.md` §3: "if already applied return that fact and current build, not a fictitious
+  cancellation").
+- Response: `{ ok: true, data: { cancelled: boolean, alreadyApplied: boolean, hero }, revision }`.
+- Errors: `unauthenticated`, `validation` (no active expedition, no pending change exists for this
+  hero), `forbidden`, `conflict`, `internal`.
+
+**On `/expedition/stop`:** run the §4 walk one final time (settling every eligible battle at the stop
+instant), then, in the same transaction, discard every remaining `status="pending"` row for this
+account's heroes (`status="discarded"`) and list them in the response — matching "discard only
+unconsumed pending edits, state which were discarded." Already-`"applied"` rows are untouched (they are
+permanent history of a real build change, not pending state). No `PendingSkillChange` row of any status
+survives into a later, *different* run's boundary numbering, since `boundaryOrdinal` is scoped to a
+`runId` that ends at stop; a fresh `/expedition/start` begins a new `runId` with its own ordinal space.
+
+**Dungeons:** `POST /hero/loadout/queue` and `/cancel-pending` both reject with `active_dungeon` if the
+account has an active `DungeonRun`, consistent with "dungeon skill edits are rejected throughout, even
+between floors" — a dungeon never has a deferred-edit path, only the immediate `PATCH /hero/loadout`
+which itself already rejects under `active_dungeon`.
+
+### 6. Expedition feed, retention and eviction (G1)
+
+#### `GET /expedition/feed`
+- Payload: query `?afterSequence=number&limit=number` (limit clamped server-side to `<=10`, default
+  10). Session-only. Read-only; never grants rewards, never advances settlement (consistent with the
+  existing read-side-effect-free invariant — this endpoint only *reads* `BattleReport`/`Settlement
+  Aggregate` rows already written by a prior settlement call; it never triggers one).
+- Response: `{ ok: true, data: { entries: FeedEntryDTO[], nextCursor: number | null, oldestAvailableSequence: number, newestAvailableSequence: number, missingRange: { from: number, to: number } | null } }`
+  where `FeedEntryDTO` is either a full `{ kind: "battle", reportId, runId, ordinal, completionSequence, result, credited: boolean }`
+  or an aggregate summary `{ kind: "aggregate", aggregateId, fromOrdinal, toOrdinal, wins, losses, elapsedMs, creditedMs, discardedMs, rewards }`
+  for a range whose individual reports were already evicted by the time this page is read.
+  `oldestAvailableSequence`/`newestAvailableSequence` are the min/max `completionSequence` among this
+  account's currently retained full `BattleReport` rows. `missingRange` is non-null only when
+  `afterSequence` requests data older than `oldestAvailableSequence - 1` and no covering aggregate
+  exists either (eviction is always of the oldest sequence first, so this is always a single
+  contiguous range, never a gap in the middle).
+- Errors: `unauthenticated`, `internal`.
+
+**Retention/eviction rule:** retain the latest 50 full `kind="pve"` `BattleReport` rows per account by
+`completionSequence`, across run boundaries. Inserting the 51st (at resolution/precompute time, §4 —
+eviction is keyed to *reveal* time, not credit time, so a long-cached pending battle counts towards the
+window the instant it is rolled) evicts the oldest by `completionSequence` **and**, in the same
+transaction, writes/extends a `SettlementAggregate` row covering whatever battles that eviction has
+accumulated since the last aggregate write for this account, so the evicted range is never silently
+unaccounted-for. Retain latest 20 `SettlementAggregate` rows/account; the 21st insert evicts the oldest
+aggregate (that range becomes genuinely, permanently unavailable — "no promise of every offline fight").
+Eviction never touches `rewards`/`creditedAt` already committed to the account's gold/XP/inventory —
+those are permanent ledger effects independent of report retention, per `m3-systems.md` §2's "report
+eviction does not delete reward receipts or permit settlement replay."
+
+**Cross-account/invalid cursor:** `afterSequence` values are meaningless across accounts (sequences are
+per-account); a session's feed request only ever reads its own `accountId`'s rows (same ownership rule
+as every other session-only endpoint — no new rule needed, restated here because G1's acceptance check
+explicitly tests cross-account cursor rejection). An `afterSequence` beyond `newestAvailableSequence`
+simply returns an empty `entries` array with `nextCursor: null`, not an error.
+
+**Client-local state (no new server entity):** the reader cursor `(runId, ordinal, reportId,
+eventIndex)` and selected-report/Follow-mode state are persisted by `apps/web` in browser storage keyed
+by `accountId`, per `m3-systems.md` §2's "persist ... locally across refresh; server is authoritative
+for availability." An account switch clears it (already required by `m3-systems.md` §10's "account
+switch clears private cached views/cursors/drafts"). The server holds no per-client cursor row.
+
+### 7. Classes, specializations and races (G4–G5)
+
+No new endpoints: `m3-systems.md` §4's eight-classes/sixteen-specializations roster is served through
+the existing codex (`GET /codex`, §8 below) and validated inline by the already-existing `PATCH
+/hero/loadout` (primary specialization choice itself uses a new, narrow endpoint since it is a distinct
+free action from skill-slot editing):
+
+#### `POST /hero/specialization/primary`
+- Payload: `{ requestId, expectedRevision, heroId, primarySpecializationId: string | null }`.
+  Session-only. `null` clears it (always legal, has no effect — `m3-systems.md` §4: "null remains legal
+  and has no effect").
+- Precondition: ownership (`forbidden`) → hero `level >= 3` (`validation`) → no active expedition/
+  dungeon (`active_expedition`/`active_dungeon` — a choice here "affects future snapshots only" per
+  `m3-systems.md` §4, so it is barred mid-run exactly like equip/secondary-class, not exempted like
+  `/party/order`/`/party/formation`) → if non-null, `primarySpecializationId` must be one of the
+  hero's **primary** class's two choice IDs (`validation`, `details.reason="wrong_primary_class"` if it
+  belongs to a different class's pair).
+- Transaction: set `Hero.primarySpecializationId`. No skill-slot change, no cost, no cooldown.
+- Response: `{ ok: true, data: { hero }, revision }`.
+- Errors: `unauthenticated`, `validation` (level<3, wrong-class specialization ID), `forbidden`,
+  `active_expedition`, `active_dungeon`, `conflict`, `internal`.
+
+**Race** is chosen only at `/hero/recruit` time (M2-25's existing endpoint gains a required
+`raceId: string` payload field, one of the three M3 IDs, validated the same way `primaryClassId`
+already is — `validation` for an unknown ID). No separate race-change endpoint exists; `m3-systems.md`
+§5 explicitly puts race changes out of scope, so there is nothing else to specify here.
+
+### 8. Codex, respec and free secondary switching (G6)
+
+#### `GET /codex`
+- Payload: none. Session-only (unlock/level-gated display still reads per-account hero state to show
+  "locked until level N" accurately, though the underlying class/skill/race data itself is static
+  content — this follows the same session-only-because-per-account-view rule already used for `GET
+  /areas` and `GET /dungeons`, not a new rule). A read never mutates anything.
+- Response: `{ ok: true, data: { rulesVersion, classes: ClassCodexDTO[], races: RaceCodexDTO[] } }`
+  where each `ClassCodexDTO` carries the full table `m3-systems.md` §4/§6 requires (curves levels 1-10,
+  secondary 25% contribution note, every skill's kind/unlock level/cooldown/targeting/numeric effect/
+  condition, both specialization choices' exact effect text) and each `RaceCodexDTO` carries the three
+  tradeoffs. "Inspecting a draft secondary does not unlock it" is a client-side copy/state concern (no
+  server call changes from inspection); the server has nothing to validate here beyond serving data.
+- Errors: `unauthenticated`, `internal`.
+- **Rules-version staleness:** every mutating endpoint that consumes codex-sourced choices (secondary-
+  class, primary specialization, loadout, respec) already carries `expectedRevision`; if the server's
+  `currentRulesVersion` has changed since the client's last `GET /codex` fetch, the client is expected
+  to refetch before presenting a stale preview — this document does not add a new error code for that,
+  since a genuinely incompatible choice (e.g. a retired skill ID) already falls out as ordinary
+  `validation` on the mutating call.
+
+#### `POST /hero/respec-primary/preview`
+- Payload: `{ heroId }`. Session-only. Read-only; no `requestId`/`expectedRevision` (nothing is
+  committed; the client re-derives correctness from `expectedRevision` on the real confirm call below,
+  which is what "changed costs/level require a fresh preview" actually enforces — no separate preview
+  token is needed).
+- Response: `{ ok: true, data: { heroId, currentPrimaryClassId, currentSecondaryClassId, cost: { gold, scrap, sigil }, cooldownEligible: boolean, nextEligibleAt: string, revision } }`
+  using the provisional formula `100*L gold + 5*L scrap + (L>=5 ? 1 : 0) sigil` from `m3-systems.md`
+  §6 (subject to Economy amendment before this is treated as final per that document's own note).
+- Errors: `unauthenticated`, `forbidden` (foreign heroId), `not_found` (unknown heroId), `internal`.
+
+#### `POST /hero/respec-primary`
+- Payload: `{ requestId, expectedRevision, heroId, newPrimaryClassId, newSecondaryClassId? }`.
+  Session-only. `newSecondaryClassId` omitted preserves the current secondary if still compatible (not
+  equal to `newPrimaryClassId`); if the current secondary **would** equal `newPrimaryClassId`, omitting
+  it is rejected (explicit clear via a different value, or explicit same-value confirmation is not
+  possible since same-value is the reject case — the client must supply a different class or accept the
+  secondary becomes null by passing `newSecondaryClassId: null` explicitly).
+- Precondition (step 3, in order): ownership (`forbidden`) → no active expedition (`active_expedition`)
+  → no active dungeon (`active_dungeon`) → cooldown eligible, `effectiveNow >= lastRespecAt + 24h` or
+  `lastRespecAt` is null (`validation`, `details.reason="cooldown"`, include `nextEligibleAt`) →
+  `newPrimaryClassId` known and differs from current primary (`validation`,
+  `details.reason="same_primary"` if equal — rejected **without** charge/reset/cooldown, per
+  `m3-systems.md` §6) → resulting secondary (explicit or preserved) differs from `newPrimaryClassId`
+  (`validation`, `details.reason="secondary_conflict_requires_explicit_choice"`) → account
+  gold/scrap/sigil each `>=` the previewed cost (`validation`, `details.reason="insufficient_funds"`).
+- Transaction: debit gold/scrap/sigil; set `primaryClassId=newPrimaryClassId`,
+  `secondaryClassId` per the rule above; set `primarySpecializationId=null`; reset
+  `skillLoadout.active=[newPrimary's Active I, level>=5 ? newPrimary's Active II : ""]`,
+  `skillLoadout.passive=[newPrimary's Passive I, level>=8 ? newPrimary's Passive II : ""]`; set
+  `lastRespecAt=effectiveNow`; bump revision; write receipt. All in one transaction (atomicity
+  requirement from `m3-systems.md` §6: "On confirmed success in one transaction").
+- Response: `{ ok: true, data: { hero }, revision }`.
+- Errors: `unauthenticated`, `validation` (cooldown, same-primary, secondary conflict, insufficient
+  funds, unknown class), `forbidden` (foreign heroId), `active_expedition`, `active_dungeon`,
+  `conflict`, `internal`.
+- **Idempotency note specific to this endpoint:** per the canonical protocol, step 2's receipt lookup
+  runs **before** the cooldown/active-run checks — "identical request retry returns original success
+  even if now on cooldown or a run started" (`m3-systems.md` §6) is exactly the existing protocol's
+  behavior, not a special case; this document states it here only because this endpoint is the first
+  one where the cooldown-after-success scenario is concretely exercised.
+
+#### `POST /hero/secondary-class/preview`
+- Payload: `{ heroId, candidateSecondaryClassId }`. Session-only, read-only.
+- Response: `{ ok: true, data: { heroId, slotsToClear: { active: [boolean, boolean], passive: [boolean, boolean] }, revision } }`
+  — true for each currently-slotted skill that would no longer be in the resulting pool and would
+  therefore clear, per `m3-systems.md` §6's "preview exactly which slots clear before confirm."
+- Errors: `unauthenticated`, `forbidden`, `not_found` (unknown candidate class), `internal`.
+- The real mutation stays the existing M2-25 `POST /hero/secondary-class` endpoint, amended only to
+  implement the "preserve valid slotted skills, clear only those no longer in pool, no respec timestamp
+  touch, no specialization reset, unchanged-secondary is a no-op receipt" behavior `m3-systems.md` §6
+  specifies — no new payload/response/error shape beyond what M2-25 already froze for that endpoint.
+
+### 9. Dungeon catalog and Cinder Archive unlock (G7)
+
+#### `GET /dungeons`
+- Payload: none. Session-only (lock status is per-account). Read-only.
+- Response: `{ ok: true, data: { dungeons: DungeonCatalogEntryDTO[] } }` where
+  `DungeonCatalogEntryDTO = { dungeonId, nameRef, rulesVersion, locked: boolean, lockReason: string | null, clearRequirement: string | null, floors: FloorSummaryDTO[], timingSecondsPerFloor: 180, rewardProfileRef, partyValidation: { minHeroes: 1, maxHeroes: 5 } }`.
+  Always lists both dungeons (`dungeon_aqueduct_depths` and `dungeon_cinder_archive`), locked ones
+  included, per `m3-systems.md` §7's "catalog always shows both dungeons including locked ones."
+- Errors: `unauthenticated`, `internal`.
+
+**`POST /dungeon/start` amendment:** precondition gains, after the existing `dungeonId` known/unlocked
+checks, a lookup against `DungeonClearRecord` for `dungeon_cinder_archive`'s unlock
+(`clearRequirement`: an existing `DungeonClearRecord{accountId, dungeonId:"dungeon_aqueduct_depths"}`
+row) — same `forbidden` error the existing unlocked-but-known check already uses, no new error code.
+On any dungeon run reaching `outcome="cleared"`, `/dungeon/settle`'s transaction additionally inserts
+the `DungeonClearRecord` row for that `dungeonId` if one does not already exist (idempotent — a second
+clear of an already-cleared dungeon does not insert a duplicate, since the unlock fact only needs to
+exist once).
+
+**Unknown/stale `dungeonId`:** unchanged from the existing `not_found`/`forbidden` precedent; "reject
+and refresh, never fall back to dungeon 1" (`m3-systems.md` §7) is a client behavior, not a new server
+rule — the server's existing errors already carry enough information for the client to refetch
+`GET /dungeons` instead of guessing.
+
+### 10. Season (G8)
+
+#### `POST /season/enter`
+- Payload: `{ requestId, expectedRevision, heroIds: HeroId[] }` (1-5 distinct owned heroes — same
+  cardinality rule as `PartyFormation`). Session-only.
+- Precondition (step 3): compute `seasonIndex = floor((effectiveNow - CompetitionEpoch.epoch) / 7d)`
+  (creating the epoch row on first-ever call, §3) → the account has already cleared Tollkeeper
+  (existing `BossClaim`/clear-fact check, same pattern as Cinder Archive's unlock) (`forbidden` if not)
+  → still within the season's first 24 hours (`effectiveNow < seasonStart + 24h`) (`validation`,
+  `details.reason="entry_window_closed"`, message states next season's open time) → account has no
+  existing non-withdrawn `SeasonEntry` for this `seasonIndex` (`validation`,
+  `details.reason="already_entered"` — "one entry per local account") → `heroIds` 1-5 distinct owned.
+- Transaction: copy the account's **current live** roster/classes/race/specialization/slots/gear/
+  formation/derived stats for exactly those `heroIds` into a `FrozenCompanySnapshotDTO`
+  (`m3-systems.md` §8: "copies the currently selected live company... live roster, not an active run's
+  frozen party" — this is a fresh by-value copy at call time, independent of any `Expedition.
+  frozenLoadout` that might separately exist); insert `SeasonEntry{ isFixture:false, optedIntoTournament:true, ... }`.
+- Response: `{ ok: true, data: { entry: SeasonEntryViewDTO }, revision }`.
+- Errors: `unauthenticated`, `validation` (window closed, already entered, bad hero count/ownership),
+  `forbidden` (Tollkeeper not cleared), `conflict`, `internal`.
+
+#### `POST /season/withdraw`
+- Payload: `{ requestId, expectedRevision, entryId }`. Session-only; ownership checked.
+- Precondition: entry belongs to account (`forbidden`) → still before the 24h lock
+  (`validation`, `details.reason="season_locked"` if not — "after lock there is no season withdrawal").
+- Transaction: set `withdrawnAt=effectiveNow`. Irreversible (no re-entry this season per
+  `m3-systems.md` §8).
+- Response: `{ ok: true, data: { entry }, revision }`.
+- Errors: `unauthenticated`, `validation` (already locked), `forbidden`, `conflict`, `internal`.
+
+#### `GET /season/:seasonIndex/standings` — **public**, like `GET /arena/snapshots`
+- Response: `{ ok: true, data: { seasonIndex, startAt, endAt, status: "entry_open"|"locked"|"in_progress"|"archived", standings: SeasonStandingRowDTO[] | null } }`.
+  `standings` is `null` until the season is archived (§ lazy-finalize below) and locked-but-not-yet-
+  fully-resolved seasons instead surface a live `inProgressStandings` field computed from currently-
+  resolved matches only (additive field, same "show partial/pending distinctly" rule as expedition
+  settlement). Public because match results/snapshots become shared-replay data the instant they
+  resolve, the same public-after-the-fact rule the existing arena snapshot/report split already
+  establishes for M1 — entrants' pre-lock live data is never exposed this way (the snapshot is a
+  by-value copy; this endpoint never reads live hero/inventory/gold state).
+- Errors: `not_found` (unknown seasonIndex — before the epoch, or past the current season), `internal`.
+
+#### `GET /season/:seasonIndex/matches/:matchId` — **public**
+- Response: `{ ok: true, data: { match: SeasonMatchViewDTO, report: BattleReport | null } }` —
+  `report` is null until `resolvedAt` is set (§ lazy resolution below); this is the "shared replay"
+  surface both participants (and, per the existing public-snapshot precedent, anyone) can read.
+- Errors: `not_found` (unknown matchId for that season), `internal`.
+
+#### `GET /season/account-state` — session-only
+- Response: `{ ok: true, data: { seasonIndex, entry: SeasonEntryViewDTO | null, remainingEligibleMatches: number, canWithdraw: boolean } }`
+  — the private "my status" view distinct from the public standings above.
+- Errors: `unauthenticated`, `internal`.
+
+**Lazy season-boundary finalize and match resolution (no background timer):** every one of the five
+endpoints above, before doing its own work, runs a shared `ensureSeasonAdvanced(effectiveNow)` step in
+the same transaction:
+1. If `effectiveNow >= currentSeasonLockDeadline` (24h after that season's start) and this season's
+   `SeasonMatch` rows do not yet exist, create all 12 (or fewer if `kind=tournament` needs a separate
+   check, §11) in one transaction: fill any of the 4 seats not filled by a non-withdrawn human
+   `SeasonEntry` with fixtures `fixture_m3_01`..`04` in ascending ID (`m3-systems.md` §8), pair
+   lexicographically by `entryId`, assign one seed per `(pair, leg)` from the server's own RNG (never
+   client-supplied), and set `SeasonEntry` rows immutable from this point. A concurrent request
+   racing this same check is protected by the same insert-guarded-by-unique-constraint pattern already
+   used for `BossClaim`'s check-then-set (SQLite single-writer serialization makes only one commit win;
+   the loser's transaction finds the rows already exist on retry and proceeds normally).
+2. For any `SeasonMatch` with `resolvedAt=null` whose "inputs" are available (both `entryAId`/
+   `entryBId` snapshots exist, which they always do once step 1 ran), resolve it: simulate using the
+   match's own fixed stored seed, write the `BattleReport`, set `result`/`reportId`/`resolvedAt`. This
+   can run eagerly (resolve every unresolved match the instant its season locks, since nothing about a
+   locked snapshot changes before resolution) or lazily per-request — this contract fixes only that
+   resolution is idempotent/exactly-once (guarded by `resolvedAt IS NULL` as the commit precondition,
+   same pattern as `BossClaim`) and never depends on which request happens to trigger it; a crash
+   between simulate and commit simply repeats the same seed/inputs on the next trigger and produces the
+   same result (deterministic combat).
+3. If `effectiveNow >= currentSeasonEndAt` (7 days after start) and no `SeasonArchive` row exists for
+   this `seasonIndex` yet, compute final standings from the now-fully-resolved `SeasonMatch` rows
+   (ranking per `m3-systems.md` §8: points desc, wins desc, entryId asc) and insert `SeasonArchive`
+   once, guarded the same way. A season with zero entries that has already fully elapsed by the time
+   anyone asks is finalized with an empty/fixture-only archive and no further matches created — "a long
+   absence skips empty seasons without creating opponents or rewards" is satisfied because step 1 never
+   ran for a season nobody ever queried while it was open, and once past its end it goes straight to an
+   empty archive instead.
+
+### 11. Tournament (G9)
+
+No separate entry endpoint — `m3-systems.md` §9: "entry preview explicitly opts into both season and
+tournament... no separate new lock." The same `ensureSeasonAdvanced` step (§10) additionally, at the
+same 24h lock point, creates the `TournamentBracket` row using the **same four locked seats**, seeded
+by ascending stable `entryId` (independent of season standings): `semifinal1` = seats 1v4,
+`semifinal2` = seats 2v3 (lower seed = team A), both as `SeasonMatch` rows with `isTournament:true,
+round:"semi1"|"semi2"`, each with its own server-stored seed, distinct from that pair's season round-
+robin seeds. `finalMatchId` is created, seeded but **not resolved**, only once both semifinals have
+`resolvedAt` set — requesting the final's report before then returns `{ report: null }` (pending),
+"never live-roster simulation," per the existing `GET /season/:seasonIndex/matches/:matchId` shape
+(no separate tournament endpoint needed; the same match-read endpoint serves tournament rounds too,
+distinguished by `round`/`isTournament` on the response).
+
+**Advancement:** decisive result -> winner advances. Draw/timeout tiebreak, in order: (a) higher
+`sum(floor(10000*remainingHP/maxHP)) / originalHeroCount` per side (dead heroes contribute 0,
+integer floor at each step); (b) more surviving heroes; (c) lower seed number. The stored `BattleReport`
+still records "Combat draw" verbatim; the **advancement reason and compared values** are additive
+fields on `SeasonMatchViewDTO` (`advancementReason: "decisive"|"hp_tiebreak"|"survivor_tiebreak"|
+"seed_tiebreak"`, `compared: { aHp, bHp, aSurvivors, bSurvivors } | null`) computed at resolution time
+from the same report, never rewriting the report itself to claim a kill that did not happen.
+
+**Byes (recovery-only):** a seat's snapshot that fails to deserialize/validate at resolution time
+(`m3-systems.md` §9: "operational error, pause bracket rather than fabricate a win") causes that
+match's resolution step to **not** set `resolvedAt` and instead set a persisted `byeReasons[seatEntryId]`
+string on the `TournamentBracket` row describing the failure; `ensureSeasonAdvanced` skips auto-
+resolving that match on future calls (it is not retried blindly — an operator/QA fix is implied, out of
+scope here) until the vacancy is explicitly recorded as permanent, at which point the opposing seat
+advances with no `BattleReport`/score, exactly per the one/two-vacancy matrix in `m3-systems.md` §9.
+Normal (non-recovery) bracket creation always fills all four seats via entries+fixtures, so this path
+is unreachable in the ordinary flow and exists only for the explicit recovery case the spec requires to
+be "clearly labelled."
+
+**Exactly-once, crash-safe:** every bracket-advancing write is guarded by `resolvedAt IS NULL` (or,
+for the bracket's own `championEntryId`, `championEntryId IS NULL`) as its update precondition inside
+one transaction — a crash before commit simply leaves the guard unsatisfied-still-true, so a retry (by
+any subsequent request, not a specific retried `requestId`, since this is server-triggered background-
+style work, not an account command) repeats the identical seed/inputs and produces the identical
+result; a crash after commit means the guard is already false and the next trigger reads the existing
+result instead of recomputing. No account-command idempotency receipt is needed for this path because
+there is no client-supplied `requestId` to key one on — the DB-level guard is the exactly-once
+mechanism here, analogous to `BossClaim.claimedAt IS NULL` already being the race-free guard for an
+account command rather than a receipt in that case too.
+
+**Reopen after restart:** since every input (`seatEntryIds`, seeds, `resolvedAt`/`result`/`reportId`,
+`championEntryId`, `byeReasons`) is persisted and nothing here depends on in-memory state or wall-clock
+timers, re-reading `GET /season/:seasonIndex/matches/:matchId` and a (not-yet-specified, but implied by
+symmetry) `GET /tournament/:seasonIndex/bracket` after any restart reproduces byte-identical output to
+before the restart — satisfying "reopen after restart must show identical bracket/history."
+
+#### `GET /tournament/:seasonIndex/bracket` — **public**, same access rule as season standings
+- Response: `{ ok: true, data: { bracket: TournamentBracketViewDTO } }` (seats, seeds, three match
+  IDs/results/advancement reasons, `byeReasons`, `championEntryId`, `status`).
+- Errors: `not_found` (unknown seasonIndex, or season not yet locked — no bracket exists yet), `internal`.
+
+### 12. Access control and fixture accounts
+
+Fixture entries (`fixture_m3_01`..`04`) are **not** `Account` rows and have no session — they are
+`SeasonEntry` rows with `accountId: null, isFixture: true, fixtureId: "fixture_m3_01..04"` and a
+server-constructed `FrozenCompanySnapshotDTO` built directly from `m3-systems.md` §8's fixed rosters at
+the moment a season locks (not copied from any live account, since none exists). No endpoint in this
+document accepts a fixture ID as an `accountId`-shaped input; `POST /dev/session/select`'s two dev
+account slots are completely unrelated to and never resolve to a fixture. Every UI-facing surface that
+lists an entry (`SeasonEntryViewDTO`, standings rows, bracket seats, match participant labels) carries
+`isFixture`/`fixtureId` so "Server fixture" labelling (`m3-systems.md` §8/§9) is driven by server data,
+never inferred client-side from a naming convention.
+
+No new `ErrorCode` value is introduced for M3; every new precondition failure above reuses the existing
+enum (`validation` | `unauthenticated` | `forbidden` | `not_found` | `conflict` | `active_expedition` |
+`active_dungeon` | `internal`) with a `details.reason` string, consistent with this document's existing
+convention of using `details.reason` for sub-cases rather than growing the enum per feature.
+
+### 13. Migration (frozen procedure, M3; applied once by a `SchemaVersion` bump, after the M2-25
+### migration if both are pending, before any new M3 endpoint is reachable)
+
+1. `ServerClock` row created at `{ highWaterMs: 0 }` if absent (pre-existing deployments with no prior
+   `ServerClock` row simply start from 0; the very first command after migration naturally sets it to
+   real `serverNow()`, since `effectiveNow = max(rawServerNow(), 0)` on that first call).
+2. Every existing `Hero.raceId := "race_vesper"`, `Hero.primarySpecializationId := null`,
+   `Hero.lastRespecAt := null` (immediately cooldown-eligible). No currency/build change.
+3. `Account`-level `CompetitionEpoch` is **not** created by this migration step; it is created lazily
+   by the first competition-surface request (§3/§10), so a save that never touches M3 competition
+   never acquires an epoch, and epoch creation always reflects a real `effectiveNow`, never a migration-
+   time placeholder.
+4. Any `Expedition` row active at migration time keeps its pre-M3 `rulesVersion` and the **old
+   fixed-60,000ms algorithm** verbatim through its next settle/stop (§4's opening paragraph); it gains
+   no `msPerRound`/`pendingBattleReportId`/`battlesCompleted` fields until it next starts fresh under
+   the new `rulesVersion` (`m3-systems.md` §5: "existing active runs continue with their captured old
+   rules/builds through stop/completion... the new deferred editor is unavailable on a legacy active
+   run"). `POST /hero/loadout/queue` on such an account returns `validation`,
+   `details.reason="legacy_run_active"`, with message text owned by Narrative (M3-06).
+5. Old `BattleReport` rows (`kind="pve"`, pre-M3) have `ordinal=null`, `runId=null`,
+   `completionSequence=null`, `creditedAt` treated as already-set (their reward was already granted
+   under the old model), `rewards=null` (not backfilled — same "legacy reports remain renderable
+   without backfill" precedent the M2-25 damage-evidence addition already established). They are never
+   returned by `GET /expedition/feed` (which only ever queries rows with a non-null
+   `completionSequence`); they remain reachable only via the existing `GET /battle-reports/:reportId`
+   if a client already holds the ID.
+6. `DungeonClearRecord` is backfilled from any already-persisted dungeon-clear signal the pre-M3 schema
+   tracked (if `m3-systems.md`/`gear.md`'s existing dungeon completion bookkeeping already recorded a
+   clear fact under a different field name, copy it once; if no such signal exists for an account that
+   nonetheless cleared the dungeon historically, that account is treated as not-yet-cleared and must
+   clear again — this document does not invent a clear fact that was never actually persisted, matching
+   `m3-systems.md` §7's "migrate from a retained verifiable clear record if present; otherwise mark
+   locked until a new clear, without removing any prior reward").
+7. Restart safety: every migration step above is idempotent (guarded by the target field's
+   not-yet-set state) and runs inside the same `SchemaVersion`-bumping transaction pattern already
+   frozen for M1/M2 migrations — a restart mid-migration either resumes cleanly (unapplied steps still
+   see their pre-migration state) or sees the fully-applied version; race applies at most once per hero/
+   account, matching `m3-systems.md` §5's "restart during migration must either resume the transaction
+   safely or see its complete version, never apply race twice."
+
+### 14. Package boundary notes (unchanged rule, no new edges)
+
+`packages/content` gains the race/specialization/dungeon-catalog/`msPerRound` definitions, consumed by
+`packages/game` (combat/race-stat-layer rules) and `apps/server` (lookups), same no-dependency rule
+already frozen above. `packages/game`'s pure functions gain no new external inputs beyond what §4
+already requires (`msPerRound`, frozen per-run, is passed in alongside `rulesVersion`/`rngSeed` exactly
+like every other rules-version-pinned numeric constant already is — it does not become a new kind of
+parameter). `apps/server` remains the only package reading `ServerClock`/generating season/tournament
+seeds. No circular dependency is introduced.
+
+### 15. Open items for downstream tasks (not blockers)
+
+- `MAX_BATTLES_PER_SETTLEMENT=500` and `msPerRound=2000` are both provisional and explicitly flagged
+  for re-benchmarking/re-tuning once M3-07 ships real content (§0, §1) — M3-07/M3-08 implement, M3-10
+  re-measures, consistent with the milestone's own sequencing.
+- `economy/m3.md`'s minute-band text requires Economy re-derivation once the no-floor decision (§0)
+  and real `resolvedRounds` distributions are both available; this document does not edit
+  `baseline.md`/`tuning.md`/`economy/m3.md` itself (Economy ownership).
+- Narrative (M3-06) owns the exact copy for every new locked/pending/evicted/fixture/bye/tiebreak label
+  this document introduces states for; schemas above fix only the state machine, not display text.
+- M3-07 implements §4's walk, §5's boundary-apply logic, and §10/§11's lazy-resolution triggers inside
+  `apps/server`; none of this requires a background scheduler/timer process, preserving architecture.md's
+  "one Node process" invariant — every resolution is triggered by, and runs inside, an ordinary request
+  transaction.

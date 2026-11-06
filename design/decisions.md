@@ -97,3 +97,9 @@ Producer asked:
 The owner answered:
 
 let's go with option a then
+
+## 2026-10-29 · design/game/first-session-redesign.md updated
+
+Proposed by UI Designer; accepted by the inbox steward.
+
+Owner task f5910ec9: the first session hides its first combat action behind a 60 s wait plus a manual Collect, labels a recorded replay 'Battle in progress', opens on a ~20-control edit ledger, and shows rewards as a transient line of totals. This additive spec gives Company, the guided first dispatch, Expedition/live-fight presentation, Spoils, Codex discovery, Inventory, Dungeon, Boss and Arena an implementable hierarchy, with states, copy keys, separated server contracts, an ordered change list and acceptance checks. Frozen docs are untouched; ui-spec.md deltas are listed in section 12. Evidence is from source review only (NOT PLAYED: no browser or shell on the UI Designer seat).

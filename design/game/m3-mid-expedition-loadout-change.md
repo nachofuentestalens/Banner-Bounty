@@ -1,5 +1,7 @@
 # M3 candidate: mid-expedition deferred skill-loadout change
 
+> **M3-03 precedence (2026-10-30):** This candidate is now reconciled by [m3-systems.md](m3-systems.md) section 3 (M3-03). Its persisted cyclesCompleted boundary and live-level eligibility argument below are superseded: settle overdue eligible history at accepted command time under the old build; preserve the partial battle; validate against frozen run level; apply at the next eligible boundary. Dungeon builds stay frozen. Applied selections persist; unconsumed pending selections are explicitly discarded on stop. Candidate schema is not the M3 API contract.
+
 Owner feedback (2026-10-22), captured by this task (Game Director task `f4491607-20b6-413e-b20c-
 bc0f026479fb`). **Status: specification only — not scheduled, not implemented.** This is explicitly
 sequenced after M2-25's contract surface and M2-26's engine land and stabilize, and must not be

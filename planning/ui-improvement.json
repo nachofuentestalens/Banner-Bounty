@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "projectId": "c6faaeda-b5c2-4d67-b351-1e1dd9f594a7",
+  "sourceTaskId": "bbdb7310-43e6-419f-ac1c-e0e03af25109",
+  "note": "Native dashboard task briefs and record IDs. This is not an import into the historical M1-only milestone registry. Status and integration remain authoritative in AgentDashboard.",
+  "roles": [
+    { "name": "UI Designer", "id": "f88e3ed9-cace-4e4c-81a0-120d8af89dcd", "department": "Design", "seatId": "54e2e452-1f91-4707-b2c8-d8e1890b02d8" },
+    { "name": "UI Engineer", "id": "e0f08735-d685-4184-b439-b10f41ce4355", "department": "Engineering", "seatId": "8bc23b58-6ff7-4129-91be-db68ef39e2e3" }
+  ],
+  "tasks": [
+    {
+      "id": "f5910ec9-59da-44cd-97fc-0448643177d0",
+      "role": "UI Designer",
+      "title": "Review current UI and specify an engaging first-session redesign",
+      "goal": "Review the current implemented game, identify why the first session feels unrewarding or confusing, and deliver an actionable visual and interaction specification for UI Engineer. Cover Company, Codex discovery, Expedition/live fight presentation, Inventory, Dungeon, Boss and Arena. Distinguish UI fixes from unresolved gameplay pacing or server work.",
+      "dependencyIds": [],
+      "requiredPaths": ["AGENTS.md", "design/game/interface.md", "design/game/ui-spec.md", "apps/web/src/App.tsx", "planning/ui-improvement.json", "design/studio/reports/owner-feedback-2026-10-24.md"],
+      "scope": ["design/game/ui-refresh.md", "design/game/reports/ui-review.md"],
+      "deliverables": ["design/game/ui-refresh.md", "design/game/reports/ui-review.md"],
+      "acceptance": [
+        "Inspect the runnable baseline at 1280x720 and 390px wide; record the actual build, exact route/actions, screenshots and observations. If hands-on tools are unavailable, report NOT PLAYED and the concrete limitation; do not substitute a source review for play evidence.",
+        "Prioritize concrete usability findings with impact, affected screen and proposed behavior. Review first meaningful decision, first visible combat action, feedback after reward, and clarity of the next useful goal. State measured timings and separate engagement hypotheses from observations.",
+        "Specify layout, spacing, typography, color/contrast, navigation, primary actions, responsive behavior, loading/error/empty/locked states and keyboard/reduced-motion behavior; include implementable screen sketches and an ordered change list.",
+        "Include a discoverable Codex with all six classes, base stats, growth, skill unlocks/cooldowns and class pairing help; specify immediate access to an authoritative in-progress fight without calling a post-collection replay live.",
+        "Give UI Engineer bounded files/components and observable acceptance checks. Preserve existing gameplay rules and server authority; identify necessary server contracts separately. Do not duplicate existing Codex planning or M2 bug-fix tasks."
+      ],
+      "report": "design/game/reports/ui-review.md"
+    },
+    {
+      "id": "79d1a3c4-0e94-44a2-a344-c8194857e768",
+      "role": "UI Engineer",
+      "title": "Implement reviewed UI improvements and verify desktop and mobile play",
+      "goal": "Implement the integrated UI review specification against the current baseline. Deliver a cohesive, readable, responsive game interface with clear build choices, activity feedback and next actions. Reuse the Codex and live-combat work from the owner-feedback branch when integrated; do not independently implement competing timing or reward models.",
+      "dependencyIds": ["f5910ec9-59da-44cd-97fc-0448643177d0"],
+      "requiredPaths": ["AGENTS.md", "design/game/ui-refresh.md", "design/game/reports/ui-review.md", "apps/web/src/App.tsx"],
+      "scope": ["apps/web", "tests/e2e", "design/game/interface.md", "design/studio/reports/ui-improvement.md"],
+      "deliverables": ["apps/web/src", "design/studio/reports/ui-improvement.md"],
+      "acceptance": [
+        "Verify the design prerequisite is approved/integrated and both required design deliverables are committed before implementation. Read the actual current baseline to avoid overwriting later Codex/live-combat work.",
+        "Implement the review's ordered UI improvements with coherent navigation, actionable first-session guidance, readable skill/stat comparison, and visible activity/reward feedback. Identify any server-dependent requirement as unresolved until that contract exists.",
+        "Exercise the real client at 1280x720 and 390px; record before/after screenshots, keyboard paths, accessible names, visible focus, contrast and reduced-motion behavior. No page-level horizontal overflow or obscured primary actions.",
+        "Verify Company, Codex when available, Expedition, Inventory, Dungeon, Boss and Arena remain reachable and usable; inspection/replay must not grant rewards or mutate builds. Do not label replay as live or create client-authoritative progression.",
+        "Run focused meaningful interaction tests, web typecheck/build, and a first-session browser walkthrough with timings and remaining engagement issues. Report any unavailable verification as a limitation, not a pass."
+      ],
+      "report": "design/studio/reports/ui-improvement.md"
+    }
+  ],
+  "existingRelatedTasks": {
+    "codexPlanning": "e6bc8b74-aff8-4130-9950-3f53573a28b4",
+    "cycleFeasibility": "9fa4109a-92c5-4c03-85d7-406189c0f218",
+    "milestoneVerdict": "72001eaf-a460-4053-9ca0-4888f1a9f07f"
+  }
+}

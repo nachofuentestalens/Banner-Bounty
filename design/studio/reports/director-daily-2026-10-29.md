@@ -79,6 +79,14 @@ Interactive play time: **0 minutes**. `npm run validate`, `npm run walkthrough`,
 
 ## Milestone goals, needed designs and staffing
 
+Producer tracking correction (2026-10-30): the historical `eb955b70` F02 retest is closed
+without fresh verification; fix `952bfce2` is now approved. Follow-up verified 2026-11-06:
+replacement `f502e33d-1203-4fa8-8222-4957b79b5dea` is approved with the fix as its sole native
+prerequisite. Its committed [QA report](../../../qa/reports/M2-29-F02-retest.md) records F02 PASS
+and zero remaining discrepancies. [F02 requeue tracking](F02-requeue.md) records the dependency
+check and the unchanged stale M3-02 edge. Director exit review must consume this evidence and
+disposition other M2 gaps; no full M2 acceptance is implied. Historical observations above are unchanged.
+
 M2's goal remains watchable, explainable fights and consequential company preparation. Exit requires all twelve checks with honest evidence, no P0/P1, replay defect closure (F01 retested, F02 landed and retested) and Director acceptance. This report does not reopen M1 or replace `M2-30`; it updates evidence status with today's live dashboard state.
 
 M3 scope (`design/studio/milestones/M3.md`) is unchanged: G0 M2 closure and G10 independent release remain mandatory gates; specification may proceed, production feature work waits for the M2 closure verdict and Producer's reviewed task graph. No new M3 task is warranted by this review.

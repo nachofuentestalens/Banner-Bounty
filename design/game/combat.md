@@ -1,5 +1,7 @@
 # Combat rules (M1-02 freeze, extended by the M2-22 addition below)
 
+> **M3-03 precedence (2026-10-30):** For M3, [m3-systems.md](m3-systems.md) sections 1-5 and 7-9 extend combat v2 with new kits, primary specializations, races and snapshot competition. Section 8 below remains the shared pipeline; M3 adds explicit modifier/removal ordering and tournament advancement after a combat draw. No historical fight or reward is recalculated. Expedition timing is a G3 Economy/CTO handoff, not a fixed 2000-ms-per-round contract.
+
 Sections 1-7 below are the **unchanged M1-02 freeze** (kept verbatim for traceability). Section 8 is
 the **M2-22 addition**: it supersedes sections 3.3-3.7 (the two-choice specialization system) for all
 M2+ content — `packages/game` must implement section 8's rules, not 3.3-3.7, once M2-26 lands. Sections

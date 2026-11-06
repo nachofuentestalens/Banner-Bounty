@@ -359,7 +359,8 @@ select {
   .expedition-columns,
   .arena-columns,
   .item-grid,
-  .account-cards {
+  .account-cards,
+  .codex-columns {
     grid-template-columns: 1fr;
     display: flex;
     flex-direction: column;
@@ -367,6 +368,27 @@ select {
 
   .nav-logout {
     margin-left: 0;
+  }
+
+  /* first-session-redesign.md section 3: nav wraps into a 4-column, 2-row
+     grid at 640px and below, no horizontal scroll, 44px minimum tap targets. */
+  .nav-links {
+    display: grid;
+    /* minmax(0, 1fr), not plain 1fr: a plain 1fr track has an implicit
+       auto (min-content) floor, so a longer label like "Dungeon (locked)"
+       would widen its whole column past the viewport instead of wrapping. */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4rem;
+    width: 100%;
+  }
+
+  .nav-link {
+    min-height: 44px;
+    width: 100%;
+    font-size: 0.8rem;
+    padding: 0.5rem 0.3rem;
+    white-space: normal;
+    overflow-wrap: break-word;
   }
 }
 
@@ -389,7 +411,7 @@ select {
 .battle-row { display: flex; flex-direction: column; gap: .5rem; padding: .5rem; border: 1px dashed #718e8d55; border-radius: 8px; }
 .battle-row.row-back { border-style: dotted; background: #0c1620a0; }
 .team-B .battle-row { border-color: #a3786955; }
-.row-label { font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: #8fa6a4; }
+.row-label { font-size: .8rem; text-transform: uppercase; letter-spacing: .1em; color: #8fa6a4; }
 .team-B .row-label { color: #d9ab9a; }
 .combatant { display: flex; align-items: center; gap: .6rem; min-height: 106px; padding: .5rem .7rem; border: 1px solid #718e8d66; border-radius: 10px; background: #111c26d9; transition: border-color .2s, background .2s; position: relative; }
 .team-B .combatant { border-color: #a3786966; }
@@ -426,7 +448,7 @@ select {
   .combatant { flex-direction: column; padding: .5rem; gap: 0; min-height: 176px; }
   .unit-info { width: 100%; }
   .unit-info strong { font-size: .8rem; }
-  .unit-state { font-size: .7rem; }
+  .unit-state { font-size: .8rem; }
   .fighter-stage { width: 62px; }
   .battle-heading { padding: .8rem .7rem 0; }
   .battle-heading h3 { font-size: 1.3rem; }
@@ -441,7 +463,7 @@ select {
    crafting/dungeon screens. Reuses the existing brass/teal/red token set. */
 .unit-class { color: var(--color-text-muted); font-size: .8rem; }
 .status-badges { display: flex; flex-wrap: wrap; gap: .3rem; margin: .3rem 0 0; padding: 0; list-style: none; }
-.status-badge { font-size: .7rem; padding: .1rem .4rem; border-radius: 10px; background: #3a3225; border: 1px solid var(--color-brass); color: var(--color-text); }
+.status-badge { font-size: .8rem; padding: .1rem .4rem; border-radius: 10px; background: #3a3225; border: 1px solid var(--color-brass); color: var(--color-text); }
 .rarity-tag { color: var(--color-text-muted); font-size: .85em; }
 .reforge-row { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .3rem; }
 .reforge-row button { font-size: .75rem; padding: .3rem .5rem; }
@@ -464,3 +486,82 @@ select {
 .skill-reference ul { padding-left: 1.25rem; }
 .skill-reference li { margin-bottom: .3rem; }
 .damage-details { display: block; font-size: .85em; line-height: 1.6; margin: .35rem 0; color: var(--color-text); overflow-wrap: anywhere; }
+
+/* first-session-redesign.md implementation styling. */
+.nav-lock-suffix { color: var(--color-text-muted); font-size: .85em; }
+
+.activity-strip {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  min-height: 44px;
+  background: var(--color-bg-panel-raised);
+  border-bottom: 1px solid var(--color-border);
+}
+.activity-strip-status { margin: 0; }
+@media (max-width: 640px) {
+  .activity-strip { max-height: 56px; }
+}
+
+.next-step-card {
+  background: var(--color-bg-panel-raised);
+  border: 1px solid var(--color-brass);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.next-step-why { color: var(--color-text-muted); margin: 0.25rem 0 0.75rem; }
+.next-step-action { min-height: 44px; }
+
+.first-dispatch-guide {
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.guide-header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.guide-steps { padding-left: 1.25rem; }
+.guide-steps > li { margin-bottom: 1rem; }
+.guide-hero-links { list-style: none; padding: 0; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.company-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; }
+.company-summary-line { font-variant-numeric: tabular-nums; }
+
+.unsaved-marker { color: var(--color-brass); font-weight: 600; }
+.formation-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; }
+.formation-save-bar { display: flex; gap: 0.5rem; }
+.formation-slot { margin-bottom: 0.4rem; }
+.formation-slot > button { min-height: 44px; min-width: 10rem; }
+.formation-slot-picker { border: 1px solid var(--color-border); border-radius: 4px; padding: 0.5rem; margin-top: 0.25rem; }
+.formation-slot-picker label { display: block; padding: 0.25rem 0; }
+
+.hero-row-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.hero-row { background: var(--color-bg-panel); border: 1px solid var(--color-border); border-radius: 6px; padding: 0.5rem 0.75rem; }
+.hero-row > details > summary { cursor: pointer; display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: baseline; min-height: 44px; }
+.hero-row-field { color: var(--color-text-muted); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+.hero-build { padding: 0.5rem 0 0; }
+.recruit-class-option { display: block; padding: 0.4rem 0; }
+
+.spoils-panel { background: var(--color-bg-panel); border: 1px solid var(--color-teal); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+.spoils-header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.spoils-progress-list, .spoils-item-list { list-style: none; padding: 0; }
+.spoils-progress-list li button, .spoils-item-list li button { margin-left: 0.5rem; }
+.spoils-totals { font-variant-numeric: tabular-nums; font-size: 1.1rem; }
+
+.party-summary-list { list-style: none; padding: 0; }
+.expedition-status-card, .expedition-areas-card { background: var(--color-bg-panel); border: 1px solid var(--color-border); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+.expedition-primary-action { min-height: 44px; }
+.expedition-secondary-action { min-height: 44px; background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+
+.fits-slot-badge { color: var(--color-teal); font-size: 0.85rem; }
+
+.codex-columns { display: grid; grid-template-columns: 14rem 1fr; gap: 1.5rem; }
+.codex-class-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.codex-class-list button, .codex-back { min-height: 44px; text-align: left; }
+.codex-skills-table td, .codex-skills-table th { font-size: 0.875rem; }

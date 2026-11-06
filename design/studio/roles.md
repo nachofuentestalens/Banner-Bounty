@@ -1,6 +1,6 @@
 # Role ownership and handoffs
 
-Use the existing eight AgentDashboard roles. A role is a responsibility, not a reason to run another model. Keep one active task in this shared checkout; provision one idle seat for each role that has planned work.
+Use the project roles below. A role is a responsibility, not a reason to run another model. Each task uses its assigned isolated worktree; provision one seat for each role that has planned work.
 
 | Role | Accountable for | Files / deliverables | M1 tasks |
 | --- | --- | --- | --- |
@@ -13,6 +13,8 @@ Use the existing eight AgentDashboard roles. A role is a responsibility, not a r
 | Gameplay Programmer | Simulation, content encoding, API/storage, UI, integration | `apps/`, `packages/`, implementation tests | M1-06, M1-07, M1-08, M1-10, M1-11, M1-14 |
 | QA Tester | Independent acceptance, reproducible bugs, release evidence, hands-on browser playtests | `qa/`, `tests/e2e/`, `design/qa/` | M1-15, M2-29 |
 | QA Player | Read-only secondary review of a QA Tester playtest or report | reads only; no deliverables | — |
+| UI Designer | Interface review, visual hierarchy, interaction flows, responsive and accessible design | `design/game/ui-refresh.md`, `design/game/reports/ui-review.md` | Owner-feedback follow-up |
+| UI Engineer | Browser presentation, interaction implementation and focused UI verification | `apps/web/`, UI tests, implementation report | Owner-feedback follow-up |
 
 ### QA Player tool mismatch (resolved 2026-10-22)
 
@@ -36,7 +38,9 @@ implements it; whoever operates that panel still needs to flip the automation's 
 See the question and answer recorded under `design/decisions.md` (2026-10-22/23, from task
 `b9ebc865-c442-4ca0-aec3-17d399fb5510`).
 
-UI engineering, art fallbacks and server engineering belong to Gameplay Programmer for this slice; Systems Designer supplies the interface specification. Security/save-integrity review belongs to CTO and QA. Build/release operations belong to Tools Engineer and Gameplay Programmer. No separate marketing, finance, HR or art-production agent is needed before there is a playable game.
+M1's UI implementation belonged to Gameplay Programmer. From the 2026-10-24 owner feedback, UI Designer owns interface design and UI Engineer owns browser presentation and art fallbacks. Systems Designer retains combat/build interaction rules; Gameplay Programmer retains simulation, API/storage and authoritative progression. Security/save-integrity review belongs to CTO and QA. Build/release operations belong to Tools Engineer and Gameplay Programmer.
+
+The two new roles and their review/implementation task IDs are recorded in `planning/ui-improvement.json`. UI Engineer must wait for the design review to be approved and integrated, with its two deliverables committed. Creating a role or task is not completion of the redesign. Existing Codex planning and M2 defect tasks remain their own records; do not duplicate them. No extra role agents should be launched by a task worker.
 
 ## Department boundaries
 

@@ -1,5 +1,7 @@
 # Classes, dual-class, skills, formation and roster (M2-22 freeze)
 
+> **M3-03 precedence (2026-10-30):** For M3, [m3-systems.md](m3-systems.md) sections 3-6 govern eight classes, sixteen primary specializations, three races, deferred skill edits, paid primary respec and free secondary switching. Existing six kits/curves remain unless explicitly amended there. M3 specializations are a new primary-only layer, not restored M1 actions. Historical M2 rules below remain traceable; the M3 freeze takes precedence for new M3 play.
+
 This document is the frozen class/skill/formation/roster surface for M2's combat v2. It builds on
 `combat.md`'s M1-02 freeze (kept intact above its own M2-22 addition) and on `content.md`. All math
 is integer; every division is a floor (truncating) integer division unless stated otherwise, matching

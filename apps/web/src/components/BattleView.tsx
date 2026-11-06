@@ -134,7 +134,7 @@ function HpBar({ hp, maxHp }: { hp: number; maxHp: number }) {
   );
 }
 
-function UnitPanel({ unit, hp, statuses, acting, targeted }: { unit: BattleUnit; hp: number; statuses: LiveStatus[]; acting: boolean; targeted: boolean }) {
+function UnitPanel({ unit, hp, statuses, currentRound, acting, targeted }: { unit: BattleUnit; hp: number; statuses: LiveStatus[]; currentRound: number; acting: boolean; targeted: boolean }) {
   const fallen = hp <= 0;
   return (
     <article
@@ -151,7 +151,7 @@ function UnitPanel({ unit, hp, statuses, acting, targeted }: { unit: BattleUnit;
             {statuses.map((s) => (
               <li key={s.statusId} className="status-badge">
                 {statusCopy(s.statusId).name}
-                {s.stacks && s.stacks > 1 ? ` x${s.stacks}` : ""} ({Math.max(0, s.duration - 1)}r)
+                {s.stacks && s.stacks > 1 ? ` x${s.stacks}` : ""} ({Math.max(0, s.duration - (currentRound - s.appliedRound))}r)
               </li>
             ))}
           </ul>
@@ -196,9 +196,9 @@ export function BattleView({ report, extra }: { report: BattleReportView; extra?
       <div className="battle-heading">
         <div>
           <p className="battle-eyebrow">
-            {report.kind === "boss" || report.kind === "dungeon_boss" ? "Boss encounter" : report.kind === "arena" ? "Arena encounter" : report.kind === "dungeon_floor" ? "Dungeon floor" : "Expedition"}
+            {report.kind === "boss" ? "Boss encounter" : report.kind === "dungeon_boss" ? "Dungeon boss" : report.kind === "arena" ? "Arena encounter" : report.kind === "dungeon_floor" ? "Dungeon floor" : "Expedition"}
           </p>
-          <h3>{finished || units.length === 0 ? OUTCOME_LABEL[report.result.outcome] : "Battle in progress"}</h3>
+          <h3>{finished || units.length === 0 ? OUTCOME_LABEL[report.result.outcome] : "Replaying recorded fight"}</h3>
         </div>
         <span className="round-badge">
           Round {event?.round ?? 1} / {report.result.rounds}
@@ -221,6 +221,7 @@ export function BattleView({ report, extra }: { report: BattleReportView; extra?
                           unit={unit}
                           hp={hpFinal[unit.unitId] ?? unit.maxHp}
                           statuses={state.statuses[unit.unitId] ?? []}
+                          currentRound={state.currentRound}
                           acting={!finished && event?.sourceId === unit.unitId}
                           targeted={!finished && event?.targetId === unit.unitId}
                         />

@@ -4,6 +4,8 @@ This setup uses the live local API at `http://127.0.0.1:5190` for project `c6faa
 
 ## Configured features
 
+2026-10-24 operating correction: creating an idle role task can cause the live scheduler to start it automatically. Do not assume the historical staging-only behavior below still holds. Supply prerequisite/required-path holds at creation, before provisioning a runnable seat or attaching a brief. A premature UI review run was stopped through `POST /api/runs/:id/stop`; its full brief is now saved. The new UI Designer review requires `planning/ui-improvement.json` and the owner-feedback report in its committed baseline, and UI Engineer depends on that review plus its deliverables. Native dependencies accept role tasks, not plain owner chats. See `planning/ui-improvement.json` for exact IDs. No global scheduler or concurrency setting was changed.
+
 - Existing departments and eight roles have milestone-specific briefs and small context-document lists.
 - Each required role has one seat available; all tasks are staged idle, without inference runs.
 - Real role-assigned tasks have priorities, effort suited to scope, 1,000,000 reported-token / 80-tool-call checkpoints and automatic use of a valid phase handoff.

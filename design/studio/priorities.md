@@ -1,5 +1,11 @@
 # M1 delivery order (complete — M1 accepted, see `design/studio/release-verdict.md`)
 
+## Active owner feedback — 2026-10-24
+
+The owner has reiterated that roster tooltips, 60-second expeditions and post-collection battle replays do not meet the desired experience. The current owner-feedback work must deliver a discoverable Codex (all classes, base stats, per-level growth, skills and class combinations), substantially shorter active-play waits, and access to the current fight while it unfolds. Historical M3-candidate deferral below is not closure of these requests. Server-authoritative rewards, deterministic catch-up and save compatibility remain required; changing a timer label or playing the last credited fight does not satisfy live viewing.
+
+UI Designer and UI Engineer now exist in AgentDashboard, with a review/specification task and a dependent implementation task recorded in `planning/ui-improvement.json`. The review must measure the first-session experience and identify actionable engagement improvements, not merely restyle colors. These records do not claim the redesign or gameplay changes have shipped. Reuse the existing Codex planning record (`e6bc8b74-aff8-4130-9950-3f53573a28b4`) and cycle-duration feasibility work rather than creating duplicates. Current progress and outstanding implementation are recorded in `reports/owner-feedback-2026-10-24.md`.
+
 The task registry in `planning/milestone.json` is authoritative for dependency edges and acceptance criteria. Dashboard statuses track execution. Everything begins staged; planning completion is not game completion.
 
 M1 is accepted and closed; the gates and policy below are the historical record of how it shipped. Current priority is M2 — see `design/studio/milestones/M2.md` for scope and `## M2 delivery order` below for the task graph.
