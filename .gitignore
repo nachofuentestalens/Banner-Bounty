@@ -14,3 +14,7 @@ data/
 *.sqlite-shm
 *.sqlite-wal
 planning/.dispatch.lock
+
+# Runtime server/tool logs; agent-launched servers keep writing them after a checkpoint.
+*.stdout.log
+*.stderr.log
