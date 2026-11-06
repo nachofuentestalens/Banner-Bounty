@@ -10,6 +10,9 @@
 //   npm run simulate -- --json=reports/engineering/simulate-out.json
 //   npm run simulate -- --mode=v2 --level=3 --runs 100        (sweep a lower level for team-building contrast / dungeon benchmark)
 //   npm run simulate -- --mode=v2ledger --heroes=1 --ledger-days=7 --ledger-starting-gold=5000
+//   npm run simulate -- --mode=v2ledger --ledger-spend=1:craft_epic:item_weapon_focus --ledger-spend=4:craft_epic:item_weapon_focus --ledger-starting-gold=5000
+//   npm run simulate -- --mode=v2ledger --ledger-online-minutes=64 --ledger-offline-minutes=8 --ledger-dungeon-clears-per-day=1
+// Ledger options and scenario limits: reports/engineering/ledger-spend-offline.md
 import os from "node:os";
 import { writeFileSync } from "node:fs";
 import process from "node:process";
@@ -42,6 +45,9 @@ const {
   simulateExpeditionCyclesV2,
   resolveCraft,
   resolveReforge,
+  computeSettlementWindowV2,
+  computeDungeonSettlementWindow,
+  INVENTORY_CAP_V2,
 } = game;
 const {
   CLASS_DEFINITIONS,
@@ -52,6 +58,8 @@ const {
   getAffixDefinition,
   powerScore,
   contentPackageVersion,
+  getRecipeDefinition,
+  isBaseClassId,
 } = content;
 
 // This is the number apps/server/src/rulesVersion.ts currently fixes
@@ -76,6 +84,9 @@ function parseArgs(argv) {
     ledgerCyclesPerDay: 60,
     ledgerDungeonClearsPerDay: 2,
     ledgerStartingGold: 0,
+    ledgerOnlineMinutes: null,
+    ledgerOfflineMinutes: null,
+    ledgerSpends: [],
   };
   // Accepts both `--seed=1` and the documented `--seed 1` form.
   for (let i = 0; i < argv.length; i++) {
@@ -127,6 +138,15 @@ function parseArgs(argv) {
       case "ledger-starting-gold":
         out.ledgerStartingGold = Number(value);
         break;
+      case "ledger-online-minutes":
+        out.ledgerOnlineMinutes = Number(value);
+        break;
+      case "ledger-offline-minutes":
+        out.ledgerOfflineMinutes = Number(value);
+        break;
+      case "ledger-spend":
+        out.ledgerSpends.push(value);
+        break;
       default:
         console.error(`[simulate] unknown flag --${key}, ignoring`);
     }
@@ -141,6 +161,36 @@ function parseArgs(argv) {
   out.ledgerCyclesPerDay = Math.max(0, Math.min(480, Number.isFinite(out.ledgerCyclesPerDay) ? out.ledgerCyclesPerDay : 60));
   out.ledgerDungeonClearsPerDay = Math.max(0, Math.min(20, Number.isFinite(out.ledgerDungeonClearsPerDay) ? out.ledgerDungeonClearsPerDay : 2));
   out.ledgerStartingGold = Math.max(0, Number.isFinite(out.ledgerStartingGold) ? out.ledgerStartingGold : 0);
+  for (const key of ["ledgerDays", "ledgerCyclesPerDay", "ledgerDungeonClearsPerDay", "ledgerStartingGold"]) {
+    if (!Number.isSafeInteger(out[key])) throw new Error(`${key} must be an integer`);
+  }
+  if ((out.ledgerOnlineMinutes === null) !== (out.ledgerOfflineMinutes === null)) {
+    throw new Error("provide both --ledger-online-minutes and --ledger-offline-minutes");
+  }
+  for (const key of ["ledgerOnlineMinutes", "ledgerOfflineMinutes"]) {
+    if (out[key] !== null && (!Number.isSafeInteger(out[key]) || out[key] < 0 || out[key] > 480)) {
+      throw new Error(`${key} must be an integer from 0 to 480`);
+    }
+  }
+  out.ledgerSpends = out.ledgerSpends.map((value, index) => {
+    // Repeatable: DAY:craft_RARITY:DEFINITION or DAY:reforge_RARITY:CRAFT_ACTION:AFFIX_INDEX
+    // or DAY:recruit:CLASS. Action numbers are 1-based CLI order, including rejected actions.
+    const [dayText, recipe, target, affixText, ...extra] = String(value).split(":");
+    const day = Number(dayText);
+    if (!Number.isInteger(day) || day < 1 || day > out.ledgerDays || extra.length || !target) throw new Error(`invalid ledger spend: ${value}`);
+    if (recipe === "recruit") {
+      if (!isBaseClassId(target) || affixText !== undefined) throw new Error(`invalid recruit: ${value}`);
+    } else {
+      getRecipeDefinition(recipe);
+      if (recipe.startsWith("craft_")) {
+        getItemDefinition(target);
+        if (affixText !== undefined) throw new Error(`invalid craft: ${value}`);
+      } else if (!Number.isInteger(Number(target)) || Number(target) < 1 || Number(target) > index || !/^\d+$/.test(affixText ?? "")) {
+        throw new Error(`invalid reforge target/index: ${value}`);
+      }
+    }
+    return { action: index + 1, day, recipe, target, affixIndex: affixText === undefined ? null : Number(affixText) };
+  });
   return out;
 }
 
@@ -637,6 +687,13 @@ function runV2Ledger(opts) {
 
   let oldRoadRngState = createRngState(mixSeed(opts.seed));
   let dungeonRngState = createRngState(mixSeed(opts.seed + 500_000));
+  let craftRngState = createRngState(mixSeed(opts.seed + 1_000_000));
+  // Roster and active party are independent. All scenarios own at least the three starters.
+  let rosterCount = Math.max(3, opts.heroes);
+  const craftedItems = new Map();
+  const spendActions = [];
+  const onlineMinutes = opts.ledgerOnlineMinutes ?? Math.min(480, opts.ledgerCyclesPerDay + opts.ledgerDungeonClearsPerDay * 12);
+  const offlineMinutes = opts.ledgerOfflineMinutes ?? 0;
   // Both activities award into the same account bag, as on the server.
   let unequippedCount = 0;
   let cyclesCompletedBefore = 0;
@@ -653,7 +710,17 @@ function runV2Ledger(opts) {
   const dailyBalances = [];
 
   for (let day = 1; day <= opts.ledgerDays; day++) {
-    if (opts.ledgerCyclesPerDay > 0) {
+    const segments = [
+      { kind: "online", minutes: onlineMinutes, oldRoadCycles: 0, dungeonFloors: 0 },
+      { kind: "offline", minutes: offlineMinutes, oldRoadCycles: 0, dungeonFloors: 0 },
+    ];
+    const totalMinutes = onlineMinutes + offlineMinutes;
+    const cyclesToday = Math.min(opts.ledgerCyclesPerDay, totalMinutes);
+    let elapsedMinutes = cyclesToday;
+    for (const segment of segments) {
+      const cycles = computeSettlementWindowV2(0, Math.min(segment.minutes, cyclesToday - segments[0].oldRoadCycles) * 60_000).creditedCycles;
+      segment.oldRoadCycles = cycles;
+      if (cycles === 0) continue;
       const oldRoadResult = simulateExpeditionCyclesV2({
         areaId: "area_old_road",
         enemyIds: OLD_ROAD_ENEMY_IDS,
@@ -663,11 +730,11 @@ function runV2Ledger(opts) {
         rngState: oldRoadRngState,
         unequippedCount,
         cyclesCompletedBefore,
-        cycles: opts.ledgerCyclesPerDay,
+        cycles,
       });
       oldRoadRngState = oldRoadResult.rngState;
       unequippedCount = oldRoadResult.unequippedCount;
-      cyclesCompletedBefore += opts.ledgerCyclesPerDay;
+      cyclesCompletedBefore += cycles;
       gold += oldRoadResult.gold;
       materials = addMaterials(materials, oldRoadResult.materials);
       xpPerParticipant += oldRoadResult.xpPerParticipant;
@@ -677,30 +744,81 @@ function runV2Ledger(opts) {
       oldRoadLosses += oldRoadResult.losses;
     }
 
+    let dungeonIncomplete = 0;
     for (let clear = 0; clear < opts.ledgerDungeonClearsPerDay; clear++) {
-      const dungeonResult = simulateDungeonFloorBatch({
-        dungeonId: "dungeon_aqueduct_depths",
-        frozenParty: partyMembers,
-        currentFloor: 1,
-        combatSeedBase: mixSeed(opts.seed + day * 1000 + clear),
-        rngState: dungeonRngState,
-        unequippedCount,
-        eligibleFloors: 4,
-      });
-      dungeonRngState = dungeonResult.rngState;
-      unequippedCount = dungeonResult.unequippedCount;
-      if (dungeonResult.outcome === "cleared") dungeonClears += 1;
-      else dungeonFails += 1;
-      for (const floor of dungeonResult.floorResults) {
-        if (!floor.rewards) continue;
-        gold += floor.rewards.gold;
-        materials = addMaterials(materials, floor.rewards.materials);
-        xpPerParticipant += floor.rewards.xp;
-        if (floor.rewards.item) itemsCount += 1;
-        if (floor.rewards.overflowConverted) overflowConvertedCount += 1;
+      // A run may be dispatched at disconnect, but cannot restart while offline.
+      if (elapsedMinutes > onlineMinutes || (clear > 0 && elapsedMinutes >= onlineMinutes)) break;
+      const startMinute = elapsedMinutes;
+      let currentFloor = 1;
+      let outcome = "in_progress";
+      for (const [index, segment] of segments.entries()) {
+        const segmentEnd = index === 0 ? onlineMinutes : totalMinutes;
+        const eligibleThroughEnd = computeDungeonSettlementWindow(0, Math.max(0, segmentEnd - startMinute) * 60_000, 4).eligibleFloors;
+        const eligibleFloors = Math.max(0, eligibleThroughEnd - (currentFloor - 1));
+        if (eligibleFloors === 0 || outcome !== "in_progress") continue;
+        const dungeonResult = simulateDungeonFloorBatch({
+          dungeonId: "dungeon_aqueduct_depths",
+          frozenParty: partyMembers,
+          currentFloor,
+          combatSeedBase: mixSeed(opts.seed + day * 1000 + clear),
+          rngState: dungeonRngState,
+          unequippedCount,
+          eligibleFloors,
+        });
+        dungeonRngState = dungeonResult.rngState;
+        unequippedCount = dungeonResult.unequippedCount;
+        segment.dungeonFloors += dungeonResult.floorsProcessed;
+        elapsedMinutes += dungeonResult.floorsProcessed * 3;
+        currentFloor = dungeonResult.currentFloorAfter;
+        outcome = dungeonResult.outcome;
+        for (const floor of dungeonResult.floorResults) {
+          if (!floor.rewards) continue;
+          gold += floor.rewards.gold;
+          materials = addMaterials(materials, floor.rewards.materials);
+          xpPerParticipant += floor.rewards.xp;
+          if (floor.rewards.item) itemsCount += 1;
+          if (floor.rewards.overflowConverted) overflowConvertedCount += 1;
+        }
       }
+      if (outcome === "cleared") dungeonClears += 1;
+      else if (outcome === "failed") dungeonFails += 1;
+      else { dungeonIncomplete += 1; break; }
     }
 
+    // Activities are stopped at the daily boundary; partial floors are discarded.
+    // Validate all preconditions before any debit or reward RNG draw.
+    for (const action of opts.ledgerSpends.filter((entry) => entry.day === day)) {
+      const before = { gold, materials: { ...materials }, rosterCount, unequippedCount, craftRngState };
+      const recruit = action.recipe === "recruit";
+      const craft = action.recipe.startsWith("craft_");
+      const cost = recruit ? { gold: 150 * rosterCount, scrap: 0, sigil: 0, core: 0 } : getRecipeDefinition(action.recipe);
+      const existing = craftedItems.get(Number(action.target));
+      let reason = null;
+      if (recruit && rosterCount >= 20) reason = "roster_full";
+      else if (!recruit && !craft && (!existing || `reforge_${existing.rarityId}` !== action.recipe || !existing.affixes[action.affixIndex])) reason = "invalid_reforge_target";
+      else if (gold < cost.gold) reason = "insufficient_gold";
+      else if (["scrap", "sigil", "core"].some((key) => materials[key] < cost[key])) reason = "insufficient_materials";
+      else if (craft && unequippedCount >= INVENTORY_CAP_V2) reason = "bag_full";
+      let item = null;
+      if (!reason) {
+        if (craft) {
+          const result = resolveCraft(craftRngState, action.target, action.recipe.slice(6));
+          craftRngState = result.nextRngState;
+          item = result.item;
+          craftedItems.set(action.action, item);
+          unequippedCount += 1;
+        } else if (!recruit) {
+          const result = resolveReforge(craftRngState, getItemDefinition(existing.definitionId).slot, existing.rarityId, existing.affixes, action.affixIndex);
+          craftRngState = result.nextRngState;
+          item = { ...existing, affixes: result.affixes };
+          craftedItems.set(Number(action.target), item);
+        } else rosterCount += 1;
+        gold -= cost.gold;
+        materials = Object.fromEntries(["scrap", "sigil", "core"].map((key) => [key, materials[key] - cost[key]]));
+      }
+      spendActions.push({ ...action, status: reason ? "rejected" : "accepted", reason, cost, item, before,
+        after: { gold, materials: { ...materials }, rosterCount, unequippedCount, craftRngState } });
+    }
     dailyBalances.push({
       day,
       gold,
@@ -709,6 +827,8 @@ function runV2Ledger(opts) {
       oldRoadLosses,
       dungeonClears,
       dungeonFails,
+      dungeonIncomplete,
+      segments,
     });
   }
 
@@ -719,6 +839,20 @@ function runV2Ledger(opts) {
     cyclesPerDay: opts.ledgerCyclesPerDay,
     dungeonClearsPerDay: opts.ledgerDungeonClearsPerDay,
     startingGold: opts.ledgerStartingGold,
+    onlineMinutes,
+    offlineMinutes,
+    assumptions: [
+      "Fixed-level M2 income/spending scenario, not fresh-save progression or migration evidence.",
+      "Old Road first, then manually dispatched dungeon attempts; no offline dungeon restart. Unfinished runs stop at day end.",
+      "Each segment is bounded to 480 minutes. Unused time earns nothing. Spends run in CLI order after daily activities stop, on reconnect.",
+      "Roster starts at max(3, active heroes); recruits remain benched at level 1/zero XP. Crafted gear remains unequipped; no replacement/salvage.",
+      "Old Road, dungeon loot and crafting have independent seeded streams; combat seeds remain stable across segment boundaries.",
+    ],
+    spendActions,
+    rosterCount,
+    unequippedCount,
+    craftedItems: [...craftedItems].map(([action, item]) => ({ action, ...item })),
+    rngStates: { oldRoad: oldRoadRngState, dungeon: dungeonRngState, crafting: craftRngState },
     final: { gold, materials, xpPerParticipant, itemsCount, overflowConvertedCount, oldRoadWins, oldRoadLosses, dungeonClears, dungeonFails },
     dailyBalances,
   };
@@ -784,9 +918,11 @@ async function main() {
   if (opts.mode === "v2ledger" || opts.mode === "all") {
     const ledger = runV2Ledger(opts);
     report.v2ledger = ledger;
-    console.log(`[simulate] v2 ledger: ${ledger.heroCount}-hero party, level ${ledger.level}, ${ledger.days} days (${ledger.cyclesPerDay} Old Road cycles/day + ${ledger.dungeonClearsPerDay} dungeon clears/day), starting gold ${ledger.startingGold}`);
+    console.log(`[simulate] v2 ledger: ${ledger.heroCount}-hero party, level ${ledger.level}, ${ledger.days} days (up to ${ledger.cyclesPerDay} Old Road cycles/day + ${ledger.dungeonClearsPerDay} dungeon attempts/day), starting gold ${ledger.startingGold}`);
+    console.log(`  daily time budget: ${ledger.onlineMinutes} online + ${ledger.offlineMinutes} offline minutes`);
     console.log(`  final balances: gold ${ledger.final.gold}, scrap ${ledger.final.materials.scrap}, sigil ${ledger.final.materials.sigil}, core ${ledger.final.materials.core}, items ${ledger.final.itemsCount}, overflow-converted ${ledger.final.overflowConvertedCount}`);
     console.log(`  old road wins/losses: ${ledger.final.oldRoadWins}/${ledger.final.oldRoadLosses}; dungeon clears/fails: ${ledger.final.dungeonClears}/${ledger.final.dungeonFails}`);
+    for (const action of ledger.spendActions) console.log(`  day ${action.day}, action ${action.action} ${action.recipe}: ${action.status}${action.reason ? ` (${action.reason})` : ""}; gold ${action.after.gold}`);
   }
 
   if (opts.mode === "catchup" || opts.mode === "all") {
