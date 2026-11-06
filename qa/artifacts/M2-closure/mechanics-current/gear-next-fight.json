@@ -1,0 +1,1843 @@
+{
+  "craft": {
+    "item": {
+      "itemInstanceId": "ba312042-585b-415f-820f-a4e17e1ba221",
+      "accountId": "00000000-0000-4000-8000-00000000000a",
+      "definitionId": "item_weapon_shortsword",
+      "rarityId": "uncommon",
+      "affixes": [
+        {
+          "affixId": "affix_of_warding",
+          "value": 2
+        }
+      ],
+      "equippedBy": null
+    },
+    "replacementConsumed": "032b852a-0640-4be6-a3ff-9382eb53f26e"
+  },
+  "reforge": {
+    "item": {
+      "itemInstanceId": "ba312042-585b-415f-820f-a4e17e1ba221",
+      "accountId": "00000000-0000-4000-8000-00000000000a",
+      "definitionId": "item_weapon_shortsword",
+      "rarityId": "uncommon",
+      "affixes": [
+        {
+          "affixId": "affix_of_power",
+          "value": 2
+        }
+      ],
+      "equippedBy": null
+    }
+  },
+  "costs": {
+    "craftGold": 100,
+    "craftScrap": 4,
+    "reforgeGold": 50,
+    "reforgeScrap": 2
+  },
+  "expected": {
+    "hpDelta": 0,
+    "atkDelta": 5
+  },
+  "beforeEquip": {
+    "maxHp": 68,
+    "atk": 27,
+    "report": {
+      "reportId": "expedition:00000000-0000-4000-8000-00000000000a:2026-11-09T17:13:00.000Z",
+      "kind": "pve",
+      "seed": "",
+      "rulesVersion": 1,
+      "createdAt": "2026-11-09T17:13:00.000Z",
+      "participantsSnapshot": {
+        "units": [
+          {
+            "unitId": "00000000-0000-4000-8000-0000000a0002",
+            "side": "A",
+            "kind": "hero",
+            "name": "Ranger",
+            "classId": "class_ranger",
+            "secondaryClassId": null,
+            "slotIndex": 0,
+            "maxHp": 68
+          },
+          {
+            "unitId": "enemy_road_brigand#0",
+            "side": "B",
+            "kind": "enemy",
+            "name": "Road Brigand",
+            "classId": null,
+            "secondaryClassId": null,
+            "slotIndex": 0,
+            "maxHp": 50
+          },
+          {
+            "unitId": "enemy_road_wolf#1",
+            "side": "B",
+            "kind": "enemy",
+            "name": "Road Wolf",
+            "classId": null,
+            "secondaryClassId": null,
+            "slotIndex": 1,
+            "maxHp": 35
+          },
+          {
+            "unitId": "enemy_road_cutpurse#2",
+            "side": "B",
+            "kind": "enemy",
+            "name": "Road Cutpurse",
+            "classId": null,
+            "secondaryClassId": null,
+            "slotIndex": 2,
+            "maxHp": 30
+          }
+        ]
+      },
+      "events": [
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  71,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  76,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 27
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 2
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  27,
+                  2
+                ],
+                "value": 26
+              }
+            ],
+            "damage": 26,
+            "hpBefore": 30,
+            "hpLoss": 26
+          },
+          "round": 1,
+          "type": "aimed_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_cutpurse#2",
+          "amount": -26,
+          "hpAfter": 4,
+          "skillId": "aimed_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  25,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  11,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 11
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  11,
+                  13
+                ],
+                "value": 5
+              }
+            ],
+            "damage": 5,
+            "hpBefore": 68,
+            "hpLoss": 5
+          },
+          "round": 1,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_wolf#1",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -5,
+          "hpAfter": 63,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  28,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  84,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 8
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  8,
+                  13
+                ],
+                "value": 2
+              }
+            ],
+            "damage": 2,
+            "hpBefore": 63,
+            "hpLoss": 2
+          },
+          "round": 1,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_cutpurse#2",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -2,
+          "hpAfter": 61,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  97,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  95,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 9
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  9,
+                  13
+                ],
+                "value": 3
+              }
+            ],
+            "damage": 3,
+            "hpBefore": 61,
+            "hpLoss": 3
+          },
+          "round": 1,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_brigand#0",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -3,
+          "hpAfter": 58,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  31,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  88,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 27
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 2
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  27,
+                  2
+                ],
+                "value": 26
+              }
+            ],
+            "damage": 26,
+            "hpBefore": 4,
+            "hpLoss": 4
+          },
+          "round": 2,
+          "type": "quick_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_cutpurse#2",
+          "amount": -4,
+          "hpAfter": 0,
+          "skillId": "quick_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": true
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  29,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  96,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 11
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  11,
+                  13
+                ],
+                "value": 5
+              }
+            ],
+            "damage": 5,
+            "hpBefore": 58,
+            "hpLoss": 5
+          },
+          "round": 2,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_wolf#1",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -5,
+          "hpAfter": 53,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  87,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  86,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 9
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  9,
+                  13
+                ],
+                "value": 3
+              }
+            ],
+            "damage": 3,
+            "hpBefore": 53,
+            "hpLoss": 3
+          },
+          "round": 2,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_brigand#0",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -3,
+          "hpAfter": 50,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  57,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  73,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 27
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 2
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  27,
+                  2
+                ],
+                "value": 26
+              }
+            ],
+            "damage": 26,
+            "hpBefore": 35,
+            "hpLoss": 26
+          },
+          "round": 3,
+          "type": "aimed_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_wolf#1",
+          "amount": -26,
+          "hpAfter": 9,
+          "skillId": "aimed_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  5,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  65,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 11
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  11,
+                  13
+                ],
+                "value": 5
+              }
+            ],
+            "damage": 5,
+            "hpBefore": 50,
+            "hpLoss": 5
+          },
+          "round": 3,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_wolf#1",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -5,
+          "hpAfter": 45,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  30,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  0,
+                  10
+                ],
+                "value": 1
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 9
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  9,
+                  13
+                ],
+                "value": 3
+              },
+              {
+                "kind": "critical",
+                "inputs": [
+                  3,
+                  3,
+                  2
+                ],
+                "value": 4
+              }
+            ],
+            "damage": 4,
+            "hpBefore": 45,
+            "hpLoss": 4
+          },
+          "round": 3,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_brigand#0",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -4,
+          "hpAfter": 41,
+          "skillId": null,
+          "crit": true,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  56,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  69,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 27
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 2
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  27,
+                  2
+                ],
+                "value": 26
+              }
+            ],
+            "damage": 26,
+            "hpBefore": 9,
+            "hpLoss": 9
+          },
+          "round": 4,
+          "type": "quick_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_wolf#1",
+          "amount": -9,
+          "hpAfter": 0,
+          "skillId": "quick_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": true
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  36,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  63,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 9
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  9,
+                  13
+                ],
+                "value": 3
+              },
+              {
+                "kind": "heavy_strike",
+                "inputs": [
+                  3,
+                  3,
+                  2
+                ],
+                "value": 4
+              }
+            ],
+            "damage": 4,
+            "hpBefore": 41,
+            "hpLoss": 4
+          },
+          "round": 4,
+          "type": "crushing_blow",
+          "sourceId": "enemy_road_brigand#0",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -4,
+          "hpAfter": 37,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": {
+            "statusId": "status_weaken",
+            "duration": 2,
+            "stacks": 1
+          },
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  57,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  9,
+                  25
+                ],
+                "value": 1
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 27
+              },
+              {
+                "kind": "weaken",
+                "inputs": [
+                  27,
+                  70,
+                  100
+                ],
+                "value": 18
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 4
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  18,
+                  4
+                ],
+                "value": 16
+              },
+              {
+                "kind": "critical",
+                "inputs": [
+                  16,
+                  3,
+                  2
+                ],
+                "value": 24
+              }
+            ],
+            "damage": 24,
+            "hpBefore": 50,
+            "hpLoss": 24
+          },
+          "round": 5,
+          "type": "aimed_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_brigand#0",
+          "amount": -24,
+          "hpAfter": 26,
+          "skillId": "aimed_shot",
+          "crit": true,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  35,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  38,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 9
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  9,
+                  13
+                ],
+                "value": 3
+              }
+            ],
+            "damage": 3,
+            "hpBefore": 37,
+            "hpLoss": 3
+          },
+          "round": 5,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_brigand#0",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -3,
+          "hpAfter": 34,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "round": 5,
+          "type": "status_expire",
+          "sourceId": null,
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": 0,
+          "hpAfter": 34,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": "status_weaken",
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  72,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  31,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 27
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 4
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  27,
+                  4
+                ],
+                "value": 25
+              }
+            ],
+            "damage": 25,
+            "hpBefore": 26,
+            "hpLoss": 25
+          },
+          "round": 6,
+          "type": "quick_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_brigand#0",
+          "amount": -25,
+          "hpAfter": 1,
+          "skillId": "quick_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  18,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  1,
+                  10
+                ],
+                "value": 1
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 9
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  9,
+                  13
+                ],
+                "value": 3
+              },
+              {
+                "kind": "critical",
+                "inputs": [
+                  3,
+                  3,
+                  2
+                ],
+                "value": 4
+              }
+            ],
+            "damage": 4,
+            "hpBefore": 34,
+            "hpLoss": 4
+          },
+          "round": 6,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_brigand#0",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -4,
+          "hpAfter": 30,
+          "skillId": null,
+          "crit": true,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  8,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  33,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 27
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 4
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  27,
+                  4
+                ],
+                "value": 25
+              },
+              {
+                "kind": "execute",
+                "inputs": [
+                  25,
+                  3,
+                  2
+                ],
+                "value": 37
+              }
+            ],
+            "damage": 37,
+            "hpBefore": 1,
+            "hpLoss": 1
+          },
+          "round": 7,
+          "type": "aimed_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_brigand#0",
+          "amount": -1,
+          "hpAfter": 0,
+          "skillId": "aimed_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": true
+        }
+      ],
+      "result": {
+        "outcome": "win",
+        "rounds": 7,
+        "finalHp": {
+          "00000000-0000-4000-8000-0000000a0002": 30,
+          "enemy_road_brigand#0": 0,
+          "enemy_road_wolf#1": 0,
+          "enemy_road_cutpurse#2": 0
+        }
+      }
+    }
+  },
+  "afterEquip": {
+    "maxHp": 68,
+    "atk": 32,
+    "report": {
+      "reportId": "expedition:00000000-0000-4000-8000-00000000000a:2026-11-09T17:14:00.000Z",
+      "kind": "pve",
+      "seed": "",
+      "rulesVersion": 1,
+      "createdAt": "2026-11-09T17:14:00.000Z",
+      "participantsSnapshot": {
+        "units": [
+          {
+            "unitId": "00000000-0000-4000-8000-0000000a0002",
+            "side": "A",
+            "kind": "hero",
+            "name": "Ranger",
+            "classId": "class_ranger",
+            "secondaryClassId": null,
+            "slotIndex": 0,
+            "maxHp": 68
+          },
+          {
+            "unitId": "enemy_road_brigand#0",
+            "side": "B",
+            "kind": "enemy",
+            "name": "Road Brigand",
+            "classId": null,
+            "secondaryClassId": null,
+            "slotIndex": 0,
+            "maxHp": 50
+          },
+          {
+            "unitId": "enemy_road_wolf#1",
+            "side": "B",
+            "kind": "enemy",
+            "name": "Road Wolf",
+            "classId": null,
+            "secondaryClassId": null,
+            "slotIndex": 1,
+            "maxHp": 35
+          },
+          {
+            "unitId": "enemy_road_cutpurse#2",
+            "side": "B",
+            "kind": "enemy",
+            "name": "Road Cutpurse",
+            "classId": null,
+            "secondaryClassId": null,
+            "slotIndex": 2,
+            "maxHp": 30
+          }
+        ]
+      },
+      "events": [
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  19,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  41,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 32
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 2
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  32,
+                  2
+                ],
+                "value": 31
+              }
+            ],
+            "damage": 31,
+            "hpBefore": 30,
+            "hpLoss": 30
+          },
+          "round": 1,
+          "type": "aimed_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_cutpurse#2",
+          "amount": -30,
+          "hpAfter": 0,
+          "skillId": "aimed_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": true
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  99,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  47,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 11
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  11,
+                  13
+                ],
+                "value": 5
+              }
+            ],
+            "damage": 5,
+            "hpBefore": 68,
+            "hpLoss": 5
+          },
+          "round": 1,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_wolf#1",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -5,
+          "hpAfter": 63,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  25,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  14,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 9
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  9,
+                  13
+                ],
+                "value": 3
+              }
+            ],
+            "damage": 3,
+            "hpBefore": 63,
+            "hpLoss": 3
+          },
+          "round": 1,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_brigand#0",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -3,
+          "hpAfter": 60,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  14,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  73,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 32
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 2
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  32,
+                  2
+                ],
+                "value": 31
+              }
+            ],
+            "damage": 31,
+            "hpBefore": 35,
+            "hpLoss": 31
+          },
+          "round": 2,
+          "type": "quick_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_wolf#1",
+          "amount": -31,
+          "hpAfter": 4,
+          "skillId": "quick_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  92,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  46,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 11
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  11,
+                  13
+                ],
+                "value": 5
+              }
+            ],
+            "damage": 5,
+            "hpBefore": 60,
+            "hpLoss": 5
+          },
+          "round": 2,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_wolf#1",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -5,
+          "hpAfter": 55,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  58,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  4,
+                  10
+                ],
+                "value": 1
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 9
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  9,
+                  13
+                ],
+                "value": 3
+              },
+              {
+                "kind": "critical",
+                "inputs": [
+                  3,
+                  3,
+                  2
+                ],
+                "value": 4
+              }
+            ],
+            "damage": 4,
+            "hpBefore": 55,
+            "hpLoss": 4
+          },
+          "round": 2,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_brigand#0",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -4,
+          "hpAfter": 51,
+          "skillId": null,
+          "crit": true,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  73,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  45,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 32
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 2
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  32,
+                  2
+                ],
+                "value": 31
+              },
+              {
+                "kind": "execute",
+                "inputs": [
+                  31,
+                  3,
+                  2
+                ],
+                "value": 46
+              }
+            ],
+            "damage": 46,
+            "hpBefore": 4,
+            "hpLoss": 4
+          },
+          "round": 3,
+          "type": "aimed_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_wolf#1",
+          "amount": -4,
+          "hpAfter": 0,
+          "skillId": "aimed_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": true
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  54,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  54,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 9
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  9,
+                  13
+                ],
+                "value": 3
+              }
+            ],
+            "damage": 3,
+            "hpBefore": 51,
+            "hpLoss": 3
+          },
+          "round": 3,
+          "type": "enemy_strike",
+          "sourceId": "enemy_road_brigand#0",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -3,
+          "hpAfter": 48,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  21,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  80,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 32
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 4
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  32,
+                  4
+                ],
+                "value": 30
+              }
+            ],
+            "damage": 30,
+            "hpBefore": 50,
+            "hpLoss": 30
+          },
+          "round": 4,
+          "type": "quick_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_brigand#0",
+          "amount": -30,
+          "hpAfter": 20,
+          "skillId": "quick_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  71,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  79,
+                  10
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 9
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 13
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  9,
+                  13
+                ],
+                "value": 3
+              },
+              {
+                "kind": "heavy_strike",
+                "inputs": [
+                  3,
+                  3,
+                  2
+                ],
+                "value": 4
+              }
+            ],
+            "damage": 4,
+            "hpBefore": 48,
+            "hpLoss": 4
+          },
+          "round": 4,
+          "type": "crushing_blow",
+          "sourceId": "enemy_road_brigand#0",
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": -4,
+          "hpAfter": 44,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": {
+            "statusId": "status_weaken",
+            "duration": 2,
+            "stacks": 1
+          },
+          "statusExpired": null,
+          "death": false
+        },
+        {
+          "damageBreakdown": {
+            "steps": [
+              {
+                "kind": "dodge_roll",
+                "inputs": [
+                  26,
+                  5
+                ],
+                "value": 0
+              },
+              {
+                "kind": "crit_roll",
+                "inputs": [
+                  53,
+                  25
+                ],
+                "value": 0
+              },
+              {
+                "kind": "attack",
+                "inputs": [],
+                "value": 32
+              },
+              {
+                "kind": "weaken",
+                "inputs": [
+                  32,
+                  70,
+                  100
+                ],
+                "value": 22
+              },
+              {
+                "kind": "defense",
+                "inputs": [],
+                "value": 4
+              },
+              {
+                "kind": "base_damage",
+                "inputs": [
+                  22,
+                  4
+                ],
+                "value": 20
+              }
+            ],
+            "damage": 20,
+            "hpBefore": 20,
+            "hpLoss": 20
+          },
+          "round": 5,
+          "type": "aimed_shot",
+          "sourceId": "00000000-0000-4000-8000-0000000a0002",
+          "targetId": "enemy_road_brigand#0",
+          "amount": -20,
+          "hpAfter": 0,
+          "skillId": "aimed_shot",
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": null,
+          "death": true
+        },
+        {
+          "round": 5,
+          "type": "status_expire",
+          "sourceId": null,
+          "targetId": "00000000-0000-4000-8000-0000000a0002",
+          "amount": 0,
+          "hpAfter": 44,
+          "skillId": null,
+          "crit": false,
+          "dodged": false,
+          "statusApplied": null,
+          "statusExpired": "status_weaken",
+          "death": false
+        }
+      ],
+      "result": {
+        "outcome": "win",
+        "rounds": 5,
+        "finalHp": {
+          "00000000-0000-4000-8000-0000000a0002": 44,
+          "enemy_road_brigand#0": 0,
+          "enemy_road_wolf#1": 0,
+          "enemy_road_cutpurse#2": 0
+        }
+      }
+    }
+  }
+}

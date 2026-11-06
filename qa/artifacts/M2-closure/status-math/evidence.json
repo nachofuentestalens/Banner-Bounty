@@ -1,0 +1,2656 @@
+{
+  "seed": 777001,
+  "party": [
+    {
+      "kind": "hero",
+      "id": "bait",
+      "slotIndex": 0,
+      "primaryClassId": "class_ranger",
+      "secondaryClassId": null,
+      "level": 5,
+      "equipment": {
+        "weapon": null,
+        "armor": null,
+        "trinket": null
+      },
+      "skillLoadout": {
+        "active": [
+          "aimed_shot",
+          ""
+        ],
+        "passive": [
+          "hunters_focus",
+          ""
+        ]
+      }
+    },
+    {
+      "kind": "hero",
+      "id": "tank",
+      "slotIndex": 1,
+      "primaryClassId": "class_vanguard",
+      "secondaryClassId": null,
+      "level": 5,
+      "equipment": {
+        "weapon": null,
+        "armor": null,
+        "trinket": null
+      },
+      "skillLoadout": {
+        "active": [
+          "bulwark_call",
+          ""
+        ],
+        "passive": [
+          "thick_hide",
+          ""
+        ]
+      }
+    },
+    {
+      "kind": "hero",
+      "id": "support",
+      "slotIndex": 3,
+      "primaryClassId": "class_herald",
+      "secondaryClassId": null,
+      "level": 5,
+      "equipment": {
+        "weapon": null,
+        "armor": null,
+        "trinket": null
+      },
+      "skillLoadout": {
+        "active": [
+          "discordant_verse",
+          ""
+        ],
+        "passive": [
+          "encore",
+          ""
+        ]
+      }
+    }
+  ],
+  "enemy": [
+    {
+      "kind": "enemy",
+      "id": "boss",
+      "slotIndex": 0,
+      "enemyId": "boss_tollkeeper",
+      "stats": {
+        "maxHp": 1000,
+        "atk": 26,
+        "def": 8,
+        "spd": 5
+      },
+      "isBoss": true
+    }
+  ],
+  "result": {
+    "result": "loss",
+    "rounds": 11,
+    "events": [
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                74,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                52,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 17
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                17,
+                8
+              ],
+              "value": 13
+            }
+          ],
+          "damage": 13,
+          "hpBefore": 1000,
+          "hpLoss": 13
+        },
+        "round": 1,
+        "type": "aimed_shot",
+        "sourceId": "bait",
+        "targetId": "boss",
+        "amount": -13,
+        "hpAfter": 987,
+        "skillId": "aimed_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "discordant_verse",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 987,
+        "skillId": "discordant_verse",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "bulwark_call",
+        "sourceId": "tank",
+        "targetId": "tank",
+        "amount": 0,
+        "hpAfter": 60,
+        "skillId": "bulwark_call",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_taunt",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 1,
+        "type": "bulwark_call",
+        "sourceId": "tank",
+        "targetId": "tank",
+        "amount": 0,
+        "hpAfter": 60,
+        "skillId": "bulwark_call",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_fortify",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                76,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                84,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                11,
+                130,
+                100
+              ],
+              "value": 14
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                14
+              ],
+              "value": 11
+            }
+          ],
+          "damage": 11,
+          "hpBefore": 60,
+          "hpLoss": 11
+        },
+        "round": 1,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "tank",
+        "amount": -11,
+        "hpAfter": 49,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                88,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                93,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 17
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                17,
+                8
+              ],
+              "value": 13
+            }
+          ],
+          "damage": 13,
+          "hpBefore": 987,
+          "hpLoss": 13
+        },
+        "round": 2,
+        "type": "quick_shot",
+        "sourceId": "bait",
+        "targetId": "boss",
+        "amount": -13,
+        "hpAfter": 974,
+        "skillId": "quick_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                75,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                83,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 10
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                10,
+                8
+              ],
+              "value": 6
+            }
+          ],
+          "damage": 6,
+          "hpBefore": 974,
+          "hpLoss": 6
+        },
+        "round": 2,
+        "type": "rally_strike",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": -6,
+        "hpAfter": 968,
+        "skillId": "rally_strike",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                49,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                60,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                11,
+                8
+              ],
+              "value": 7
+            }
+          ],
+          "damage": 7,
+          "hpBefore": 968,
+          "hpLoss": 7
+        },
+        "round": 2,
+        "type": "strike",
+        "sourceId": "tank",
+        "targetId": "boss",
+        "amount": -7,
+        "hpAfter": 961,
+        "skillId": "strike",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                51,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                11,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                11,
+                130,
+                100
+              ],
+              "value": 14
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                14
+              ],
+              "value": 11
+            }
+          ],
+          "damage": 11,
+          "hpBefore": 49,
+          "hpLoss": 11
+        },
+        "round": 2,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "tank",
+        "amount": -11,
+        "hpAfter": 38,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 2,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "tank",
+        "amount": 0,
+        "hpAfter": 38,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_fortify",
+        "death": false
+      },
+      {
+        "round": 2,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "tank",
+        "amount": 0,
+        "hpAfter": 38,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_taunt",
+        "death": false
+      },
+      {
+        "round": 2,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 961,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_weaken",
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                90,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                91,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 17
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                17,
+                8
+              ],
+              "value": 13
+            }
+          ],
+          "damage": 13,
+          "hpBefore": 961,
+          "hpLoss": 13
+        },
+        "round": 3,
+        "type": "aimed_shot",
+        "sourceId": "bait",
+        "targetId": "boss",
+        "amount": -13,
+        "hpAfter": 948,
+        "skillId": "aimed_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 3,
+        "type": "discordant_verse",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 948,
+        "skillId": "discordant_verse",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                29,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                35,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                11,
+                8
+              ],
+              "value": 7
+            }
+          ],
+          "damage": 7,
+          "hpBefore": 948,
+          "hpLoss": 7
+        },
+        "round": 3,
+        "type": "strike",
+        "sourceId": "tank",
+        "targetId": "boss",
+        "amount": -7,
+        "hpAfter": 941,
+        "skillId": "strike",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                61,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                69,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                11
+              ],
+              "value": 13
+            },
+            {
+              "kind": "heavy_strike",
+              "inputs": [
+                13,
+                3,
+                2
+              ],
+              "value": 19
+            }
+          ],
+          "damage": 19,
+          "hpBefore": 38,
+          "hpLoss": 19
+        },
+        "round": 3,
+        "type": "toll_smash",
+        "sourceId": "boss",
+        "targetId": "tank",
+        "amount": -19,
+        "hpAfter": 19,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                91,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                5,
+                25
+              ],
+              "value": 1
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 17
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                17,
+                8
+              ],
+              "value": 13
+            },
+            {
+              "kind": "critical",
+              "inputs": [
+                13,
+                3,
+                2
+              ],
+              "value": 19
+            }
+          ],
+          "damage": 19,
+          "hpBefore": 941,
+          "hpLoss": 19
+        },
+        "round": 4,
+        "type": "quick_shot",
+        "sourceId": "bait",
+        "targetId": "boss",
+        "amount": -19,
+        "hpAfter": 922,
+        "skillId": "quick_shot",
+        "crit": true,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                72,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                42,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 10
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                10,
+                8
+              ],
+              "value": 6
+            }
+          ],
+          "damage": 6,
+          "hpBefore": 922,
+          "hpLoss": 6
+        },
+        "round": 4,
+        "type": "rally_strike",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": -6,
+        "hpAfter": 916,
+        "skillId": "rally_strike",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 4,
+        "type": "bulwark_call",
+        "sourceId": "tank",
+        "targetId": "tank",
+        "amount": 0,
+        "hpAfter": 19,
+        "skillId": "bulwark_call",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_taunt",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 4,
+        "type": "bulwark_call",
+        "sourceId": "tank",
+        "targetId": "tank",
+        "amount": 0,
+        "hpAfter": 19,
+        "skillId": "bulwark_call",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_fortify",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                59,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                40,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                11,
+                130,
+                100
+              ],
+              "value": 14
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                14
+              ],
+              "value": 11
+            }
+          ],
+          "damage": 11,
+          "hpBefore": 19,
+          "hpLoss": 11
+        },
+        "round": 4,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "tank",
+        "amount": -11,
+        "hpAfter": 8,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 4,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "tank",
+        "amount": 0,
+        "hpAfter": 8,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_weaken",
+        "death": false
+      },
+      {
+        "round": 4,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 916,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_weaken",
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                82,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                53,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 17
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                17,
+                8
+              ],
+              "value": 13
+            }
+          ],
+          "damage": 13,
+          "hpBefore": 916,
+          "hpLoss": 13
+        },
+        "round": 5,
+        "type": "aimed_shot",
+        "sourceId": "bait",
+        "targetId": "boss",
+        "amount": -13,
+        "hpAfter": 903,
+        "skillId": "aimed_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 5,
+        "type": "discordant_verse",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 903,
+        "skillId": "discordant_verse",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                46,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                88,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                11,
+                8
+              ],
+              "value": 7
+            }
+          ],
+          "damage": 7,
+          "hpBefore": 903,
+          "hpLoss": 7
+        },
+        "round": 5,
+        "type": "strike",
+        "sourceId": "tank",
+        "targetId": "boss",
+        "amount": -7,
+        "hpAfter": 896,
+        "skillId": "strike",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                7,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                72,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                11,
+                130,
+                100
+              ],
+              "value": 14
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                14
+              ],
+              "value": 11
+            }
+          ],
+          "damage": 11,
+          "hpBefore": 8,
+          "hpLoss": 8
+        },
+        "round": 5,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "tank",
+        "amount": -8,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": true
+      },
+      {
+        "round": 5,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "tank",
+        "amount": 0,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_fortify",
+        "death": false
+      },
+      {
+        "round": 5,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "tank",
+        "amount": 0,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_taunt",
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                90,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                85,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 17
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                17,
+                8
+              ],
+              "value": 13
+            }
+          ],
+          "damage": 13,
+          "hpBefore": 896,
+          "hpLoss": 13
+        },
+        "round": 6,
+        "type": "quick_shot",
+        "sourceId": "bait",
+        "targetId": "boss",
+        "amount": -13,
+        "hpAfter": 883,
+        "skillId": "quick_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                42,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                73,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 10
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                10,
+                8
+              ],
+              "value": 6
+            }
+          ],
+          "damage": 6,
+          "hpBefore": 883,
+          "hpLoss": 6
+        },
+        "round": 6,
+        "type": "rally_strike",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": -6,
+        "hpAfter": 877,
+        "skillId": "rally_strike",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                70,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                27,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                8
+              ],
+              "value": 14
+            },
+            {
+              "kind": "heavy_strike",
+              "inputs": [
+                14,
+                3,
+                2
+              ],
+              "value": 21
+            }
+          ],
+          "damage": 21,
+          "hpBefore": 48,
+          "hpLoss": 21
+        },
+        "round": 6,
+        "type": "toll_smash",
+        "sourceId": "boss",
+        "targetId": "bait",
+        "amount": -21,
+        "hpAfter": 27,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 6,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 877,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_weaken",
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                12,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                72,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 17
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                17,
+                70,
+                100
+              ],
+              "value": 11
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                11,
+                8
+              ],
+              "value": 7
+            }
+          ],
+          "damage": 7,
+          "hpBefore": 877,
+          "hpLoss": 7
+        },
+        "round": 7,
+        "type": "aimed_shot",
+        "sourceId": "bait",
+        "targetId": "boss",
+        "amount": -7,
+        "hpAfter": 870,
+        "skillId": "aimed_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 7,
+        "type": "discordant_verse",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 870,
+        "skillId": "discordant_verse",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                41,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                66,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                8
+              ],
+              "value": 14
+            }
+          ],
+          "damage": 14,
+          "hpBefore": 27,
+          "hpLoss": 14
+        },
+        "round": 7,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "bait",
+        "amount": -14,
+        "hpAfter": 13,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 7,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "bait",
+        "amount": 0,
+        "hpAfter": 13,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_weaken",
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                46,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                81,
+                25
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 17
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                17,
+                8
+              ],
+              "value": 13
+            }
+          ],
+          "damage": 13,
+          "hpBefore": 870,
+          "hpLoss": 13
+        },
+        "round": 8,
+        "type": "quick_shot",
+        "sourceId": "bait",
+        "targetId": "boss",
+        "amount": -13,
+        "hpAfter": 857,
+        "skillId": "quick_shot",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                32,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                51,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 10
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                10,
+                8
+              ],
+              "value": 6
+            }
+          ],
+          "damage": 6,
+          "hpBefore": 857,
+          "hpLoss": 6
+        },
+        "round": 8,
+        "type": "rally_strike",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": -6,
+        "hpAfter": 851,
+        "skillId": "rally_strike",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                77,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                20,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                8
+              ],
+              "value": 14
+            }
+          ],
+          "damage": 14,
+          "hpBefore": 13,
+          "hpLoss": 13
+        },
+        "round": 8,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "bait",
+        "amount": -13,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": true
+      },
+      {
+        "round": 8,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 851,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_weaken",
+        "death": false
+      },
+      {
+        "round": 9,
+        "type": "discordant_verse",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 851,
+        "skillId": "discordant_verse",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                45,
+                15
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                67,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                8
+              ],
+              "value": 14
+            },
+            {
+              "kind": "heavy_strike",
+              "inputs": [
+                14,
+                3,
+                2
+              ],
+              "value": 21
+            }
+          ],
+          "damage": 21,
+          "hpBefore": 46,
+          "hpLoss": 21
+        },
+        "round": 9,
+        "type": "toll_smash",
+        "sourceId": "boss",
+        "targetId": "support",
+        "amount": -21,
+        "hpAfter": 25,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                44,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                88,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 10
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                10,
+                70,
+                100
+              ],
+              "value": 7
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                7,
+                8
+              ],
+              "value": 3
+            }
+          ],
+          "damage": 3,
+          "hpBefore": 851,
+          "hpLoss": 3
+        },
+        "round": 10,
+        "type": "rally_strike",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": -3,
+        "hpAfter": 848,
+        "skillId": "rally_strike",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                90,
+                15
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                41,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                8
+              ],
+              "value": 14
+            }
+          ],
+          "damage": 14,
+          "hpBefore": 25,
+          "hpLoss": 14
+        },
+        "round": 10,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "support",
+        "amount": -14,
+        "hpAfter": 11,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "round": 10,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "support",
+        "amount": 0,
+        "hpAfter": 11,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_weaken",
+        "death": false
+      },
+      {
+        "round": 10,
+        "type": "status_expire",
+        "sourceId": null,
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 848,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": "status_weaken",
+        "death": false
+      },
+      {
+        "round": 11,
+        "type": "discordant_verse",
+        "sourceId": "support",
+        "targetId": "boss",
+        "amount": 0,
+        "hpAfter": 848,
+        "skillId": "discordant_verse",
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      },
+      {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                43,
+                15
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                47,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 8
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                8
+              ],
+              "value": 14
+            }
+          ],
+          "damage": 14,
+          "hpBefore": 11,
+          "hpLoss": 11
+        },
+        "round": 11,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "support",
+        "amount": -11,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": true
+      }
+    ],
+    "finalHp": {
+      "bait": 0,
+      "tank": 0,
+      "support": 0,
+      "boss": 848
+    },
+    "units": [
+      {
+        "unitId": "bait",
+        "side": "A",
+        "kind": "hero",
+        "classId": "class_ranger",
+        "secondaryClassId": null,
+        "slotIndex": 0,
+        "maxHp": 48
+      },
+      {
+        "unitId": "tank",
+        "side": "A",
+        "kind": "hero",
+        "classId": "class_vanguard",
+        "secondaryClassId": null,
+        "slotIndex": 1,
+        "maxHp": 60
+      },
+      {
+        "unitId": "support",
+        "side": "A",
+        "kind": "hero",
+        "classId": "class_herald",
+        "secondaryClassId": null,
+        "slotIndex": 3,
+        "maxHp": 46
+      },
+      {
+        "unitId": "boss",
+        "side": "B",
+        "kind": "enemy",
+        "classId": null,
+        "secondaryClassId": null,
+        "slotIndex": 0,
+        "maxHp": 1000
+      }
+    ]
+  },
+  "samples": [
+    {
+      "round": 1,
+      "fortified": true,
+      "weakened": true,
+      "atk": 18,
+      "def": 14,
+      "event": {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                76,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                84,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                11,
+                130,
+                100
+              ],
+              "value": 14
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                14
+              ],
+              "value": 11
+            }
+          ],
+          "damage": 11,
+          "hpBefore": 60,
+          "hpLoss": 11
+        },
+        "round": 1,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "tank",
+        "amount": -11,
+        "hpAfter": 49,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      }
+    },
+    {
+      "round": 2,
+      "fortified": true,
+      "weakened": true,
+      "atk": 18,
+      "def": 14,
+      "event": {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                51,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                11,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                11,
+                130,
+                100
+              ],
+              "value": 14
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                14
+              ],
+              "value": 11
+            }
+          ],
+          "damage": 11,
+          "hpBefore": 49,
+          "hpLoss": 11
+        },
+        "round": 2,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "tank",
+        "amount": -11,
+        "hpAfter": 38,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      }
+    },
+    {
+      "round": 3,
+      "fortified": false,
+      "weakened": true,
+      "atk": 18,
+      "def": 11,
+      "event": {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                61,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                69,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                11
+              ],
+              "value": 13
+            },
+            {
+              "kind": "heavy_strike",
+              "inputs": [
+                13,
+                3,
+                2
+              ],
+              "value": 19
+            }
+          ],
+          "damage": 19,
+          "hpBefore": 38,
+          "hpLoss": 19
+        },
+        "round": 3,
+        "type": "toll_smash",
+        "sourceId": "boss",
+        "targetId": "tank",
+        "amount": -19,
+        "hpAfter": 19,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": {
+          "statusId": "status_weaken",
+          "duration": 2,
+          "stacks": 1
+        },
+        "statusExpired": null,
+        "death": false
+      }
+    },
+    {
+      "round": 4,
+      "fortified": true,
+      "weakened": true,
+      "atk": 18,
+      "def": 14,
+      "event": {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                59,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                40,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                11,
+                130,
+                100
+              ],
+              "value": 14
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                14
+              ],
+              "value": 11
+            }
+          ],
+          "damage": 11,
+          "hpBefore": 19,
+          "hpLoss": 11
+        },
+        "round": 4,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "tank",
+        "amount": -11,
+        "hpAfter": 8,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": false
+      }
+    },
+    {
+      "round": 5,
+      "fortified": true,
+      "weakened": true,
+      "atk": 18,
+      "def": 14,
+      "event": {
+        "damageBreakdown": {
+          "steps": [
+            {
+              "kind": "dodge_roll",
+              "inputs": [
+                7,
+                5
+              ],
+              "value": 0
+            },
+            {
+              "kind": "crit_roll",
+              "inputs": [
+                72,
+                10
+              ],
+              "value": 0
+            },
+            {
+              "kind": "attack",
+              "inputs": [],
+              "value": 26
+            },
+            {
+              "kind": "weaken",
+              "inputs": [
+                26,
+                70,
+                100
+              ],
+              "value": 18
+            },
+            {
+              "kind": "defense",
+              "inputs": [],
+              "value": 11
+            },
+            {
+              "kind": "fortify",
+              "inputs": [
+                11,
+                130,
+                100
+              ],
+              "value": 14
+            },
+            {
+              "kind": "base_damage",
+              "inputs": [
+                18,
+                14
+              ],
+              "value": 11
+            }
+          ],
+          "damage": 11,
+          "hpBefore": 8,
+          "hpLoss": 8
+        },
+        "round": 5,
+        "type": "toll_strike",
+        "sourceId": "boss",
+        "targetId": "tank",
+        "amount": -8,
+        "hpAfter": 0,
+        "skillId": null,
+        "crit": false,
+        "dodged": false,
+        "statusApplied": null,
+        "statusExpired": null,
+        "death": true
+      }
+    }
+  ],
+  "casts": [
+    1,
+    4
+  ],
+  "firstRedirect": {
+    "damageBreakdown": {
+      "steps": [
+        {
+          "kind": "dodge_roll",
+          "inputs": [
+            51,
+            5
+          ],
+          "value": 0
+        },
+        {
+          "kind": "crit_roll",
+          "inputs": [
+            11,
+            10
+          ],
+          "value": 0
+        },
+        {
+          "kind": "attack",
+          "inputs": [],
+          "value": 26
+        },
+        {
+          "kind": "weaken",
+          "inputs": [
+            26,
+            70,
+            100
+          ],
+          "value": 18
+        },
+        {
+          "kind": "defense",
+          "inputs": [],
+          "value": 11
+        },
+        {
+          "kind": "fortify",
+          "inputs": [
+            11,
+            130,
+            100
+          ],
+          "value": 14
+        },
+        {
+          "kind": "base_damage",
+          "inputs": [
+            18,
+            14
+          ],
+          "value": 11
+        }
+      ],
+      "damage": 11,
+      "hpBefore": 49,
+      "hpLoss": 11
+    },
+    "round": 2,
+    "type": "toll_strike",
+    "sourceId": "boss",
+    "targetId": "tank",
+    "amount": -11,
+    "hpAfter": 38,
+    "skillId": null,
+    "crit": false,
+    "dodged": false,
+    "statusApplied": null,
+    "statusExpired": null,
+    "death": false
+  }
+}

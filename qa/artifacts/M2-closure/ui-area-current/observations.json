@@ -1,0 +1,421 @@
+{
+  "keyboard": [
+    {
+      "label": "Company A",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    },
+    {
+      "label": "Expedition",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    },
+    {
+      "label": "Start Expedition",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    },
+    {
+      "label": "Expedition",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    },
+    {
+      "label": "Collect Rewards",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    },
+    {
+      "label": "Stop and Collect",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    },
+    {
+      "label": "Company",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    },
+    {
+      "label": "Inventory",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    },
+    {
+      "label": "Codex",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    },
+    {
+      "label": "Expedition",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    },
+    {
+      "label": "Expedition",
+      "outline": {
+        "style": "solid",
+        "width": "3px"
+      }
+    }
+  ],
+  "area": [
+    {
+      "check": "fresh/default/read-only/unauthenticated",
+      "pass": true,
+      "areas": [
+        {
+          "areaId": "area_old_road",
+          "unlocked": true,
+          "isSelected": true
+        },
+        {
+          "areaId": "area_sunken_aqueduct",
+          "unlocked": false,
+          "isSelected": false
+        }
+      ]
+    },
+    {
+      "check": "contract name field",
+      "pass": false,
+      "note": "M2-01 explicitly requires name on AreaSummaryDTO"
+    },
+    {
+      "check": "unknown and locked errors",
+      "pass": true
+    },
+    {
+      "check": "active selection blocked, frozen expedition preserved",
+      "pass": true
+    },
+    {
+      "check": "unlock/select/idempotent retry/stale revision/start snapshot",
+      "pass": true
+    }
+  ],
+  "solo": [
+    {
+      "attempt": 1,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 2,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 3,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 4,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 5,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 6,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 7,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 8,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 9,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 10,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 11,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 12,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 13,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 14,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 15,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 16,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 17,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 18,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 19,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    },
+    {
+      "attempt": 20,
+      "outcomes": {
+        "wins": 0,
+        "losses": 1
+      },
+      "rewards": {
+        "xp": 0,
+        "gold": 0,
+        "items": []
+      }
+    }
+  ],
+  "errors": [],
+  "soloSummary": {
+    "before": {
+      "heroId": "00000000-0000-4000-8000-0000000a0001",
+      "accountId": "00000000-0000-4000-8000-00000000000a",
+      "primaryClassId": "class_vanguard",
+      "secondaryClassId": null,
+      "level": 1,
+      "xp": 0,
+      "skillLoadout": {
+        "active": [
+          "bulwark_call",
+          ""
+        ],
+        "passive": [
+          "thick_hide",
+          ""
+        ]
+      },
+      "equipment": {
+        "weapon": null,
+        "armor": null,
+        "trinket": null
+      },
+      "effectiveStats": {
+        "maxHp": 40,
+        "atk": 7,
+        "def": 6,
+        "spd": 8
+      }
+    },
+    "after": {
+      "heroId": "00000000-0000-4000-8000-0000000a0001",
+      "accountId": "00000000-0000-4000-8000-00000000000a",
+      "primaryClassId": "class_vanguard",
+      "secondaryClassId": null,
+      "level": 1,
+      "xp": 0,
+      "skillLoadout": {
+        "active": [
+          "bulwark_call",
+          ""
+        ],
+        "passive": [
+          "thick_hide",
+          ""
+        ]
+      },
+      "equipment": {
+        "weapon": null,
+        "armor": null,
+        "trinket": null
+      },
+      "effectiveStats": {
+        "maxHp": 40,
+        "atk": 7,
+        "def": 6,
+        "spd": 8
+      }
+    },
+    "improved": false,
+    "note": "20 literal solo cycles; failure to improve is not automatically a gameplay defect"
+  }
+}
