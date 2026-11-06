@@ -300,7 +300,9 @@ drop/rare/craft/reforge/epic time, material/gold balances, overflow, unlocks and
 clear/fail rates by build and seed. Compare same-level/gear good and poor teams;
 test whether abundant legacy gold removes only the gold constraint, while dungeon
 materials still pace crafts. Include 1/3/5-hero groups, offline partitions, first
-week at 30/78/480 credited minutes/day, and guaranteed-material failure recovery.
+week at 30/84/480 credited minutes/day, and guaranteed-material failure recovery.
+(Corrected 2026-11-06, M2-28 resumption: this section's own established-party rate two
+paragraphs above is 84 credited minutes/day, not 78 — a wording slip, not a tuning value.)
 Retune only on that evidence. M2-29 owns browser verification of rarity, visible
 stat changes, receipts, overflow and dungeon playback. M2-23 claims table readiness,
 not that M2 gameplay or its pacing targets have passed.
