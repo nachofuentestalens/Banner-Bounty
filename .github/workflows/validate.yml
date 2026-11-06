@@ -24,6 +24,6 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - name: Validate delivery plan invariants
-        run: node --test scripts/dashboard.test.mjs
+        run: node --test scripts/dashboard.test.mjs scripts/recover-delivery.test.mjs
       - name: Typecheck, test and build game
         run: npm run validate

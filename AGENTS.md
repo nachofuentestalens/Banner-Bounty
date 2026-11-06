@@ -27,6 +27,8 @@ Build the first playable milestone described in `design/studio/vision.md`. This 
 8. Each completed task leaves its specified report: changes, acceptance evidence, commands/results, unresolved issues, and next task. Save work in the task worktree; do not claim a successful CLI run proves acceptance. The owner reviews the task and integrates it into the baseline; only then do dependent tasks see its files.
 9. At a phase boundary with work left, provide the dashboard's six-field context-handoff JSON. Preserve provider/session context where useful; reassess effort for the actual task. Do not infer prices from model catalog order.
 10. Keep architecture notes current when contracts change. Do not edit `design/decisions.md`; AgentDashboard owns that decision log.
+11. Stop every server or watcher you start (including background game servers) before your run ends, and never commit a log a live process is still writing; `*.stdout.log`/`*.stderr.log` are ignored. A leftover process that writes after the checkpoint blocks publication of approved work.
+12. Stall ("Nothing has run…") fixes and inbox triage run `node scripts/recover-delivery.mjs` first. It resets only runtime logs in approved tasks stuck on "Save a fresh checkpoint" and retries the dashboard publish; act on anything it reports as SKIP.
 
 ## Commands available now
 
