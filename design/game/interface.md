@@ -5,7 +5,7 @@ A readable company ledger with restrained fantasy accents. Prioritize clear choi
 ## Screens
 
 1. Local account selector: two named test companies; explain that this is a local development build.
-2. Company: three hero cards, party position, class/spec, level/XP, effective stats and gear. Primary next action stays visible.
+2. Company: one hero card per active hero (a variable company of 1–5 distinct active heroes, per [m3-systems.md](m3-systems.md) section 1), party position, class/spec, level/XP, effective stats and gear. Primary next action stays visible.
 3. Expedition: area/enemy summary, start/stop/collect, estimated next cycle, server-confirmed result summary and combat log.
 4. Inventory: slot/type filters, equipped owner, before/after stat comparison, equip/unequip; labels explain disabled actions.
 5. Boss: readiness summary and challenge result, one-time reward state.
