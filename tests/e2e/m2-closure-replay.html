@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QA retained report replay</title><div id="root"></div>
+<script type="module">
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { BattleView } from '/apps/web/src/components/BattleView.tsx';
+import '/apps/web/src/styles.css';
+const root = createRoot(document.getElementById('root'));
+window.showReport = report => root.render(React.createElement(BattleView, { report, key: report.reportId }));
+</script></html>

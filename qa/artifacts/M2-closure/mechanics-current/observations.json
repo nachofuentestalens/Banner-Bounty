@@ -1,0 +1,52 @@
+{
+  "accelerated": true,
+  "checks": {
+    "drops": {
+      "pass": true,
+      "pair": [
+        {
+          "batch": 0,
+          "item": {
+            "itemInstanceId": "032b852a-0640-4be6-a3ff-9382eb53f26e",
+            "accountId": "00000000-0000-4000-8000-00000000000a",
+            "definitionId": "item_weapon_longspear",
+            "rarityId": "uncommon",
+            "affixes": [
+              {
+                "affixId": "affix_of_vigor",
+                "value": 4
+              }
+            ],
+            "equippedBy": null
+          }
+        },
+        {
+          "batch": 0,
+          "item": {
+            "itemInstanceId": "5d7fe131-2f92-46f9-89e4-6189faa33ba0",
+            "accountId": "00000000-0000-4000-8000-00000000000a",
+            "definitionId": "item_weapon_longspear",
+            "rarityId": "uncommon",
+            "affixes": [
+              {
+                "affixId": "affix_of_vigor",
+                "value": 3
+              }
+            ],
+            "equippedBy": null
+          }
+        }
+      ]
+    },
+    "gear": {
+      "pass": true,
+      "expected": {
+        "hpDelta": 0,
+        "atkDelta": 5
+      },
+      "equippedText": "Shortsword of Power (Uncommon)\nA balanced blade. Raises attack.\nRanger (weapon)\nUnequip",
+      "note": "HP snapshot and attack operand measured; DEF/SPD not exposed by participant snapshots and not asserted here."
+    }
+  },
+  "errors": []
+}

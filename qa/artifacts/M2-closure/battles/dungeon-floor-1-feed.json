@@ -1,0 +1,17 @@
+[
+  "Round 1 / Ranger uses Aimed Shot on Aqueduct Husk for 37 damage — a solid hit!.Dodge roll 15, chance 5%: hit; Critical roll 4, chance 25%: critical; Battle-start ATK 27; Battle-start DEF 4; Base damage: max(1, 27 ATK − floor(4 DEF / 2)) = 25; Critical damage: floor(25 × 3/2) = 37. Resolved damage 37; HP before 40; actual HP loss 37; HP after 3. / 3 HP remaining",
+  "Round 1 / Vanguard uses Mending Light on Vanguard. / 102 HP remaining",
+  "Round 1 / Aqueduct Husk uses Enemy strike on Vanguard for 1 damage.Dodge roll 54, chance 5%: hit; Critical roll 31, chance 10%: normal; Battle-start ATK 9; Battle-start DEF 20; Base damage: max(1, 9 ATK − floor(20 DEF / 2)) = 1. Resolved damage 1; HP before 102; actual HP loss 1; HP after 101. / 101 HP remaining",
+  "Round 1 / Aqueduct Husk uses Enemy strike on Vanguard for 1 damage.Dodge roll 12, chance 5%: hit; Critical roll 53, chance 10%: normal; Battle-start ATK 9; Battle-start DEF 20; Base damage: max(1, 9 ATK − floor(20 DEF / 2)) = 1. Resolved damage 1; HP before 101; actual HP loss 1; HP after 100. / 100 HP remaining",
+  "Round 1 / Arcanist uses Firebolt on Aqueduct Husk for 3 damage — a solid hit!. (Burning applied, 2 round(s)) Aqueduct Husk falls.Dodge roll 62, chance 5%: hit; Critical roll 5, chance 10%: critical; Battle-start ATK 28; Battle-start DEF 4; Base damage: max(1, 28 ATK − floor(4 DEF / 2)) = 26; Overload: floor(26 × 11/10) = 28; Critical damage: floor(28 × 3/2) = 42. Resolved damage 42; HP before 3; actual HP loss 3; HP after 0. Damage limited by remaining HP or survival effect. / 0 HP remaining",
+  "Round 2 / Ranger uses Quick Shot on Aqueduct Husk for 37 damage — a solid hit!.Dodge roll 37, chance 5%: hit; Critical roll 8, chance 25%: critical; Battle-start ATK 27; Battle-start DEF 4; Base damage: max(1, 27 ATK − floor(4 DEF / 2)) = 25; Critical damage: floor(25 × 3/2) = 37. Resolved damage 37; HP before 40; actual HP loss 37; HP after 3. / 3 HP remaining",
+  "Round 2 / Vanguard uses Bulwark Call on Vanguard. (Taunting applied, 2 round(s)) / 100 HP remaining",
+  "Round 2 / Vanguard uses Bulwark Call on Vanguard. (Fortified applied, 2 round(s)) / 100 HP remaining",
+  "Round 2 / Aqueduct Husk uses Enemy strike on Vanguard for 1 damage.Dodge roll 91, chance 5%: hit; Critical roll 23, chance 10%: normal; Battle-start ATK 9; Battle-start DEF 20; Fortified DEF: floor(20 × 130/100) = 26; Base damage: max(1, 9 ATK − floor(26 DEF / 2)) = 1. Resolved damage 1; HP before 100; actual HP loss 1; HP after 99. / 99 HP remaining",
+  "Round 2 / Arcanist attacks Aqueduct Husk with Firebolt — dodged!Dodge roll 4, chance 5%: dodged; base damage and critical roll not evaluated. Resolved damage 0; HP before 3; actual HP loss 0; HP after 3. / 3 HP remaining",
+  "Round 2 / Aqueduct Husk's burning status fades. / 0 HP remaining",
+  "Round 3 / Ranger uses Aimed Shot on Aqueduct Husk for 3 damage. Aqueduct Husk falls.Dodge roll 90, chance 5%: hit; Critical roll 70, chance 25%: normal; Battle-start ATK 27; Battle-start DEF 4; Base damage: max(1, 27 ATK − floor(4 DEF / 2)) = 25; Execute bonus: floor(25 × 3/2) = 37. Resolved damage 37; HP before 3; actual HP loss 3; HP after 0. Damage limited by remaining HP or survival effect. / 0 HP remaining",
+  "Round 3 / Vanguard uses Mending Light on Vanguard, healing 3 HP. / 102 HP remaining",
+  "Round 3 / Vanguard's fortified status fades. / 102 HP remaining",
+  "Round 3 / Vanguard's taunting status fades. / 102 HP remaining"
+]

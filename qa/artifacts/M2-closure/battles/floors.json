@@ -1,0 +1,66 @@
+[
+  {
+    "floor": 1,
+    "reportId": "073c5349-8c93-4338-9eb9-47d5436010d6",
+    "result": "win",
+    "isBoss": false,
+    "rewards": {
+      "xp": 8,
+      "gold": 20,
+      "materials": {
+        "scrap": 2,
+        "sigil": 0,
+        "core": 0
+      },
+      "items": []
+    }
+  },
+  {
+    "floor": 2,
+    "reportId": "ee07e9d5-f33f-4b88-9429-59c3dba5293c",
+    "result": "win",
+    "isBoss": false,
+    "rewards": {
+      "xp": 8,
+      "gold": 20,
+      "materials": {
+        "scrap": 2,
+        "sigil": 0,
+        "core": 0
+      },
+      "items": []
+    }
+  },
+  {
+    "floor": 3,
+    "reportId": "2dbf433d-51cb-48ef-8df6-d88269789564",
+    "result": "win",
+    "isBoss": false,
+    "rewards": {
+      "xp": 8,
+      "gold": 20,
+      "materials": {
+        "scrap": 2,
+        "sigil": 0,
+        "core": 0
+      },
+      "items": []
+    }
+  },
+  {
+    "floor": 4,
+    "reportId": "43469f58-ae4b-4c81-8c9d-a458d9b8a6dd",
+    "result": "win",
+    "isBoss": true,
+    "rewards": {
+      "xp": 16,
+      "gold": 49,
+      "materials": {
+        "scrap": 4,
+        "sigil": 2,
+        "core": 1
+      },
+      "items": []
+    }
+  }
+]

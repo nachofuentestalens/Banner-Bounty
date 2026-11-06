@@ -1,0 +1,19 @@
+[
+  "Round 1 / Ranger uses Aimed Shot on Aqueduct Husk for 25 damage.Dodge roll 96, chance 5%: hit; Critical roll 81, chance 25%: normal; Battle-start ATK 27; Battle-start DEF 4; Base damage: max(1, 27 ATK − floor(4 DEF / 2)) = 25. Resolved damage 25; HP before 40; actual HP loss 25; HP after 15. / 15 HP remaining",
+  "Round 1 / Vanguard uses Mending Light on Vanguard. / 102 HP remaining",
+  "Round 1 / Aqueduct Husk uses Enemy strike on Vanguard for 1 damage.Dodge roll 62, chance 5%: hit; Critical roll 76, chance 10%: normal; Battle-start ATK 9; Battle-start DEF 20; Base damage: max(1, 9 ATK − floor(20 DEF / 2)) = 1. Resolved damage 1; HP before 102; actual HP loss 1; HP after 101. / 101 HP remaining",
+  "Round 1 / Arcanist uses Firebolt on Aqueduct Husk for 15 damage — a solid hit!. (Burning applied, 2 round(s)) Aqueduct Husk falls.Dodge roll 27, chance 5%: hit; Critical roll 5, chance 10%: critical; Battle-start ATK 28; Battle-start DEF 4; Base damage: max(1, 28 ATK − floor(4 DEF / 2)) = 26; Overload: floor(26 × 11/10) = 28; Critical damage: floor(28 × 3/2) = 42. Resolved damage 42; HP before 15; actual HP loss 15; HP after 0. Damage limited by remaining HP or survival effect. / 0 HP remaining",
+  "Round 1 / Drowned Warden-Thrall uses Enemy strike on Arcanist for 6 damage.Dodge roll 70, chance 5%: hit; Critical roll 34, chance 10%: normal; Battle-start ATK 12; Battle-start DEF 12; Base damage: max(1, 12 ATK − floor(12 DEF / 2)) = 6. Resolved damage 6; HP before 64; actual HP loss 6; HP after 58. / 58 HP remaining",
+  "Round 2 / Ranger uses Quick Shot on Drowned Warden-Thrall for 24 damage.Dodge roll 37, chance 5%: hit; Critical roll 70, chance 25%: normal; Battle-start ATK 27; Battle-start DEF 6; Base damage: max(1, 27 ATK − floor(6 DEF / 2)) = 24. Resolved damage 24; HP before 65; actual HP loss 24; HP after 41. / 41 HP remaining",
+  "Round 2 / Vanguard uses Bulwark Call on Vanguard. (Taunting applied, 2 round(s)) / 101 HP remaining",
+  "Round 2 / Vanguard uses Bulwark Call on Vanguard. (Fortified applied, 2 round(s)) / 101 HP remaining",
+  "Round 2 / Arcanist uses Firebolt on Drowned Warden-Thrall for 27 damage. (Burning applied, 2 round(s))Dodge roll 20, chance 5%: hit; Critical roll 62, chance 10%: normal; Battle-start ATK 28; Battle-start DEF 6; Base damage: max(1, 28 ATK − floor(6 DEF / 2)) = 25; Overload: floor(25 × 11/10) = 27. Resolved damage 27; HP before 41; actual HP loss 27; HP after 14. / 14 HP remaining",
+  "Round 2 / Drowned Warden-Thrall uses Enemy strike on Vanguard for 1 damage.Dodge roll 23, chance 5%: hit; Critical roll 95, chance 10%: normal; Battle-start ATK 12; Battle-start DEF 20; Fortified DEF: floor(20 × 130/100) = 26; Base damage: max(1, 12 ATK − floor(26 DEF / 2)) = 1. Resolved damage 1; HP before 101; actual HP loss 1; HP after 100. / 100 HP remaining",
+  "Round 2 / Drowned Warden-Thrall takes 9 damage from Burn tick.Burn: 1 stacks × floor(28 captured ATK / 3) = 9 (no dodge/critical roll). Resolved damage 9; HP before 14; actual HP loss 9; HP after 5. / 5 HP remaining",
+  "Round 2 / Aqueduct Husk's burning status fades. / 0 HP remaining",
+  "Round 3 / Ranger uses Aimed Shot on Drowned Warden-Thrall for 5 damage. Drowned Warden-Thrall falls.Dodge roll 66, chance 5%: hit; Critical roll 86, chance 25%: normal; Battle-start ATK 27; Battle-start DEF 6; Base damage: max(1, 27 ATK − floor(6 DEF / 2)) = 24; Execute bonus: floor(24 × 3/2) = 36. Resolved damage 36; HP before 5; actual HP loss 5; HP after 0. Damage limited by remaining HP or survival effect. / 0 HP remaining",
+  "Round 3 / Vanguard uses Mending Light on Arcanist, healing 6 HP. / 64 HP remaining",
+  "Round 3 / Vanguard's fortified status fades. / 100 HP remaining",
+  "Round 3 / Vanguard's taunting status fades. / 100 HP remaining",
+  "Round 3 / Drowned Warden-Thrall's burning status fades. / 0 HP remaining"
+]

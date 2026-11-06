@@ -8,7 +8,7 @@ import { chromium, expect } from '@playwright/test';
 import { buildServer } from '../../apps/server/dist/app.js';
 import { makeManualClock } from './lib/server.mjs';
 
-const out = fileURLToPath(new URL('../../qa/artifacts/M2-29/roster/', import.meta.url));
+const out = process.env.QA_ROSTER_OUT || fileURLToPath(new URL('../../qa/artifacts/M2-29/roster/', import.meta.url));
 fs.mkdirSync(out, { recursive: true });
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'bnb-m2-roster-'));
 const { clock, advanceMs } = makeManualClock('2026-10-23T10:00:00Z');
