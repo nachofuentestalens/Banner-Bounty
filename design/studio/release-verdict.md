@@ -40,10 +40,10 @@ The two tasks this gate rests on are already approved and distinct, not duplicat
 below: original M3-02 review `5dc6371a-c0a0-4393-9404-4497720246f4` and the G0 Economy
 re-disposition `9b78d00a-504d-4b20-8b9e-bc1e51545679`. This Producer task dispatches a new
 Game Director task to author the missing marker, depending on both approved tasks above so it
-cannot start before they are integrated and cannot duplicate their review. **Its task ID is
-not yet known at the time of this edit** (the dashboard assigns it only after this reply is
-processed); it will be read back and recorded here, replacing this sentence, before this
-Producer task is reported complete.
+cannot start before they are integrated and cannot duplicate their review. This is
+tracked by the Game Director task "Author M3-02-accepted.md acceptance marker for M3-07's
+required path", dispatched by Producer task `2cf2e5db-6c44-47a7-8a2a-6e7c796fc74e` on
+2026-11-06.
 
 Historical verdicts below are preserved; the current G0 Economy disposition above controls the
 production gate. Full M2 acceptance is not granted by this update.
