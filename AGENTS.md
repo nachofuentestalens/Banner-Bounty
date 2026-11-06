@@ -27,6 +27,7 @@ Build the first playable milestone described in `design/studio/vision.md`. This 
 8. Each completed task leaves its specified report: changes, acceptance evidence, commands/results, unresolved issues, and next task. Save work in the task worktree; do not claim a successful CLI run proves acceptance. The owner reviews the task and integrates it into the baseline; only then do dependent tasks see its files.
 9. At a phase boundary with work left, provide the dashboard's six-field context-handoff JSON. Preserve provider/session context where useful; reassess effort for the actual task. Do not infer prices from model catalog order.
 10. Keep architecture notes current when contracts change. Do not edit `design/decisions.md`; AgentDashboard owns that decision log.
+11. Submit work to GitHub (`origin` = `https://github.com/nachofuentestalens/Banner-Bounty.git`, shared by every worktree): commit in your task worktree, then `git push -u origin HEAD` to publish your own `agent/task-<id>` branch. Never push to `main`, force-push, or push another task's branch; `main` changes only through the owner's dashboard integration. Never commit secrets, `.env` files, databases, `node_modules/` or build output. If the push is refused or offline, report it as a limitation; the dashboard's end-of-run WIP commit is published by the coordinator.
 
 ## Commands available now
 
