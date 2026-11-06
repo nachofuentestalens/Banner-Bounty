@@ -1,0 +1,4 @@
+[server] listening on http://127.0.0.1:3299
+[server] save database: C:\Users\user\AppData\Local\AgentDashboard\worktrees\279a9824-633f-43d4-9163-e0271d770ab4\qa\artifacts\M2-closure\playtest.sqlite
+[server] debug tools (level/XP/gold menu): disabled
+[server] serving built client from C:\Users\user\AppData\Local\AgentDashboard\worktrees\279a9824-633f-43d4-9163-e0271d770ab4\apps\web\dist at http://127.0.0.1:3299/
