@@ -125,3 +125,7 @@ Producer creates the real M3 task graph from the milestone's role/output/prerequ
 resolves native IDs before dispatch. Director reviews scope and evidence gates. Specification may
 proceed while M2 closes; production feature work requires the M2 closure verdict and plan review.
 Never use M2-30 as a created task's prerequisite; require its committed plan/report paths instead.
+
+### G0 recovery hold (2026-11-06)
+
+The updated [M3-02 reassessment](reports/M3-02.md) dispositions new Economy evidence but still rejects full M2 acceptance. Existing tasks own remaining harness/progression measurements, opponent identification, area contract and solo-improvement corrections, followed by Economy and independent QA review. No duplicate tasks. The dashboard refuses to resume merged M3-02; its approved stage is not acceptance. M3-07 now requires committed `design/studio/reports/M3-02-accepted.md` in addition to existing prerequisites. Only create that record when affirmative full M2/G0 acceptance is supported; review and integrate it before resuming production. Do not remove this hold merely because the recovery report is approved.

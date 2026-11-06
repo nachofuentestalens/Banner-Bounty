@@ -1,27 +1,12 @@
-# Current release verdict: M2 acceptance still withheld; M3 production stays blocked
+# Current release verdict: M2 acceptance rejected; M3 production held
 
-Date: 2026-11-06 · Owner: Game Director · Task M3-02 (`5dc6371a-c0a0-4393-9404-4497720246f4`)
+Date: 2026-11-06. Game Director recovery task `750646bf-b613-4ff5-93eb-f33545a3f0d2`; gate owner remains M3-02 `5dc6371a-c0a0-4393-9404-4497720246f4`.
 
-**M2 full acceptance remains withheld; M3-02 stays unfinished so M3-07 onward stay blocked.**
-The [M3-02 report](reports/M3-02.md) reviews M2 closure gate-by-gate: QA's replay-fix retest,
-checks 8–10/12, and check-7 reconciliation now all have evidence and are dispositioned, with no
-P0/P1 and no silently waived watchability failure. QA's own `qa/reports/M2-closure.md` recommends
-withholding full M2 acceptance, citing the unmet literal solo-improvement criterion and missing
-enemy/opponent identification (both P2, both documented, neither waived).
+**G0 does not pass.** The [current M3-02 reassessment](reports/M3-02.md) supersedes the earlier claim that no new Economy evidence exists. Updated Economy checkpoint `7a70613683083f65fc24ea93cde5507e99fe9305` is committed in this baseline. Fixed-level income, overflow, gold-only legacy comparison and level-3 dungeon contrast have bounded supporting evidence.
 
-The one gate item that still fails is the Economy disposition: `design/game/reports/M2-28.md` is
-unchanged since 2026-10-21 and was already read together with the separate simulation-matrix
-report by the M2-30 verdict below — no new Economy evidence exists to disposition. Full M2
-acceptance needs Economy's existing task (`7f1bf5c6-fc85-4105-a67f-03ee624161ee`) resumed with the
-fresh/migrated progression matrix (1/3/5 heroes × 30/84/480 credited minutes/day, purchases,
-overflow, failure recovery) that `gear.md` section 7 and M2-30 both call for, before this gate can
-pass. No duplicate Economy task is created for this.
+Full acceptance remains withheld: fresh/migrated evolving progression, actual purchases, insufficient-material recovery and offline partitions are unmeasured; broad build balance is unverified. QA retains failed opponent identification, unmet solo expedition improvement and missing `/areas.name`; numeric affix comparison is not established. The reassessment explicitly routes these through existing harness, M2 implementation/design, Economy and QA closure tasks. No failed criterion is silently waived and no duplicate task is authorized.
 
-Separately, the Producer's M3 execution graph (`design/studio/reports/M3-01.md`) passes plan
-review: all 12 native tasks exist exactly once, verified live against the dashboard; dependency
-edges correctly chain every production task (M3-07 onward) back to this gate; scope matches
-`design/studio/priorities.md` and `milestones/M3.md`; acceptance checks are observable and
-testable. That half of this gate is ready; only the M2 closure half is not.
+The M3 execution-plan review remains PASS. Its gate requires full M2 acceptance, not approval of an incomplete report. M3-02 must remain open and M3-07 onward held until an affirmative verdict is reviewed and integrated. The dashboard refuses to resume merged M3-02; this is an unresolved delivery restriction. M3-07 now additionally requires the absent committed `design/studio/reports/M3-02-accepted.md`. Create that record only for an affirmative, evidence-backed Director verdict and integrate its reviewed changes before resuming existing M3-07. M1's historical acceptance remains unchanged; no new playtest, build-health or enjoyment claim is made.
 
 The verdict below, from the prior Director review (M2-30, 2026-10-29), is preserved as the
 record of what was already fixed and resolved since. It is not superseded in substance, only
