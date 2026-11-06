@@ -33,6 +33,18 @@ M3-07/M3-05 prerequisites, carrying the explicit server-evidence obligation; M3-
 after its M3-08/M3-06 prerequisites.** All native dependencies and committed-input requirements
 still apply. No task was started or dependency bypassed by this review.
 
+### Marker-hold reconciliation (2026-11-06, Producer, task `2cf2e5db-6c44-47a7-8a2a-6e7c796fc74e`)
+
+As of this update, no task exists that authors `design/studio/reports/M3-02-accepted.md`.
+The two tasks this gate rests on are already approved and distinct, not duplicated by anything
+below: original M3-02 review `5dc6371a-c0a0-4393-9404-4497720246f4` and the G0 Economy
+re-disposition `9b78d00a-504d-4b20-8b9e-bc1e51545679`. This Producer task dispatches a new
+Game Director task to author the missing marker, depending on both approved tasks above so it
+cannot start before they are integrated and cannot duplicate their review. **Its task ID is
+not yet known at the time of this edit** (the dashboard assigns it only after this reply is
+processed); it will be read back and recorded here, replacing this sentence, before this
+Producer task is reported complete.
+
 Historical verdicts below are preserved; the current G0 Economy disposition above controls the
 production gate. Full M2 acceptance is not granted by this update.
 
