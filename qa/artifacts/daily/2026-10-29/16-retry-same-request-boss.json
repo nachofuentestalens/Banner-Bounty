@@ -1,0 +1,1191 @@
+﻿{
+    "ok":  true,
+    "data":  {
+                 "report":  {
+                                "reportId":  "3abd31ca-1750-47f9-87a3-b99a06095e6c",
+                                "kind":  "boss",
+                                "seed":  "f8716c67",
+                                "rulesVersion":  1,
+                                "createdAt":  "2026-10-29T13:35:22.467Z",
+                                "participantsSnapshot":  {
+                                                             "units":  [
+                                                                           {
+                                                                               "unitId":  "00000000-0000-4000-8000-0000000a0002",
+                                                                               "side":  "A",
+                                                                               "kind":  "hero",
+                                                                               "name":  "Ranger",
+                                                                               "classId":  "class_ranger",
+                                                                               "secondaryClassId":  null,
+                                                                               "slotIndex":  0,
+                                                                               "maxHp":  32
+                                                                           },
+                                                                           {
+                                                                               "unitId":  "00000000-0000-4000-8000-0000000a0001",
+                                                                               "side":  "A",
+                                                                               "kind":  "hero",
+                                                                               "name":  "Vanguard",
+                                                                               "classId":  "class_vanguard",
+                                                                               "secondaryClassId":  null,
+                                                                               "slotIndex":  1,
+                                                                               "maxHp":  40
+                                                                           },
+                                                                           {
+                                                                               "unitId":  "00000000-0000-4000-8000-0000000a0003",
+                                                                               "side":  "A",
+                                                                               "kind":  "hero",
+                                                                               "name":  "Arcanist",
+                                                                               "classId":  "class_arcanist",
+                                                                               "secondaryClassId":  null,
+                                                                               "slotIndex":  2,
+                                                                               "maxHp":  28
+                                                                           },
+                                                                           {
+                                                                               "unitId":  "boss_tollkeeper#0",
+                                                                               "side":  "B",
+                                                                               "kind":  "enemy",
+                                                                               "name":  "The Tollkeeper",
+                                                                               "classId":  null,
+                                                                               "secondaryClassId":  null,
+                                                                               "slotIndex":  0,
+                                                                               "maxHp":  220
+                                                                           }
+                                                                       ]
+                                                         },
+                                "events":  [
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=1}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=5}",
+                                                                                         "@{kind=critical; inputs=System.Object[]; value=7}"
+                                                                                     ],
+                                                                           "damage":  7,
+                                                                           "hpBefore":  220,
+                                                                           "hpLoss":  7
+                                                                       },
+                                                   "round":  1,
+                                                   "type":  "aimed_shot",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -7,
+                                                   "hpAfter":  213,
+                                                   "skillId":  "aimed_shot",
+                                                   "crit":  true,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=1}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=overload; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=critical; inputs=System.Object[]; value=9}"
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  213,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  1,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  204,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  true,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=14}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=12}"
+                                                                                     ],
+                                                                           "damage":  12,
+                                                                           "hpBefore":  32,
+                                                                           "hpLoss":  12
+                                                                       },
+                                                   "round":  1,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "amount":  -12,
+                                                   "hpAfter":  20,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  1,
+                                                   "type":  "bulwark_call",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  40,
+                                                   "skillId":  "bulwark_call",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_taunt",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  1,
+                                                   "type":  "bulwark_call",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  40,
+                                                   "skillId":  "bulwark_call",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_fortify",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=burn; inputs=System.Object[]; value=3}"
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  204,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  1,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  201,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=5}"
+                                                                                     ],
+                                                                           "damage":  5,
+                                                                           "hpBefore":  201,
+                                                                           "hpLoss":  5
+                                                                       },
+                                                   "round":  2,
+                                                   "type":  "quick_shot",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -5,
+                                                   "hpAfter":  196,
+                                                   "skillId":  "quick_shot",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=1}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=overload; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=critical; inputs=System.Object[]; value=9}"
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  196,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  2,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  187,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  true,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  2
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=14}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=fortify; inputs=System.Object[]; value=7}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=11}"
+                                                                                     ],
+                                                                           "damage":  11,
+                                                                           "hpBefore":  40,
+                                                                           "hpLoss":  11
+                                                                       },
+                                                   "round":  2,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  -11,
+                                                   "hpAfter":  29,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=7}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=3}"
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  187,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  2,
+                                                   "type":  "strike",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  184,
+                                                   "skillId":  "strike",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=burn; inputs=System.Object[]; value=6}"
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  184,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  2,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  178,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  2,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  29,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_fortify",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  2,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  29,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_taunt",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=5}"
+                                                                                     ],
+                                                                           "damage":  5,
+                                                                           "hpBefore":  178,
+                                                                           "hpLoss":  5
+                                                                       },
+                                                   "round":  3,
+                                                   "type":  "aimed_shot",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -5,
+                                                   "hpAfter":  173,
+                                                   "skillId":  "aimed_shot",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=overload; inputs=System.Object[]; value=6}"
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  173,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  3,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  167,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  3
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=14}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=12}",
+                                                                                         "@{kind=heavy_strike; inputs=System.Object[]; value=18}"
+                                                                                     ],
+                                                                           "damage":  18,
+                                                                           "hpBefore":  20,
+                                                                           "hpLoss":  18
+                                                                       },
+                                                   "round":  3,
+                                                   "type":  "toll_smash",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "amount":  -18,
+                                                   "hpAfter":  2,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_weaken",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=7}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=3}"
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  167,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  3,
+                                                   "type":  "strike",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  164,
+                                                   "skillId":  "strike",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=burn; inputs=System.Object[]; value=9}"
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  164,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  3,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  155,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=1}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                         "@{kind=weaken; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=2}",
+                                                                                         "@{kind=critical; inputs=System.Object[]; value=3}"
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  155,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  4,
+                                                   "type":  "quick_shot",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  152,
+                                                   "skillId":  "quick_shot",
+                                                   "crit":  true,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=overload; inputs=System.Object[]; value=6}"
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  152,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  4,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  146,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=14}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=12}"
+                                                                                     ],
+                                                                           "damage":  12,
+                                                                           "hpBefore":  2,
+                                                                           "hpLoss":  2
+                                                                       },
+                                                   "round":  4,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "amount":  -2,
+                                                   "hpAfter":  0,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  true
+                                               },
+                                               {
+                                                   "round":  4,
+                                                   "type":  "bulwark_call",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  29,
+                                                   "skillId":  "bulwark_call",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_taunt",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  4,
+                                                   "type":  "bulwark_call",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  29,
+                                                   "skillId":  "bulwark_call",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_fortify",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=burn; inputs=System.Object[]; value=9}"
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  146,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  4,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  137,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  4,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "amount":  0,
+                                                   "hpAfter":  0,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_weaken",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  4,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  0,
+                                                   "hpAfter":  137,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_burn",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=overload; inputs=System.Object[]; value=6}"
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  137,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  5,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  131,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=14}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=fortify; inputs=System.Object[]; value=7}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=11}"
+                                                                                     ],
+                                                                           "damage":  11,
+                                                                           "hpBefore":  29,
+                                                                           "hpLoss":  11
+                                                                       },
+                                                   "round":  5,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  -11,
+                                                   "hpAfter":  18,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=7}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=3}"
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  131,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  5,
+                                                   "type":  "strike",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  128,
+                                                   "skillId":  "strike",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=burn; inputs=System.Object[]; value=3}"
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  128,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  5,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  125,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  5,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  18,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_fortify",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  5,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  18,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_taunt",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=overload; inputs=System.Object[]; value=6}"
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  125,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  6,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  119,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  2
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=14}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=11}",
+                                                                                         "@{kind=heavy_strike; inputs=System.Object[]; value=16}"
+                                                                                     ],
+                                                                           "damage":  16,
+                                                                           "hpBefore":  18,
+                                                                           "hpLoss":  16
+                                                                       },
+                                                   "round":  6,
+                                                   "type":  "toll_smash",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  -16,
+                                                   "hpAfter":  2,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_weaken",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=1}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=7}",
+                                                                                         "@{kind=weaken; inputs=System.Object[]; value=4}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=1}",
+                                                                                         "@{kind=critical; inputs=System.Object[]; value=1}"
+                                                                                     ],
+                                                                           "damage":  1,
+                                                                           "hpBefore":  119,
+                                                                           "hpLoss":  1
+                                                                       },
+                                                   "round":  6,
+                                                   "type":  "strike",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -1,
+                                                   "hpAfter":  118,
+                                                   "skillId":  "strike",
+                                                   "crit":  true,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=burn; inputs=System.Object[]; value=6}"
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  118,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  6,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  112,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=1}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=overload; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=critical; inputs=System.Object[]; value=9}"
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  112,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  7,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  103,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  true,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  3
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=14}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=11}"
+                                                                                     ],
+                                                                           "damage":  11,
+                                                                           "hpBefore":  2,
+                                                                           "hpLoss":  2
+                                                                       },
+                                                   "round":  7,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  -2,
+                                                   "hpAfter":  0,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  true
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=burn; inputs=System.Object[]; value=9}"
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  103,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  7,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  94,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  7,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  0,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_weaken",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=overload; inputs=System.Object[]; value=6}"
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  94,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  8,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  88,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=14}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=3}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=13}"
+                                                                                     ],
+                                                                           "damage":  13,
+                                                                           "hpBefore":  28,
+                                                                           "hpLoss":  13
+                                                                       },
+                                                   "round":  8,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "amount":  -13,
+                                                   "hpAfter":  15,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=burn; inputs=System.Object[]; value=9}"
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  88,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  8,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  79,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  8,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  0,
+                                                   "hpAfter":  79,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_burn",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=8}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=6}",
+                                                                                         "@{kind=overload; inputs=System.Object[]; value=6}"
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  79,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  9,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  73,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                         "@{kind=attack; inputs=System.Object[]; value=14}",
+                                                                                         "@{kind=defense; inputs=System.Object[]; value=3}",
+                                                                                         "@{kind=base_damage; inputs=System.Object[]; value=13}",
+                                                                                         "@{kind=heavy_strike; inputs=System.Object[]; value=19}"
+                                                                                     ],
+                                                                           "damage":  19,
+                                                                           "hpBefore":  15,
+                                                                           "hpLoss":  15
+                                                                       },
+                                                   "round":  9,
+                                                   "type":  "toll_smash",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "amount":  -15,
+                                                   "hpAfter":  0,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_weaken",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  true
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         "@{kind=burn; inputs=System.Object[]; value=3}"
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  73,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  9,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  70,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               }
+                                           ],
+                                "result":  {
+                                               "outcome":  "loss",
+                                               "rounds":  9,
+                                               "finalHp":  {
+                                                               "00000000-0000-4000-8000-0000000a0002":  0,
+                                                               "00000000-0000-4000-8000-0000000a0001":  0,
+                                                               "00000000-0000-4000-8000-0000000a0003":  0,
+                                                               "boss_tollkeeper#0":  70
+                                                           }
+                                           }
+                            },
+                 "rewardGranted":  false,
+                 "reward":  null
+             },
+    "revision":  9
+}

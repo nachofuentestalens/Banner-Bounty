@@ -1,0 +1,88 @@
+﻿{
+    "ok":  true,
+    "data":  {
+                 "snapshot":  {
+                                  "snapshotId":  "b6629693-63b5-48d6-b30a-b48e93e0a578",
+                                  "accountId":  "00000000-0000-4000-8000-00000000000b",
+                                  "publishedAt":  "2026-10-29T13:34:34.917Z",
+                                  "rulesVersion":  1,
+                                  "frozenParty":  [
+                                                      {
+                                                          "heroId":  "00000000-0000-4000-8000-0000000b0001",
+                                                          "slotIndex":  0,
+                                                          "primaryClassId":  "class_vanguard",
+                                                          "secondaryClassId":  null,
+                                                          "level":  1,
+                                                          "skillLoadout":  {
+                                                                               "active":  [
+                                                                                              "bulwark_call",
+                                                                                              ""
+                                                                                          ],
+                                                                               "passive":  [
+                                                                                               "thick_hide",
+                                                                                               ""
+                                                                                           ]
+                                                                           }
+                                                      },
+                                                      {
+                                                          "heroId":  "00000000-0000-4000-8000-0000000b0002",
+                                                          "slotIndex":  1,
+                                                          "primaryClassId":  "class_ranger",
+                                                          "secondaryClassId":  null,
+                                                          "level":  1,
+                                                          "skillLoadout":  {
+                                                                               "active":  [
+                                                                                              "aimed_shot",
+                                                                                              ""
+                                                                                          ],
+                                                                               "passive":  [
+                                                                                               "hunters_focus",
+                                                                                               ""
+                                                                                           ]
+                                                                           }
+                                                      },
+                                                      {
+                                                          "heroId":  "00000000-0000-4000-8000-0000000b0003",
+                                                          "slotIndex":  2,
+                                                          "primaryClassId":  "class_arcanist",
+                                                          "secondaryClassId":  null,
+                                                          "level":  1,
+                                                          "skillLoadout":  {
+                                                                               "active":  [
+                                                                                              "firebolt",
+                                                                                              ""
+                                                                                          ],
+                                                                               "passive":  [
+                                                                                               "overload",
+                                                                                               ""
+                                                                                           ]
+                                                                           }
+                                                      }
+                                                  ],
+                                  "frozenStats":  [
+                                                      {
+                                                          "heroId":  "00000000-0000-4000-8000-0000000b0001",
+                                                          "maxHp":  40,
+                                                          "atk":  7,
+                                                          "def":  6,
+                                                          "spd":  8
+                                                      },
+                                                      {
+                                                          "heroId":  "00000000-0000-4000-8000-0000000b0002",
+                                                          "maxHp":  32,
+                                                          "atk":  9,
+                                                          "def":  4,
+                                                          "spd":  12
+                                                      },
+                                                      {
+                                                          "heroId":  "00000000-0000-4000-8000-0000000b0003",
+                                                          "maxHp":  28,
+                                                          "atk":  10,
+                                                          "def":  3,
+                                                          "spd":  9
+                                                      }
+                                                  ]
+                              }
+             },
+    "revision":  1
+}
