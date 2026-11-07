@@ -18,6 +18,7 @@ import { runMutation, type MutationResult } from "../mutation.js";
 import { AccountRepository } from "../repositories/accountRepository.js";
 import { BattleReportRepository } from "../repositories/battleReportRepository.js";
 import { BossClaimRepository } from "../repositories/bossClaimRepository.js";
+import { DungeonClearRecordRepository } from "../repositories/dungeonClearRecordRepository.js";
 import { DungeonRunRepository, type DungeonRunRow } from "../repositories/dungeonRunRepository.js";
 import { ExpeditionRepository } from "../repositories/expeditionRepository.js";
 import { HeroRepository } from "../repositories/heroRepository.js";
@@ -230,6 +231,13 @@ function applySettlement(
     outcome: batch.outcome === "in_progress" ? "none" : batch.outcome,
     status: batch.outcome === "in_progress" ? "active" : "none",
   });
+
+  // M3-05 addition section 9: persist the server-outcome clear fact Cinder
+  // Archive's catalog unlock check reads (idempotent — a second clear of an
+  // already-cleared dungeon inserts no duplicate).
+  if (batch.outcome === "cleared") {
+    new DungeonClearRecordRepository(db).recordClear(accountId, run.dungeonId!, createdAt);
+  }
 
   return {
     result: {

@@ -19,6 +19,15 @@ import {
   DebugSetHeroLevelRequestSchema,
   DebugGrantHeroXpRequestSchema,
   DebugGrantGoldRequestSchema,
+  HeroSpecializationPrimaryRequestSchema,
+  HeroLoadoutQueueRequestSchema,
+  HeroLoadoutCancelPendingRequestSchema,
+  ExpeditionFeedQuerySchema,
+  RespecPreviewRequestSchema,
+  RespecPrimaryRequestSchema,
+  SecondaryClassPreviewRequestSchema,
+  SeasonEnterRequestSchema,
+  SeasonWithdrawRequestSchema,
   type Account,
 } from "@banner-and-bounty/contracts";
 import { MAX_BODY_BYTES } from "@banner-and-bounty/contracts";
@@ -43,6 +52,20 @@ import { startDungeon, settleDungeon, stopDungeon } from "./services/dungeonServ
 import { settleExpedition, startExpedition, stopExpedition } from "./services/expeditionService.js";
 import { challengeBoss } from "./services/bossService.js";
 import { debugGrantGold, debugGrantHeroXp, debugSetHeroLevel } from "./services/debugService.js";
+import { getExpeditionFeed } from "./services/expeditionFeedService.js";
+import { queueHeroLoadoutChange, cancelPendingHeroLoadoutChange } from "./services/heroLoadoutV3.js";
+import { setPrimarySpecialization } from "./services/specializationService.js";
+import { getCodex } from "./services/codexService.js";
+import { previewRespecPrimary, respecPrimary, previewSecondaryClassSwitch } from "./services/respecService.js";
+import { listDungeonCatalog } from "./services/dungeonCatalogService.js";
+import {
+  enterSeason,
+  withdrawSeason,
+  getSeasonStandings,
+  getSeasonMatch,
+  getSeasonAccountState,
+  getTournamentBracket,
+} from "./services/competitionService.js";
 import { registerStaticClient } from "./http/staticClient.js";
 import { SESSION_COOKIE_NAME, parseCookies, serializeSessionCookie, serializeClearedSessionCookie } from "./http/cookies.js";
 
@@ -334,6 +357,97 @@ export function buildServer(options: BuildServerOptions = {}): FastifyInstance {
     const { reportId } = request.params as { reportId: string };
     const report = getOwnedReport(db, accountId, reportId);
     return { ok: true, data: { report } };
+  });
+
+  // M3-05 addition: deferred skill edits, expedition feed, specialization,
+  // respec/secondary preview, codex, dungeon catalog, season and tournament.
+  app.post("/hero/loadout/queue", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = queueHeroLoadoutChange(db, accountId, HeroLoadoutQueueRequestSchema.parse(request.body), clock.now().getTime());
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/hero/loadout/cancel-pending", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = cancelPendingHeroLoadoutChange(db, accountId, HeroLoadoutCancelPendingRequestSchema.parse(request.body), clock.now().getTime());
+    return { ok: true, data: result, revision };
+  });
+
+  app.get("/expedition/feed", async (request) => {
+    const accountId = requireSession(request);
+    const query = ExpeditionFeedQuerySchema.parse(request.query);
+    const data = getExpeditionFeed(db, accountId, query.afterSequence ?? 0, query.limit ?? 10);
+    return { ok: true, data };
+  });
+
+  app.post("/hero/specialization/primary", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = setPrimarySpecialization(db, accountId, HeroSpecializationPrimaryRequestSchema.parse(request.body));
+    return { ok: true, data: result, revision };
+  });
+
+  app.get("/codex", async (request) => {
+    requireSession(request);
+    return { ok: true, data: getCodex() };
+  });
+
+  app.post("/hero/respec-primary/preview", async (request) => {
+    const accountId = requireSession(request);
+    const data = previewRespecPrimary(db, accountId, RespecPreviewRequestSchema.parse(request.body));
+    return { ok: true, data };
+  });
+
+  app.post("/hero/respec-primary", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = respecPrimary(db, accountId, RespecPrimaryRequestSchema.parse(request.body), clock.now().getTime());
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/hero/secondary-class/preview", async (request) => {
+    const accountId = requireSession(request);
+    const data = previewSecondaryClassSwitch(db, accountId, SecondaryClassPreviewRequestSchema.parse(request.body));
+    return { ok: true, data };
+  });
+
+  app.get("/dungeons", async (request) => {
+    const accountId = requireSession(request);
+    return { ok: true, data: { dungeons: listDungeonCatalog(db, accountId) } };
+  });
+
+  app.post("/season/enter", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = enterSeason(db, accountId, SeasonEnterRequestSchema.parse(request.body), clock.now().getTime());
+    return { ok: true, data: result, revision };
+  });
+
+  app.post("/season/withdraw", async (request) => {
+    const accountId = requireSession(request);
+    const { result, revision } = withdrawSeason(db, accountId, SeasonWithdrawRequestSchema.parse(request.body), clock.now().getTime());
+    return { ok: true, data: result, revision };
+  });
+
+  app.get("/season/:seasonIndex/standings", async (request) => {
+    const { seasonIndex } = request.params as { seasonIndex: string };
+    const data = getSeasonStandings(db, Number(seasonIndex), clock.now().getTime());
+    return { ok: true, data };
+  });
+
+  app.get("/season/:seasonIndex/matches/:matchId", async (request) => {
+    const { seasonIndex, matchId } = request.params as { seasonIndex: string; matchId: string };
+    const data = getSeasonMatch(db, Number(seasonIndex), matchId, clock.now().getTime());
+    return { ok: true, data };
+  });
+
+  app.get("/season/account-state", async (request) => {
+    const accountId = requireSession(request);
+    const data = getSeasonAccountState(db, accountId, clock.now().getTime());
+    return { ok: true, data };
+  });
+
+  app.get("/tournament/:seasonIndex/bracket", async (request) => {
+    const { seasonIndex } = request.params as { seasonIndex: string };
+    const data = getTournamentBracket(db, Number(seasonIndex), clock.now().getTime());
+    return { ok: true, data: { bracket: data } };
   });
 
   registerStaticClient(app, options.webDistDir);

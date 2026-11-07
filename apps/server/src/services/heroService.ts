@@ -96,7 +96,18 @@ export function assignSecondaryClass(db: DatabaseSync, accountId: string, reques
         if (hero.secondaryClassId === secondaryClassId) {
           return { result: { hero: attachEffectiveStats(db, accountId, hero) }, changed: false };
         }
+        // M3-05 addition section 8 ("free secondary switching"): preserve
+        // each valid slotted skill in position; clear only those no longer
+        // in the resulting pool. No respec timestamp touch, no
+        // specialization reset (M1/M2 heroes have none yet).
+        const activePool = new Set(unlockedSkillPool(hero.primaryClassId, secondaryClassId, hero.level, "active"));
+        const passivePool = new Set(unlockedSkillPool(hero.primaryClassId, secondaryClassId, hero.level, "passive"));
+        const keep = (id: string, pool: Set<string>): string => (id !== "" && pool.has(id) ? id : "");
         heroes.setSecondaryClass(heroId, secondaryClassId);
+        heroes.setLoadout(heroId, {
+          active: [keep(hero.skillLoadout.active[0], activePool), keep(hero.skillLoadout.active[1], activePool)],
+          passive: [keep(hero.skillLoadout.passive[0], passivePool), keep(hero.skillLoadout.passive[1], passivePool)],
+        });
         return { result: { hero: attachEffectiveStats(db, accountId, heroes.findById(heroId)!) }, changed: true };
       },
     },
