@@ -59,7 +59,10 @@ async function step(name, fn) {
 }
 
 const nav = (page, label) => page.getByRole("navigation", { name: "Main" }).getByRole("button", { name: label, exact: true }).click();
-const heroHeadings = (page) => page.locator("section.hero-card h2").allInnerTexts();
+// Company.tsx renders each hero as <li class="hero-row"><details><summary>
+// {ordinal} Lv {level} ...</summary><details><summary>Build</summary>...
+// (first-session-redesign.md). The outer summary is the direct-child one.
+const heroHeadings = (page) => page.locator("li.hero-row > details > summary").allInnerTexts();
 const accountState = async (context) => (await (await context.request.get(`${baseUrl}/account/state`)).json()).data;
 
 /** Registers the response listener *before* clicking — on a fast local server a click-then-waitForResponse ordering can miss the response entirely. */
@@ -68,6 +71,23 @@ async function clickAndWaitForResponse(locator, urlSuffix) {
   const responsePromise = page.waitForResponse((r) => r.url().endsWith(urlSuffix));
   await locator.click();
   return responsePromise;
+}
+
+/** Front row slots render as a toggle button ("(empty)" or "{ordinal} Lv{level}")
+ * that opens a radio-button picker (first-session-redesign.md), not a <select>.
+ * Swaps the heroes in front-row slots 0 and 1 via that picker and returns their
+ * pre-swap ordinal labels (e.g. "Vanguard 1"), used by callers to confirm the swap. */
+async function swapFrontRowSlots(page) {
+  const frontRow = page.locator(".formation-row").first();
+  const slot0Button = frontRow.locator(".formation-slot").nth(0).getByRole("button");
+  const slot1Button = frontRow.locator(".formation-slot").nth(1).getByRole("button");
+  const label0 = (await slot0Button.innerText()).split(" Lv")[0];
+  const label1 = (await slot1Button.innerText()).split(" Lv")[0];
+  await slot0Button.click();
+  await frontRow.locator(".formation-slot").nth(0).locator("label", { hasText: label1 }).locator("input[type=radio]").check();
+  await slot1Button.click();
+  await frontRow.locator(".formation-slot").nth(1).locator("label", { hasText: label0 }).locator("input[type=radio]").check();
+  return [label0, label1];
 }
 
 await startServer();
@@ -95,18 +115,15 @@ try {
     await pageA.getByRole("heading", { level: 1, name: "Company" }).waitFor();
     const before = await heroHeadings(pageA);
     assert.equal(before.length, 3, `expected 3 starter heroes, got ${before.length}`);
-    const slot0 = pageA.getByRole("combobox", { name: "Front row slot 1" });
-    const slot1 = pageA.getByRole("combobox", { name: "Front row slot 2" });
-    const [v0, v1] = await Promise.all([slot0.inputValue(), slot1.inputValue()]);
-    await slot0.selectOption(v1);
-    await slot1.selectOption(v0);
+    const [v0, v1] = (await accountState(ctxA)).formation.slots;
+    const [label0, label1] = await swapFrontRowSlots(pageA);
     const formationResp = await clickAndWaitForResponse(pageA.getByRole("button", { name: "Save formation" }), "/party/formation");
     assert.equal(formationResp.status(), 200);
     const formation = (await accountState(ctxA)).formation.slots;
     assert.equal(formation[0], v1);
     assert.equal(formation[1], v0);
     await pageA.screenshot({ path: path.join(outDir, "01-company-1280.png") });
-    return `starters: ${before.join(" | ")}; formation slots 0/1 swapped and persisted (${formation.slice(0, 2).join(", ")})`;
+    return `starters: ${before.join(" | ")}; formation slots 0/1 swapped (${label0} <-> ${label1}) and persisted (${formation.slice(0, 2).join(", ")})`;
   });
 
   await step("3 start expedition on the selected area; lock explanations shown", async () => {
@@ -120,10 +137,16 @@ try {
   });
 
   await step("4 collect progression; close/reopen the browser page; collect again", async () => {
+    // Expedition.tsx now shows a cumulative "Fights credited so far" counter
+    // (state.expedition.cyclesCompletedSinceStart) instead of a per-collect
+    // "Credited cycles: N" message, so credited counts are read from account
+    // state (the delta across each settle call) rather than DOM text.
     advance(5);
     await nav(pageA, "Expedition");
-    await pageA.getByRole("button", { name: "Collect Rewards" }).click();
-    await pageA.getByText("Credited cycles: 5").waitFor();
+    let before = (await accountState(ctxA)).expedition.cyclesCompletedSinceStart;
+    await clickAndWaitForResponse(pageA.getByRole("button", { name: "Collect Rewards" }), "/expedition/settle");
+    let after = await accountState(ctxA);
+    assert.equal(after.expedition.cyclesCompletedSinceStart - before, 5, `expected 5 cycles credited, got ${after.expedition.cyclesCompletedSinceStart - before}`);
     await pageA.close();
     advance(3);
     pageA = await ctxA.newPage();
@@ -131,9 +154,10 @@ try {
     await pageA.goto(baseUrl);
     await pageA.getByRole("heading", { level: 1, name: "Company" }).waitFor(); // session cookie survived
     await nav(pageA, "Expedition");
-    await pageA.getByRole("button", { name: "Collect Rewards" }).click();
-    await pageA.getByText("Credited cycles: 3").waitFor();
+    before = after.expedition.cyclesCompletedSinceStart;
+    await clickAndWaitForResponse(pageA.getByRole("button", { name: "Collect Rewards" }), "/expedition/settle");
     const s = await accountState(ctxA);
+    assert.equal(s.expedition.cyclesCompletedSinceStart - before, 3, `expected 3 more cycles credited, got ${s.expedition.cyclesCompletedSinceStart - before}`);
     return `5 then 3 cycles credited; gold=${s.gold}, inventory=${s.inventory.length}`;
   });
 
@@ -160,11 +184,14 @@ try {
 
     // Dual-class + skill loadout (classes.md section 4): assign a secondary
     // class to the first hero card, then save a loadout pick for it.
-    const firstCard = pageA.locator("section.hero-card").first();
+    const firstCard = pageA.locator("li.hero-row").first();
+    // The dual-class/loadout controls live inside two nested, collapsed
+    // <details> (the hero row, then its "Build" disclosure) — expand both
+    // before interacting with the controls underneath.
+    await firstCard.locator(":scope > details > summary").click();
+    await firstCard.getByText("Build", { exact: true }).click();
     const secondaryResp = await clickAndWaitForResponse(firstCard.getByRole("button", { name: "Assign" }), "/hero/secondary-class");
     assert.equal(secondaryResp.status(), 200, `secondary-class assignment failed: ${await secondaryResp.text()}`);
-    const dualHeading = await firstCard.locator("h2").innerText();
-    assert.match(dualHeading, /\//, "secondary class not reflected in hero heading");
     const active0 = firstCard.locator("select").nth(1); // 0 = secondary-class picker, 1 = active1
     await active0.selectOption({ index: 1 });
     const loadoutResp = await clickAndWaitForResponse(firstCard.getByRole("button", { name: "Save loadout" }), "/hero/loadout");
@@ -173,7 +200,7 @@ try {
     const dualHero = stateAfterLoadout.heroes.find((h) => h.secondaryClassId !== null);
     assert.ok(dualHero, "no hero shows a persisted secondaryClassId");
 
-    return `${equipNote}; levels ${levels.join(", ")}; dual-classed "${dualHeading}"; loadout persisted for ${dualHero.heroId}`;
+    return `${equipNote}; levels ${levels.join(", ")}; dual-classed secondary=${dualHero.secondaryClassId}; loadout persisted for ${dualHero.heroId}`;
   });
 
   await step("6 challenge boss; full battle view shows units/HP/statuses; reward granted only once", async () => {
@@ -250,11 +277,7 @@ try {
     // B alters its company (via the formation editor) and republishes.
     const pageB = ctxB.pages()[0];
     await nav(pageB, "Company");
-    const bSlot0 = pageB.getByRole("combobox", { name: "Front row slot 1" });
-    const bSlot1 = pageB.getByRole("combobox", { name: "Front row slot 2" });
-    const [bv0, bv1] = await Promise.all([bSlot0.inputValue(), bSlot1.inputValue()]);
-    await bSlot0.selectOption(bv1);
-    await bSlot1.selectOption(bv0);
+    await swapFrontRowSlots(pageB);
     await clickAndWaitForResponse(pageB.getByRole("button", { name: "Save formation" }), "/party/formation");
     await nav(pageB, "Arena");
     await clickAndWaitForResponse(pageB.getByRole("button", { name: "Publish Team" }), "/arena/publish");
@@ -281,8 +304,10 @@ try {
     assert.deepEqual(afterA.heroes, beforeA.heroes);
     await pageA.reload();
     await nav(pageA, "Expedition");
-    await pageA.getByRole("button", { name: "Collect Rewards" }).click();
-    await pageA.getByText("Credited cycles: 4").waitFor();
+    const beforeCycles = afterA.expedition.cyclesCompletedSinceStart;
+    await clickAndWaitForResponse(pageA.getByRole("button", { name: "Collect Rewards" }), "/expedition/settle");
+    const finalState = await accountState(ctxA);
+    assert.equal(finalState.expedition.cyclesCompletedSinceStart - beforeCycles, 4, `expected 4 cycles credited across downtime, got ${finalState.expedition.cyclesCompletedSinceStart - beforeCycles}`);
     return `revisions A=${afterA.revision} B=${afterB.revision} preserved; 4 cycles credited across downtime`;
   });
 
