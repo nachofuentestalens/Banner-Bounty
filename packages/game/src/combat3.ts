@@ -892,6 +892,7 @@ function toUnitSummary(actor: ActorState): BattleUnitSummaryV2 {
     kind: actor.kind,
     classId: actor.primaryClassId,
     secondaryClassId: actor.secondaryClassId,
+    enemyId: actor.enemyId,
     slotIndex: actor.slotIndex,
     maxHp: actor.maxHp,
   };

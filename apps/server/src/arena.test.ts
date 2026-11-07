@@ -89,6 +89,18 @@ describe("arena: publish, list, challenge, and battle reports (M1-11)", () => {
     expect(typeof report.seed).toBe("string");
     expect(report.rulesVersion).toBe(1);
 
+    // Opponent (side B) units must show readable class names, not raw
+    // unitIds — same bug the Game Director/QA flagged in the combat
+    // replay/log (arena opponents are "enemy"-kind BattleUnits whose
+    // unitId is a stable heroId, unlike dungeon enemies).
+    const opponentUnits = report.participantsSnapshot.units.filter((u: { side: string }) => u.side === "B");
+    expect(opponentUnits).toHaveLength(3);
+    const expectedNames = ["Vanguard", "Ranger", "Arcanist"];
+    for (const unit of opponentUnits) {
+      expect(expectedNames).toContain(unit.name);
+      expect(unit.name).not.toBe(unit.unitId);
+    }
+
     // Challenging never mutates the opponent's (B's) live account: B's
     // revision reflects only B's own publish call (1), not A's challenge.
     const bState = await app.inject({ method: "GET", url: "/account/state", headers: { cookie: await selectSlot(app, "B") } });
