@@ -48,6 +48,15 @@ required path", dispatched by Producer task `2cf2e5db-6c44-47a7-8a2a-6e7c796fc74
 Historical verdicts below are preserved; the current G0 Economy disposition above controls the
 production gate. Full M2 acceptance is not granted by this update.
 
+### Superseded interim reassessment (task `750646bf-b613-4ff5-93eb-f33545a3f0d2`, 2026-11-06)
+
+A separate recovery task independently reassessed G0 on the same date and reached a draft REJECT
+disposition. That draft is superseded in substance by the G0 Economy re-disposition above, which
+reviewed fresher Economy evidence; no part of the draft REJECT is reinstated. Its one durable,
+non-superseded finding — that the dashboard refuses to resume an already-merged task, which is why
+this correction was delivered through new tasks instead — is preserved in
+[`reports/M3-02.md`](reports/M3-02.md#superseded-interim-reassessment-and-dashboard-recovery-capability-finding-task-750646bf-b613-4ff5-93eb-f33545a3f0d2-2026-11-06).
+
 ---
 # Prior release verdict: M2 acceptance withheld
 
