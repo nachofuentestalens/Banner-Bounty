@@ -125,3 +125,12 @@ Producer creates the real M3 task graph from the milestone's role/output/prerequ
 resolves native IDs before dispatch. Director reviews scope and evidence gates. Specification may
 proceed while M2 closes; production feature work requires the M2 closure verdict and plan review.
 Never use M2-30 as a created task's prerequisite; require its committed plan/report paths instead.
+
+### Current production gate (2026-11-07 reconciliation)
+
+The approved/integrated [M3-02 acceptance marker](reports/M3-02-accepted.md) satisfies the
+conditional production gate; M3-07 is approved and integrated. Earlier instructions to reopen
+merged M3-02 or hold M3-07 are superseded. Continue the existing graph, including M3-08's CTO
+review and all native dependency/usage gates. The [current verdict](release-verdict.md) retains
+M3-08's fresh/migrated progression evidence obligation, M3-11 independent verification,
+M3-12 acceptance limits and the open P2 checks. Full M2 acceptance remains withheld.
