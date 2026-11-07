@@ -109,6 +109,13 @@ export interface Hero {
   xp: number;
   skillLoadout: SkillLoadout;
   equipment: HeroEquipment;
+  // M3-05 addition (optional/additive: apps/web's existing Hero literals in
+  // rules.test.ts never set these; DB-level defaults supply them for every
+  // row). raceId defaults "race_vesper", primarySpecializationId/lastRespecAt
+  // default null.
+  raceId?: string;
+  primarySpecializationId?: string | null;
+  lastRespecAt?: string | null;
 }
 
 export type RarityId = "common" | "uncommon" | "rare" | "epic";
@@ -553,3 +560,225 @@ export const ArenaSnapshotsQuerySchema = z.object({
 export const boundedStringSchema = boundedString;
 export const boundedArraySchema = <T extends z.ZodTypeAny>(item: T, max = MAX_ARRAY_LENGTH) =>
   z.array(item).max(max);
+
+// ---------------------------------------------------------------------------
+// M3-05 addition: variable-duration settlement, deferred skills, respec,
+// dungeon catalog, codex, seasons and tournament (design/studio/contracts.md
+// "M3-05 addition"). New request schemas and response DTOs only; every
+// existing M1/M2 shape above is unchanged.
+// ---------------------------------------------------------------------------
+
+export const HeroSpecializationPrimaryRequestSchema = z.object({
+  ...MutationEnvelopeShape,
+  heroId: boundedString(64),
+  primarySpecializationId: z.union([boundedString(64), z.null()]),
+});
+export type HeroSpecializationPrimaryRequest = z.infer<typeof HeroSpecializationPrimaryRequestSchema>;
+
+const skillSlotSchemaV3 = z.union([boundedString(64), z.literal("")]);
+export const HeroLoadoutQueueRequestSchema = z.object({
+  ...MutationEnvelopeShape,
+  heroId: boundedString(64),
+  active: z.tuple([skillSlotSchemaV3, skillSlotSchemaV3]),
+  passive: z.tuple([skillSlotSchemaV3, skillSlotSchemaV3]),
+});
+export type HeroLoadoutQueueRequest = z.infer<typeof HeroLoadoutQueueRequestSchema>;
+
+export const HeroLoadoutCancelPendingRequestSchema = z.object({
+  ...MutationEnvelopeShape,
+  heroId: boundedString(64),
+});
+export type HeroLoadoutCancelPendingRequest = z.infer<typeof HeroLoadoutCancelPendingRequestSchema>;
+
+export const ExpeditionFeedQuerySchema = z.object({
+  afterSequence: z.coerce.number().int().min(0).optional(),
+  limit: z.coerce.number().int().min(1).max(10).optional(),
+});
+export type ExpeditionFeedQuery = z.infer<typeof ExpeditionFeedQuerySchema>;
+
+export const RespecPreviewRequestSchema = z.object({ heroId: boundedString(64) });
+export type RespecPreviewRequest = z.infer<typeof RespecPreviewRequestSchema>;
+
+export const RespecPrimaryRequestSchema = z.object({
+  ...MutationEnvelopeShape,
+  heroId: boundedString(64),
+  newPrimaryClassId: boundedString(64),
+  newSecondaryClassId: z.union([boundedString(64), z.null()]).optional(),
+});
+export type RespecPrimaryRequest = z.infer<typeof RespecPrimaryRequestSchema>;
+
+export const SecondaryClassPreviewRequestSchema = z.object({
+  heroId: boundedString(64),
+  candidateSecondaryClassId: boundedString(64),
+});
+export type SecondaryClassPreviewRequest = z.infer<typeof SecondaryClassPreviewRequestSchema>;
+
+export const SeasonEnterRequestSchema = z.object({
+  ...MutationEnvelopeShape,
+  heroIds: z.array(boundedString(64)).min(1).max(5).refine((ids) => new Set(ids).size === ids.length, {
+    message: "heroIds must be distinct",
+  }),
+});
+export type SeasonEnterRequest = z.infer<typeof SeasonEnterRequestSchema>;
+
+export const SeasonWithdrawRequestSchema = z.object({
+  ...MutationEnvelopeShape,
+  entryId: boundedString(64),
+});
+export type SeasonWithdrawRequest = z.infer<typeof SeasonWithdrawRequestSchema>;
+
+// --- Response DTOs (loosely typed where the shape is server-internal/read-only) ---
+
+export interface PendingSkillChangeViewDTO {
+  heroId: HeroId;
+  active: readonly [string, string];
+  passive: readonly [string, string];
+  boundaryOrdinal: number;
+  acceptedAt: string;
+  status: "pending" | "applied" | "discarded";
+  appliedAt: string | null;
+}
+
+export interface CreditedBattleDTO {
+  reportId: ReportId;
+  ordinal: number;
+  result: "win" | "loss" | "draw";
+  resolvedRounds: number;
+  nominalDurationMs: number;
+  rewards: { xp: number; gold: number; items: ItemInstance[] };
+}
+
+export interface PendingBattleViewDTO {
+  reportId: ReportId;
+  ordinal: number;
+  resolvedRounds: number;
+  nominalDurationMs: number;
+  result: "win" | "loss" | "draw";
+  events: BattleEventDTO[];
+  credited: false;
+}
+
+export interface SettlementResultV3DTO {
+  creditedBattles: CreditedBattleDTO[];
+  pendingBattle: PendingBattleViewDTO | null;
+  elapsedMs: number;
+  discardedMs: number;
+  checkpointAt: string;
+  rewards: { xp: number; gold: number; items: ItemInstance[] };
+  overflow: { convertedCount: number; convertedGold: number };
+}
+
+export type FeedEntryDTO =
+  | { kind: "battle"; reportId: ReportId; runId: string; ordinal: number; completionSequence: number; result: "win" | "loss" | "draw"; credited: boolean }
+  | {
+      kind: "aggregate";
+      aggregateId: string;
+      fromOrdinal: number;
+      toOrdinal: number;
+      fromSequence: number;
+      toSequence: number;
+      wins: number;
+      losses: number;
+      elapsedMs: number;
+      creditedMs: number;
+      discardedMs: number;
+      rewards: { xp: number; gold: number; items: ItemInstance[] };
+    };
+
+export interface ExpeditionFeedResponseDTO {
+  entries: FeedEntryDTO[];
+  nextCursor: number | null;
+  oldestAvailableSequence: number | null;
+  newestAvailableSequence: number | null;
+  missingRange: { from: number; to: number } | null;
+}
+
+export interface DungeonCatalogEntryDTO {
+  dungeonId: string;
+  rulesVersion: number;
+  locked: boolean;
+  lockReason: string | null;
+  clearRequirement: string | null;
+  floors: { floor: number; isBoss: boolean; rewardProfileRef: string }[];
+  timingSecondsPerFloor: 180;
+  partyValidation: { minHeroes: 1; maxHeroes: 5 };
+}
+
+export interface RespecPreviewResultDTO {
+  heroId: HeroId;
+  currentPrimaryClassId: string;
+  currentSecondaryClassId: string | null;
+  cost: { gold: number; scrap: number; sigil: number };
+  cooldownEligible: boolean;
+  nextEligibleAt: string | null;
+  revision: number;
+}
+
+export interface SecondaryClassPreviewResultDTO {
+  heroId: HeroId;
+  slotsToClear: { active: [boolean, boolean]; passive: [boolean, boolean] };
+  revision: number;
+}
+
+export interface SeasonEntryViewDTO {
+  entryId: string;
+  accountId: AccountId | null;
+  isFixture: boolean;
+  fixtureId: string | null;
+  seasonIndex: number;
+  enteredAt: string;
+  withdrawnAt: string | null;
+  optedIntoTournament: boolean;
+}
+
+export interface SeasonStandingRowDTO {
+  entryId: string;
+  points: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  rank: number;
+  isFixture: boolean;
+}
+
+export interface SeasonMatchViewDTO {
+  matchId: string;
+  seasonIndex: number;
+  entryAId: string;
+  entryBId: string;
+  leg: number;
+  resolvedAt: string | null;
+  result: "A" | "B" | "draw" | null;
+  reportId: ReportId | null;
+  isTournament: boolean;
+  round: "regular" | "semi1" | "semi2" | "final";
+  advancementReason: "decisive" | "hp_tiebreak" | "survivor_tiebreak" | "seed_tiebreak" | "bye" | null;
+  compared: { aHp: number; bHp: number; aSurvivors: number; bSurvivors: number } | null;
+}
+
+export interface SeasonStandingsResponseDTO {
+  seasonIndex: number;
+  startAt: string;
+  endAt: string;
+  status: "entry_open" | "locked" | "in_progress" | "archived";
+  standings: SeasonStandingRowDTO[] | null;
+  inProgressStandings: SeasonStandingRowDTO[] | null;
+}
+
+export interface SeasonAccountStateDTO {
+  seasonIndex: number;
+  entry: SeasonEntryViewDTO | null;
+  remainingEligibleMatches: number;
+  canWithdraw: boolean;
+}
+
+export interface TournamentBracketViewDTO {
+  seasonIndex: number;
+  seatEntryIds: [string | null, string | null, string | null, string | null];
+  semifinal1MatchId: string;
+  semifinal2MatchId: string;
+  finalMatchId: string | null;
+  byeReasons: Record<string, string>;
+  championEntryId: string | null;
+  status: "pending" | "in_progress" | "complete" | "no_champion";
+}

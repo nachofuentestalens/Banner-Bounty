@@ -243,6 +243,159 @@ const MIGRATIONS: Migration[] = [
       for (const row of accountIds) insertDungeonRun.run(row.accountId);
     },
   },
+  {
+    // M3-05/M3-08: ServerClock high-water mark; race/primary-specialization/
+    // respec-cooldown hero fields (contracts.md M3-05 addition section 13
+    // steps 1-2); variable-duration expedition state (section 2's Expedition
+    // changes, minus the `cyclesCompleted`->`battlesCompleted` rename, kept
+    // as the same column per this task's bounded-rename decision, see
+    // reports/engineering/M3-08.md); additive BattleReport columns for the
+    // reveal/credit split (section 2); and every new M3 entity (section 3).
+    // Every step below is guarded by ALTER TABLE ADD COLUMN / CREATE TABLE,
+    // which SQLite only runs once per column/table — idempotent by the
+    // existing `schema_version`-gated migration runner, matching
+    // architecture.md's "restart mid-migration either resumes cleanly or
+    // sees the fully-applied version" requirement (no separate guard needed
+    // beyond the runner's own applied-version tracking).
+    version: 5,
+    sql: `
+      CREATE TABLE server_clock (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        highWaterMs INTEGER NOT NULL
+      );
+      INSERT INTO server_clock (id, highWaterMs) VALUES (1, 0);
+
+      ALTER TABLE accounts ADD COLUMN nextCompletionSequence INTEGER NOT NULL DEFAULT 1;
+
+      ALTER TABLE heroes ADD COLUMN raceId TEXT NOT NULL DEFAULT 'race_vesper';
+      ALTER TABLE heroes ADD COLUMN primarySpecializationId TEXT;
+      ALTER TABLE heroes ADD COLUMN lastRespecAt TEXT;
+
+      ALTER TABLE expeditions ADD COLUMN msPerRound INTEGER;
+      ALTER TABLE expeditions ADD COLUMN pendingBattleReportId TEXT;
+      ALTER TABLE expeditions ADD COLUMN nextOrdinal INTEGER NOT NULL DEFAULT 1;
+      ALTER TABLE expeditions ADD COLUMN runId TEXT;
+
+      ALTER TABLE battle_reports ADD COLUMN ordinal INTEGER;
+      ALTER TABLE battle_reports ADD COLUMN runId TEXT;
+      ALTER TABLE battle_reports ADD COLUMN completionSequence INTEGER;
+      ALTER TABLE battle_reports ADD COLUMN nominalDurationMs INTEGER;
+      ALTER TABLE battle_reports ADD COLUMN creditedAt TEXT;
+      ALTER TABLE battle_reports ADD COLUMN rewards TEXT;
+      CREATE INDEX idx_battle_reports_feed ON battle_reports(accountId, completionSequence);
+      CREATE INDEX idx_battle_reports_run ON battle_reports(runId, ordinal);
+
+      CREATE TABLE settlement_aggregates (
+        aggregateId TEXT PRIMARY KEY,
+        accountId TEXT NOT NULL REFERENCES accounts(accountId),
+        runId TEXT NOT NULL,
+        fromOrdinal INTEGER NOT NULL,
+        toOrdinal INTEGER NOT NULL,
+        fromSequence INTEGER NOT NULL,
+        toSequence INTEGER NOT NULL,
+        wins INTEGER NOT NULL,
+        losses INTEGER NOT NULL,
+        elapsedMs INTEGER NOT NULL,
+        creditedMs INTEGER NOT NULL,
+        discardedMs INTEGER NOT NULL,
+        rewards TEXT NOT NULL,
+        createdAt TEXT NOT NULL
+      );
+      CREATE INDEX idx_settlement_aggregates_account ON settlement_aggregates(accountId, createdAt);
+
+      CREATE TABLE pending_skill_changes (
+        accountId TEXT NOT NULL REFERENCES accounts(accountId),
+        heroId TEXT NOT NULL REFERENCES heroes(heroId),
+        requestId TEXT NOT NULL,
+        acceptedAt TEXT NOT NULL,
+        boundaryOrdinal INTEGER NOT NULL,
+        runId TEXT NOT NULL,
+        active TEXT NOT NULL,
+        passive TEXT NOT NULL,
+        status TEXT NOT NULL CHECK (status IN ('pending', 'applied', 'discarded')),
+        appliedAt TEXT,
+        PRIMARY KEY (accountId, heroId, requestId)
+      );
+      CREATE INDEX idx_pending_skill_changes_hero ON pending_skill_changes(accountId, heroId, status);
+
+      CREATE TABLE dungeon_clear_records (
+        accountId TEXT NOT NULL REFERENCES accounts(accountId),
+        dungeonId TEXT NOT NULL,
+        clearedAt TEXT NOT NULL,
+        PRIMARY KEY (accountId, dungeonId)
+      );
+
+      CREATE TABLE competition_epoch (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        epochMs INTEGER NOT NULL
+      );
+
+      CREATE TABLE season_entries (
+        entryId TEXT PRIMARY KEY,
+        accountId TEXT REFERENCES accounts(accountId),
+        isFixture INTEGER NOT NULL,
+        fixtureId TEXT,
+        seasonIndex INTEGER NOT NULL,
+        snapshot TEXT NOT NULL,
+        enteredAt TEXT NOT NULL,
+        withdrawnAt TEXT,
+        optedIntoTournament INTEGER NOT NULL
+      );
+      CREATE INDEX idx_season_entries_season ON season_entries(seasonIndex);
+      CREATE INDEX idx_season_entries_account ON season_entries(accountId, seasonIndex);
+
+      CREATE TABLE season_matches (
+        matchId TEXT PRIMARY KEY,
+        seasonIndex INTEGER NOT NULL,
+        entryAId TEXT NOT NULL,
+        entryBId TEXT NOT NULL,
+        leg INTEGER NOT NULL,
+        seed INTEGER NOT NULL,
+        resolvedAt TEXT,
+        reportId TEXT,
+        reportJson TEXT,
+        result TEXT,
+        isTournament INTEGER NOT NULL DEFAULT 0,
+        round TEXT NOT NULL DEFAULT 'regular',
+        advancementReason TEXT,
+        comparedJson TEXT
+      );
+      CREATE INDEX idx_season_matches_season ON season_matches(seasonIndex);
+
+      CREATE TABLE season_archives (
+        seasonIndex INTEGER PRIMARY KEY,
+        standings TEXT NOT NULL,
+        titleEntryId TEXT,
+        archivedAt TEXT NOT NULL
+      );
+
+      CREATE TABLE tournament_brackets (
+        seasonIndex INTEGER PRIMARY KEY,
+        seatEntryIds TEXT NOT NULL,
+        semifinal1MatchId TEXT NOT NULL,
+        semifinal2MatchId TEXT NOT NULL,
+        finalMatchId TEXT,
+        byeReasons TEXT NOT NULL DEFAULT '{}',
+        championEntryId TEXT,
+        status TEXT NOT NULL DEFAULT 'pending',
+        createdAt TEXT NOT NULL
+      );
+    `,
+    migrate: (db) => {
+      // Section 13 step 2: idempotent defaults are already expressed as SQL
+      // column defaults above (race_vesper / NULL / NULL), applied to every
+      // existing row by ALTER TABLE ... ADD COLUMN ... DEFAULT. No JS
+      // backfill is needed for heroes.
+      //
+      // Section 13 step 6: DungeonClearRecord backfill. This pre-M3 schema
+      // never tracked a separate "dungeon cleared" fact (DungeonRun.outcome
+      // is overwritten by the next run, not retained history), so there is
+      // no verifiable signal to copy; per m3-systems.md section 7 and
+      // contracts.md's explicit instruction, accounts are left
+      // not-yet-cleared rather than inventing a clear fact that was never
+      // actually persisted. Nothing to do here.
+    },
+  },
 ];
 
 function schemaVersionTableExists(db: DatabaseSync): boolean {

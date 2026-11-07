@@ -10,6 +10,7 @@ import {
   createRngState,
   simulateExpeditionCyclesV2,
 } from "@banner-and-bounty/game";
+import { M3_RULES } from "@banner-and-bounty/content";
 import type { Clock } from "../clock.js";
 import { AppError } from "../errors.js";
 import { presentBattle } from "./battlePresentation.js";
@@ -19,14 +20,17 @@ import { DungeonRunRepository } from "../repositories/dungeonRunRepository.js";
 import { ExpeditionRepository, type ExpeditionRow } from "../repositories/expeditionRepository.js";
 import { HeroRepository } from "../repositories/heroRepository.js";
 import { ItemRepository } from "../repositories/itemRepository.js";
-import { CURRENT_RULES_VERSION } from "../rulesVersion.js";
+import { PendingSkillChangeRepository } from "../repositories/pendingSkillChangeRepository.js";
+import { ServerClockRepository } from "../repositories/serverClockRepository.js";
+import { CURRENT_RULES_VERSION, EXPEDITION_RULES_VERSION } from "../rulesVersion.js";
 import { grantRewards, loadLiveParty, toFrozenMembers } from "./partyLoadout.js";
+import { settleWalkV3 } from "./expeditionV3.js";
 
 type ExpeditionView = ExpeditionViewDTO;
 type SettlementResult = SettlementResultDTO;
 
 /** areaId -> content enemyId roster. Not a packages/content field (AREAS only carries rewardProfileId); this is apps/server's own lookup, per contracts.md M2-25's "apps/server (lookups)" package-boundary note. */
-const AREA_ENEMY_IDS: Record<string, readonly string[]> = {
+export const AREA_ENEMY_IDS: Record<string, readonly string[]> = {
   area_old_road: OLD_ROAD_ENEMIES.map((e) => e.enemyId),
   area_sunken_aqueduct: SUNKEN_AQUEDUCT_ENEMIES.map((e) => e.enemyId),
 };
@@ -77,11 +81,23 @@ interface SettlementPlan {
   batch: CycleBatchResultV2 | null;
 }
 
-function requireSettleableExpedition(db: DatabaseSync, accountId: string): ExpeditionRow {
+/**
+ * Status-only check; rulesVersion dispatch (legacy fixed-60,000ms vs
+ * EXPEDITION_RULES_VERSION's variable-duration walk) happens in the public
+ * settle/stop functions below, per contracts.md M3-05 addition section 4's
+ * "keep the old algorithm for the old version, not reject it" reading of
+ * the pre-existing unsupported_rules_version guard.
+ */
+function requireActiveExpedition(db: DatabaseSync, accountId: string): ExpeditionRow {
   const expedition = new ExpeditionRepository(db).find(accountId);
   if (!expedition || expedition.status !== "active") {
     throw new AppError("validation", "there is no active expedition to settle", { reason: "no_active_expedition" });
   }
+  return expedition;
+}
+
+function requireSettleableExpedition(db: DatabaseSync, accountId: string): ExpeditionRow {
+  const expedition = requireActiveExpedition(db, accountId);
   if (expedition.rulesVersion !== CURRENT_RULES_VERSION) {
     throw new AppError(
       "validation",
@@ -245,19 +261,27 @@ export function startExpedition(
       },
       apply: () => {
         const frozenLoadout = toFrozenMembers(db, loadLiveParty(db, accountId));
-        const startedAt = clock.now().toISOString();
+        // M3-05 addition section 1: every persisted timestamp uses the
+        // monotonic high-water clock, never raw clock.now() directly.
+        const effectiveNowMs = new ServerClockRepository(db).advance(clock.now().getTime());
+        const startedAt = new Date(effectiveNowMs).toISOString();
         const areaId = new AccountRepository(db).getSelectedAreaId(accountId);
         const rewardSeed = expeditionSeed(accountId, startedAt);
         const combatSeed = expeditionCombatSeed(accountId, startedAt);
+        const runId = crypto.randomUUID();
         expeditions.start({
           accountId,
           areaId,
           startedAt,
           checkpointAt: startedAt,
           frozenLoadout,
-          rulesVersion: CURRENT_RULES_VERSION,
+          rulesVersion: EXPEDITION_RULES_VERSION,
           seed: combatSeed,
           rngState: createRngState(rewardSeed),
+          msPerRound: M3_RULES.msPerRound,
+          pendingBattleReportId: null,
+          nextOrdinal: 1,
+          runId,
         });
         return { result: { expedition: toExpeditionView(expeditions.find(accountId)!) }, changed: true };
       },
@@ -265,12 +289,18 @@ export function startExpedition(
   );
 }
 
+/** Dispatches on the *current* expedition's rulesVersion; both branches share the command name/idempotency scope. */
 export function settleExpedition(
   db: DatabaseSync,
   accountId: string,
   request: NoPayloadMutationRequest,
   clock: Clock,
-): MutationResult<SettlementResult> {
+): MutationResult<SettlementResult | import("@banner-and-bounty/contracts").SettlementResultV3DTO> {
+  const existing = new ExpeditionRepository(db).find(accountId);
+  if (existing?.status === "active" && existing.rulesVersion === EXPEDITION_RULES_VERSION) {
+    return settleExpeditionV3(db, accountId, request, clock);
+  }
+
   const now = clock.now();
   const precomputed = tryPlan(db, accountId, now.getTime());
   return runMutation(
@@ -291,12 +321,47 @@ export function settleExpedition(
   );
 }
 
+function settleExpeditionV3(
+  db: DatabaseSync,
+  accountId: string,
+  request: NoPayloadMutationRequest,
+  clock: Clock,
+): MutationResult<import("@banner-and-bounty/contracts").SettlementResultV3DTO> {
+  return runMutation(
+    db,
+    {
+      accountId,
+      command: "expedition/settle",
+      requestId: request.requestId,
+      expectedRevision: request.expectedRevision,
+      fingerprintPayload: {},
+    },
+    {
+      precondition: () => {
+        requireActiveExpedition(db, accountId);
+      },
+      apply: () => {
+        const expedition = requireActiveExpedition(db, accountId);
+        const effectiveNowMs = new ServerClockRepository(db).advance(clock.now().getTime());
+        const nowIso = new Date(effectiveNowMs).toISOString();
+        const { dto, changed } = settleWalkV3(db, accountId, expedition, effectiveNowMs, nowIso);
+        return { result: dto, changed };
+      },
+    },
+  );
+}
+
 export function stopExpedition(
   db: DatabaseSync,
   accountId: string,
   request: NoPayloadMutationRequest,
   clock: Clock,
-): MutationResult<{ finalSettlement: SettlementResult; expedition: ExpeditionView }> {
+): MutationResult<{ finalSettlement: SettlementResult; expedition: ExpeditionView } | { finalSettlement: import("@banner-and-bounty/contracts").SettlementResultV3DTO; expedition: ExpeditionView; discardedPending: unknown[] }> {
+  const existing = new ExpeditionRepository(db).find(accountId);
+  if (existing?.status === "active" && existing.rulesVersion === EXPEDITION_RULES_VERSION) {
+    return stopExpeditionV3(db, accountId, request, clock);
+  }
+
   const expeditions = new ExpeditionRepository(db);
   const now = clock.now();
   const precomputed = tryPlan(db, accountId, now.getTime());
@@ -317,6 +382,39 @@ export function stopExpedition(
         const { result: finalSettlement } = applySettlement(db, accountId, precomputed, now.getTime(), now.toISOString());
         expeditions.stop(accountId);
         return { result: { finalSettlement, expedition: toExpeditionView(expeditions.find(accountId)!) }, changed: true };
+      },
+    },
+  );
+}
+
+function stopExpeditionV3(
+  db: DatabaseSync,
+  accountId: string,
+  request: NoPayloadMutationRequest,
+  clock: Clock,
+): MutationResult<{ finalSettlement: import("@banner-and-bounty/contracts").SettlementResultV3DTO; expedition: ExpeditionView; discardedPending: unknown[] }> {
+  const expeditions = new ExpeditionRepository(db);
+  return runMutation(
+    db,
+    {
+      accountId,
+      command: "expedition/stop",
+      requestId: request.requestId,
+      expectedRevision: request.expectedRevision,
+      fingerprintPayload: {},
+    },
+    {
+      precondition: () => {
+        requireActiveExpedition(db, accountId);
+      },
+      apply: () => {
+        const expedition = requireActiveExpedition(db, accountId);
+        const effectiveNowMs = new ServerClockRepository(db).advance(clock.now().getTime());
+        const nowIso = new Date(effectiveNowMs).toISOString();
+        const { dto: finalSettlement } = settleWalkV3(db, accountId, expedition, effectiveNowMs, nowIso);
+        const discardedPending = new PendingSkillChangeRepository(db).discardAllPendingForRun(accountId, expedition.runId!);
+        expeditions.stop(accountId);
+        return { result: { finalSettlement, expedition: toExpeditionView(expeditions.find(accountId)!), discardedPending }, changed: true };
       },
     },
   );
