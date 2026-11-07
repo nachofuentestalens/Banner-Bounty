@@ -16,6 +16,7 @@ export class ContentValidationError extends Error {
 // (re-exported below) since M1's specialization-era shape has no room for a
 // class without exactly 2 specializations.
 export type ClassId = "class_vanguard" | "class_ranger" | "class_arcanist" | "class_cleric" | "class_rogue" | "class_herald";
+export * from "./v3/index.js";
 
 export type SpecializationId =
   | "spec_guardian"
