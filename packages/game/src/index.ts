@@ -24,5 +24,6 @@ export * from "./dungeon3.js";
 export * from "./settlement3.js";
 export * from "./loadout3.js";
 export * from "./competition3.js";
+export * from "./codex3.js";
 
 export const gamePackageVersion = "0.2.0" as const;
