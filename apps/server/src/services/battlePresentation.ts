@@ -21,8 +21,10 @@ ENEMY_DISPLAY[DEPTHS_BROODLING_STATS.enemyId] = DEPTHS_BROODLING_STATS.display;
  * classes/templates) — same precedent M1's BattleResultPanel already used
  * (`label(unit.role)` on the classId). A unit's `name` is its primary class's
  * display name for a hero, or the content display name for an enemy/boss
- * (stripping the `#slotIndex` suffix encounters2.ts appends to make enemy IDs
- * unique within a battle).
+ * using `unit.enemyId` (not `unit.unitId`, which for arena opponents is a
+ * stable heroId with no enemy encoding — see arenaService.ts's
+ * `snapshotToCombatants`), stripping the `#slotIndex` suffix encounters2.ts
+ * appends to make dungeon enemy IDs unique within a battle.
  */
 function unitDisplayName(unit: BattleUnitSummaryV2): string {
   if (unit.kind === "hero") {
@@ -35,7 +37,15 @@ function unitDisplayName(unit: BattleUnitSummaryV2): string {
       return getClassV3(unit.classId!).display;
     }
   }
-  const enemyId = unit.unitId.split("#")[0]!;
+  const enemyId = (unit.enemyId ?? unit.unitId).split("#")[0]!;
+  const arenaClassId = enemyId.startsWith("arena_") ? enemyId.slice("arena_".length) : null;
+  if (arenaClassId) {
+    try {
+      return getClassBaseStatsV2(arenaClassId).display;
+    } catch {
+      return getClassV3(arenaClassId).display;
+    }
+  }
   return ENEMY_DISPLAY[enemyId] ?? enemyId;
 }
 
