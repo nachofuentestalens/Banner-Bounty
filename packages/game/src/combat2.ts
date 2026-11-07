@@ -84,6 +84,8 @@ export interface BattleUnitSummaryV2 {
   readonly kind: "hero" | "enemy";
   readonly classId: string | null;
   readonly secondaryClassId: string | null;
+  /** Enemy-kind only; distinct from unitId since arena opponents use a stable heroId as unitId (contracts.md). */
+  readonly enemyId: string | null;
   readonly slotIndex: number;
   readonly maxHp: number;
 }
@@ -861,6 +863,7 @@ function toUnitSummary(actor: ActorState): BattleUnitSummaryV2 {
     kind: actor.kind,
     classId: actor.primaryClassId,
     secondaryClassId: actor.secondaryClassId,
+    enemyId: actor.enemyId,
     slotIndex: actor.slotIndex,
     maxHp: actor.maxHp,
   };
