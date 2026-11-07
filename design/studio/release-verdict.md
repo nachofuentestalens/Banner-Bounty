@@ -25,17 +25,17 @@ The other G0 dispositions and M3 plan-review PASS are unchanged. G0 is condition
 for production sequencing. Existing P2 enemy/opponent identification and literal solo-improvement
 gaps remain recorded and unwaived; this decision does not certify full M2 acceptance or enjoyment.
 
-**M3-07 may proceed under this verdict after integration and normal prerequisite checks.**
-However, its live required path `design/studio/reports/M3-02-accepted.md` is absent from this
-baseline: the existing gate/Producer workflow must reconcile that marker hold before execution.
-Its `in_progress` stage alone does not establish readiness. **M3-08 may proceed after its
+**The M3-07 acceptance-marker hold is resolved (verified 2026-11-07).**
+[The marker](reports/M3-02-accepted.md), task `5b919139-a70e-445d-b9d8-223b34657cdf`,
+is approved and integrated, and M3-07 is also approved and integrated. The marker permits
+production sequencing under conditional acceptance only. **M3-08 may proceed after its
 M3-07/M3-05 prerequisites, carrying the explicit server-evidence obligation; M3-09 may proceed
 after its M3-08/M3-06 prerequisites.** All native dependencies and committed-input requirements
 still apply. No task was started or dependency bypassed by this review.
 
-### Marker-hold reconciliation (2026-11-06, Producer, task `2cf2e5db-6c44-47a7-8a2a-6e7c796fc74e`)
+### Historical marker-hold reconciliation (2026-11-06, Producer, task `2cf2e5db-6c44-47a7-8a2a-6e7c796fc74e`)
 
-As of this update, no task exists that authors `design/studio/reports/M3-02-accepted.md`.
+At the time of this historical update, no task existed to author `design/studio/reports/M3-02-accepted.md`.
 The two tasks this gate rests on are already approved and distinct, not duplicated by anything
 below: original M3-02 review `5dc6371a-c0a0-4393-9404-4497720246f4` and the G0 Economy
 re-disposition `9b78d00a-504d-4b20-8b9e-bc1e51545679`. This Producer task dispatches a new
@@ -49,6 +49,12 @@ Historical verdicts below are preserved; the current G0 Economy disposition abov
 production gate. Full M2 acceptance is not granted by this update.
 
 ### Superseded interim reassessment (task `750646bf-b613-4ff5-93eb-f33545a3f0d2`, 2026-11-06)
+
+Its continuation demanding that merged M3-02 reopen and M3-07 remain held is obsolete.
+Do not execute that handoff or merge its draft REJECT over this conditional disposition.
+The [recovery reconciliation report](reports/recovery-f156da76.md) records the supported-control
+results and any remaining dashboard limitation. M3-08's existing CTO review remains required;
+neither task closure nor this reconciliation supplies its deferred evidence.
 
 A separate recovery task independently reassessed G0 on the same date and reached a draft REJECT
 disposition. That draft is superseded in substance by the G0 Economy re-disposition above, which
