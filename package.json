@@ -19,6 +19,8 @@
     "validate": "npm run typecheck && npm run test && npm run build",
     "test:e2e": "node scripts/not-implemented.mjs test:e2e \"owned by tests/e2e (QA), not yet implemented\"",
     "simulate": "node scripts/simulate.mjs",
+    "simulate:v3-tactical": "node scripts/simulate-v3-tactical.mjs",
+    "simulate:v3-catchup": "node scripts/simulate-v3-catchup.mjs",
     "start": "node apps/server/dist/main.js",
     "save:path": "node scripts/save.mjs path",
     "save:backup": "node scripts/save.mjs backup",

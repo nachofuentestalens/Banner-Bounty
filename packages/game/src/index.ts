@@ -20,5 +20,9 @@ export * from "./expedition2.js";
 export * from "./builds3.js";
 export * from "./combat3.js";
 export * from "./encounters3.js";
+export * from "./dungeon3.js";
+export * from "./settlement3.js";
+export * from "./loadout3.js";
+export * from "./competition3.js";
 
 export const gamePackageVersion = "0.2.0" as const;
