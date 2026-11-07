@@ -29,7 +29,7 @@ describe("migrations", () => {
     const db = openDatabase(":memory:");
     expect(currentSchemaVersion(db)).toBe(0);
     runMigrations(db);
-    expect(currentSchemaVersion(db)).toBe(4);
+    expect(currentSchemaVersion(db)).toBe(5);
     db.close();
   });
 
@@ -38,7 +38,7 @@ describe("migrations", () => {
     runMigrations(db);
     runMigrations(db);
     const rows = db.prepare("SELECT * FROM schema_version").all();
-    expect(rows).toHaveLength(4);
+    expect(rows).toHaveLength(5);
     db.close();
   });
 
@@ -74,7 +74,7 @@ describe("migrations", () => {
 
     const second = openDatabase(dbPath);
     runMigrations(second); // no-op; must not fail or re-create tables
-    expect(currentSchemaVersion(second)).toBe(4);
+    expect(currentSchemaVersion(second)).toBe(5);
     const accountIdAfter = new AccountRepository(second).findBySlot("A")?.accountId;
     expect(accountIdAfter).toBe(accountIdBefore);
     second.close();
@@ -103,7 +103,7 @@ describe("migrations", () => {
 
     const v4 = openDatabase(dbPath);
     runMigrations(v4);
-    expect(currentSchemaVersion(v4)).toBe(4);
+    expect(currentSchemaVersion(v4)).toBe(5);
 
     const hero = v4.prepare("SELECT primaryClassId, secondaryClassId, skillLoadout FROM heroes WHERE heroId = 'h1'").get() as {
       primaryClassId: string;
@@ -138,5 +138,58 @@ describe("migrations", () => {
     expect(account).toEqual({ selectedAreaId: "area_old_road", materialScrap: 0, materialSigil: 0, materialCore: 0 });
 
     v4.close();
+  });
+
+  // design/studio/contracts.md M3-05 addition section 13 (migration
+  // procedure): ServerClock starts at 0, every existing hero gets
+  // race_vesper/null specialization/null (cooldown-eligible) respec
+  // timestamp, and an active pre-M3 expedition keeps its old rulesVersion.
+  it("applies the M3-05 migration (version 5): ServerClock row and hero race/specialization/respec defaults", () => {
+    const dbPath = tempDbPath("m305-migrate");
+    openedPaths.push(dbPath);
+
+    const v4 = openDatabase(dbPath);
+    runMigrations(v4, 4);
+    v4.prepare("INSERT INTO accounts (accountId, displayName, createdAt, slot, revision, gold) VALUES ('acc', 'Pre-M3 Save', 't', 'A', 3, 10)").run();
+    v4.prepare(
+      "INSERT INTO heroes (heroId, accountId, primaryClassId, level, xp, skillLoadout) VALUES ('h1', 'acc', 'class_ranger', 5, 10, '{\"active\":[\"aimed_shot\",\"\"],\"passive\":[\"\",\"\"]}')",
+    ).run();
+    v4.prepare(
+      "INSERT INTO expeditions (accountId, status, startedAt, checkpointAt, frozenLoadout, rulesVersion, seed, rngState, cyclesCompleted) VALUES ('acc', 'active', 't', 't', '[]', 1, 1, 1, 2)",
+    ).run();
+    expect(currentSchemaVersion(v4)).toBe(4);
+    v4.close();
+
+    const v5 = openDatabase(dbPath);
+    runMigrations(v5);
+    expect(currentSchemaVersion(v5)).toBe(5);
+
+    const clockRow = v5.prepare("SELECT highWaterMs FROM server_clock WHERE id = 1").get();
+    expect(clockRow).toEqual({ highWaterMs: 0 });
+
+    const hero = v5.prepare("SELECT raceId, primarySpecializationId, lastRespecAt FROM heroes WHERE heroId = 'h1'").get();
+    expect(hero).toEqual({ raceId: "race_vesper", primarySpecializationId: null, lastRespecAt: null });
+
+    // An expedition already active at migration time keeps its pre-M3
+    // rulesVersion and gains no msPerRound/pendingBattleReportId until it
+    // next starts fresh (section 13 step 4); nextOrdinal still defaults to 1
+    // (a harmless, unread default for a row still on the legacy algorithm).
+    const expedition = v5.prepare("SELECT rulesVersion, msPerRound, pendingBattleReportId FROM expeditions WHERE accountId = 'acc'").get();
+    expect(expedition).toEqual({ rulesVersion: 1, msPerRound: null, pendingBattleReportId: null });
+
+    // Idempotent restart: re-running migrations on the already-migrated file
+    // must not fail, duplicate the ServerClock row or re-touch hero defaults.
+    runMigrations(v5);
+    expect(v5.prepare("SELECT COUNT(*) AS n FROM server_clock").get()).toEqual({ n: 1 });
+    expect(v5.prepare("SELECT raceId FROM heroes WHERE heroId = 'h1'").get()).toEqual({ raceId: "race_vesper" });
+    v5.close();
+
+    // Reopen (simulated restart): a fresh connection to the same file sees
+    // the identical migrated state, no re-application, no data loss.
+    const reopened = openDatabase(dbPath);
+    expect(currentSchemaVersion(reopened)).toBe(5);
+    expect(reopened.prepare("SELECT gold, revision FROM accounts WHERE accountId = 'acc'").get()).toEqual({ gold: 10, revision: 3 });
+    expect(reopened.prepare("SELECT level, xp FROM heroes WHERE heroId = 'h1'").get()).toEqual({ level: 5, xp: 10 });
+    reopened.close();
   });
 });

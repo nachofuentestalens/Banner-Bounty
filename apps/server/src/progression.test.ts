@@ -9,6 +9,7 @@ import { FixedClock } from "./clock.js";
 import { openDatabase } from "./db/connection.js";
 import { SEED_ACCOUNT_A_ID, SEED_ACCOUNT_B_ID, starterHeroIds } from "./db/seed.js";
 import { ItemRepository } from "./repositories/itemRepository.js";
+import { CURRENT_RULES_VERSION, EXPEDITION_RULES_VERSION } from "./rulesVersion.js";
 
 // M1-08 acceptance fixtures: injected FixedClock, isolated in-memory or
 // temp-file databases, real HTTP routes via app.inject.
@@ -91,17 +92,36 @@ function rewardSummary(state: any) {
   };
 }
 
-async function startedHarness(options: { db?: DatabaseSync; clock?: FixedClock } = {}) {
+/**
+ * M3-05 addition: `/expedition/start` now freezes `EXPEDITION_RULES_VERSION`
+ * (variable-duration combat v3) for every fresh start. This whole test file
+ * predates M3 and specifically exercises the still-supported legacy
+ * fixed-60,000ms algorithm's worked-example/idempotency/overflow invariants
+ * (contracts.md's pre-M3-05 "Offline settlement algorithm" section, kept
+ * verbatim for an expedition that was active at migration time). Downgrading
+ * the freshly-started row back to the legacy rulesVersion here preserves
+ * that coverage without rewriting every assertion for variable-duration
+ * semantics; the one test that specifically checks what `/expedition/start`
+ * assigns opts out via `legacyRules: false`.
+ */
+function downgradeToLegacyRules(db: DatabaseSync, accountId: string): void {
+  db.prepare(
+    "UPDATE expeditions SET rulesVersion = ?, msPerRound = NULL, pendingBattleReportId = NULL, nextOrdinal = 1, runId = NULL WHERE accountId = ?",
+  ).run(CURRENT_RULES_VERSION, accountId);
+}
+
+async function startedHarness(options: { db?: DatabaseSync; clock?: FixedClock; legacyRules?: boolean } = {}) {
   const h = harness(options);
   const cookie = await login(h.app);
   const start = await mutate(h.app, cookie, "/expedition/start");
   expect(start.status).toBe(200);
+  if (options.legacyRules ?? true) downgradeToLegacyRules(h.db, SEED_ACCOUNT_A_ID);
   return { ...h, cookie, start };
 }
 
 describe("expedition start", () => {
   it("freezes the ordered party loadout with the server clock and rules version", async () => {
-    const { app, cookie, start } = await startedHarness();
+    const { app, cookie, start } = await startedHarness({ legacyRules: false });
     expect(start.body.revision).toBe(1);
     const expedition = start.body.data.expedition;
     expect(expedition).toMatchObject({
@@ -109,7 +129,7 @@ describe("expedition start", () => {
       startedAt: new Date(T0).toISOString(),
       checkpointAt: new Date(T0).toISOString(),
       subCycleRemainderMs: 0,
-      rulesVersion: 1,
+      rulesVersion: EXPEDITION_RULES_VERSION,
       cyclesCompleted: 0,
     });
     expect(expedition.frozenLoadout.map((m: any) => m.heroId)).toEqual([VANGUARD, RANGER, ARCANIST]);
@@ -521,6 +541,7 @@ describe("party, equipment and specialization rules (A05)", () => {
     );
     expect(preStart.status).toBe(200);
     const start = await mutate(app, cookie, "/expedition/start");
+    downgradeToLegacyRules(db, SEED_ACCOUNT_A_ID);
     const frozen = start.body.data.expedition.frozenLoadout;
     expect(frozen[0].equippedInstanceIds.weapon).toBe(sword);
 
@@ -569,12 +590,13 @@ describe("party, equipment and specialization rules (A05)", () => {
   });
 
   it("stop settles whole cycles and discards the sub-cycle remainder", async () => {
-    const { app, cookie, at } = await startedHarness();
+    const { app, db, cookie, at } = await startedHarness();
     at(5 * MIN + 59 * SEC);
     const stop = await mutate(app, cookie, "/expedition/stop");
     expect(stop.body.data.finalSettlement.creditedCycles).toBe(5);
     // Restarting begins a fresh window from the stop instant; the 59s are gone.
     const restart = await mutate(app, cookie, "/expedition/start");
+    downgradeToLegacyRules(db, SEED_ACCOUNT_A_ID);
     expect(restart.body.data.expedition.checkpointAt).toBe(new Date(T0 + 5 * MIN + 59 * SEC).toISOString());
     at(6 * MIN + 30 * SEC);
     expect((await mutate(app, cookie, "/expedition/settle")).body.data.creditedCycles).toBe(0);

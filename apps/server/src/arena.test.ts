@@ -141,7 +141,14 @@ describe("arena: publish, list, challenge, and battle reports (M1-11)", () => {
       url: `/battle-reports/${reportId}`,
       headers: { cookie: cookieA },
     });
-    expect(reportAfterMutation.json().data.report).toEqual(reportBefore);
+    // M3-05 addition: battle_reports gained additive ordinal/runId/
+    // completionSequence/nominalDurationMs/creditedAt/rewards columns, null
+    // on every pre-M3/non-pve row; a DB round-trip now surfaces them
+    // (as null) even though the in-memory object the challenge response
+    // built inline never had them. toMatchObject checks everything
+    // reportBefore asserted is still byte-identical, without hardcoding the
+    // additive null fields here.
+    expect(reportAfterMutation.json().data.report).toMatchObject(reportBefore);
 
     await app.close();
 
@@ -156,7 +163,7 @@ describe("arena: publish, list, challenge, and battle reports (M1-11)", () => {
       headers: { cookie: cookieA2 },
     });
     expect(reportAfterReopen.statusCode).toBe(200);
-    expect(reportAfterReopen.json().data.report).toEqual(reportBefore);
+    expect(reportAfterReopen.json().data.report).toMatchObject(reportBefore);
 
     const detailAfterReopen = await app.inject({ method: "GET", url: `/arena/snapshots/${snapshotId}` });
     expect(detailAfterReopen.json().data.snapshot.frozenStats).toEqual(statsBefore);

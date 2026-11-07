@@ -93,6 +93,19 @@ export class AccountRepository {
       .run(cost.scrap, cost.sigil, cost.core, accountId);
   }
 
+  /** M3-05 addition section 2: account-global monotonic BattleReport.completionSequence source. */
+  getNextCompletionSequence(accountId: string): number {
+    const row = this.db.prepare("SELECT nextCompletionSequence FROM accounts WHERE accountId = ?").get(accountId) as
+      | { nextCompletionSequence: number }
+      | undefined;
+    if (!row) throw new Error(`unknown accountId ${accountId}`);
+    return row.nextCompletionSequence;
+  }
+
+  setNextCompletionSequence(accountId: string, value: number): void {
+    this.db.prepare("UPDATE accounts SET nextCompletionSequence = ? WHERE accountId = ?").run(value, accountId);
+  }
+
   insertSeed(accountId: string, displayName: string, slot: AccountSlot, createdAt: string): void {
     this.db
       .prepare(

@@ -18,6 +18,9 @@ interface HeroRow {
   equipmentWeapon: string | null;
   equipmentArmor: string | null;
   equipmentTrinket: string | null;
+  raceId: string;
+  primarySpecializationId: string | null;
+  lastRespecAt: string | null;
 }
 
 function toHero(row: HeroRow): Hero {
@@ -34,6 +37,9 @@ function toHero(row: HeroRow): Hero {
       armor: row.equipmentArmor,
       trinket: row.equipmentTrinket,
     },
+    raceId: row.raceId,
+    primarySpecializationId: row.primarySpecializationId,
+    lastRespecAt: row.lastRespecAt,
   };
 }
 
@@ -72,6 +78,23 @@ export class HeroRepository {
 
   setLevelXp(heroId: string, level: number, xp: number): void {
     this.db.prepare("UPDATE heroes SET level = ?, xp = ? WHERE heroId = ?").run(level, xp, heroId);
+  }
+
+  setPrimarySpecialization(heroId: string, primarySpecializationId: string | null): void {
+    this.db.prepare("UPDATE heroes SET primarySpecializationId = ? WHERE heroId = ?").run(primarySpecializationId, heroId);
+  }
+
+  /** M3-05 addition section 8: atomic primary respec (one transaction, caller's). */
+  applyPrimaryRespec(
+    heroId: string,
+    update: { primaryClassId: string; secondaryClassId: string | null; skillLoadout: SkillLoadout; lastRespecAt: string },
+  ): void {
+    this.db
+      .prepare(
+        `UPDATE heroes SET primaryClassId = ?, secondaryClassId = ?, primarySpecializationId = NULL, skillLoadout = ?, lastRespecAt = ?
+         WHERE heroId = ?`,
+      )
+      .run(update.primaryClassId, update.secondaryClassId, JSON.stringify(update.skillLoadout), update.lastRespecAt, heroId);
   }
 
   /** Starter roster / recruit seeding: idempotent on a fixed heroId. */

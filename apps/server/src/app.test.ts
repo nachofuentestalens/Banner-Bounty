@@ -32,7 +32,7 @@ describe("GET /health", () => {
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
       ok: true,
-      data: { status: "ok", schemaVersion: 4 },
+      data: { status: "ok", schemaVersion: 5 },
     });
     await app.close();
   });

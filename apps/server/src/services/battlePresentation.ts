@@ -6,6 +6,7 @@ import {
   SUNKEN_AQUEDUCT_ENEMIES,
   TOLLKEEPER,
   getClassBaseStatsV2,
+  getClassV3,
 } from "@banner-and-bounty/content";
 import type { BattleEventV2, BattleResultV2, BattleUnitSummaryV2 } from "@banner-and-bounty/game";
 
@@ -24,7 +25,16 @@ ENEMY_DISPLAY[DEPTHS_BROODLING_STATS.enemyId] = DEPTHS_BROODLING_STATS.display;
  * unique within a battle).
  */
 function unitDisplayName(unit: BattleUnitSummaryV2): string {
-  if (unit.kind === "hero") return getClassBaseStatsV2(unit.classId!).display;
+  if (unit.kind === "hero") {
+    // M3-05 addition: season/tournament combatants may carry a class outside
+    // the original six (class_warder/class_weaver); fall back to the wider
+    // V3 roster rather than throwing on an otherwise-valid new class.
+    try {
+      return getClassBaseStatsV2(unit.classId!).display;
+    } catch {
+      return getClassV3(unit.classId!).display;
+    }
+  }
   const enemyId = unit.unitId.split("#")[0]!;
   return ENEMY_DISPLAY[enemyId] ?? enemyId;
 }
