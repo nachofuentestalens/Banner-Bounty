@@ -1,0 +1,1060 @@
+﻿{
+    "ok":  true,
+    "data":  {
+                 "creditedCycles":  1,
+                 "elapsedMs":  119316,
+                 "discardedMs":  0,
+                 "checkpointAt":  "2026-10-29T13:33:25.600Z",
+                 "rewards":  {
+                                 "xp":  4,
+                                 "gold":  10,
+                                 "items":  [
+
+                                           ]
+                             },
+                 "outcomes":  {
+                                  "wins":  1,
+                                  "losses":  0
+                              },
+                 "overflow":  {
+                                  "convertedCount":  0,
+                                  "convertedGold":  0
+                              },
+                 "recentCycles":  [
+                                      {
+                                          "cycle":  3,
+                                          "result":  "win",
+                                          "rounds":  7,
+                                          "gold":  10,
+                                          "drop":  null,
+                                          "converted":  false
+                                      }
+                                  ],
+                 "latestBattleReport":  {
+                                            "reportId":  "expedition:00000000-0000-4000-8000-00000000000a:2026-10-29T13:33:25.600Z",
+                                            "kind":  "pve",
+                                            "seed":  "",
+                                            "rulesVersion":  1,
+                                            "createdAt":  "2026-10-29T13:34:24.916Z",
+                                            "participantsSnapshot":  {
+                                                                         "units":  [
+                                                                                       {
+                                                                                           "unitId":  "00000000-0000-4000-8000-0000000a0001",
+                                                                                           "side":  "A",
+                                                                                           "kind":  "hero",
+                                                                                           "name":  "Vanguard",
+                                                                                           "classId":  "class_vanguard",
+                                                                                           "secondaryClassId":  null,
+                                                                                           "slotIndex":  0,
+                                                                                           "maxHp":  40
+                                                                                       },
+                                                                                       {
+                                                                                           "unitId":  "00000000-0000-4000-8000-0000000a0002",
+                                                                                           "side":  "A",
+                                                                                           "kind":  "hero",
+                                                                                           "name":  "Ranger",
+                                                                                           "classId":  "class_ranger",
+                                                                                           "secondaryClassId":  null,
+                                                                                           "slotIndex":  1,
+                                                                                           "maxHp":  32
+                                                                                       },
+                                                                                       {
+                                                                                           "unitId":  "00000000-0000-4000-8000-0000000a0003",
+                                                                                           "side":  "A",
+                                                                                           "kind":  "hero",
+                                                                                           "name":  "Arcanist",
+                                                                                           "classId":  "class_arcanist",
+                                                                                           "secondaryClassId":  null,
+                                                                                           "slotIndex":  2,
+                                                                                           "maxHp":  28
+                                                                                       },
+                                                                                       {
+                                                                                           "unitId":  "enemy_road_brigand#0",
+                                                                                           "side":  "B",
+                                                                                           "kind":  "enemy",
+                                                                                           "name":  "Road Brigand",
+                                                                                           "classId":  null,
+                                                                                           "secondaryClassId":  null,
+                                                                                           "slotIndex":  0,
+                                                                                           "maxHp":  50
+                                                                                       },
+                                                                                       {
+                                                                                           "unitId":  "enemy_road_wolf#1",
+                                                                                           "side":  "B",
+                                                                                           "kind":  "enemy",
+                                                                                           "name":  "Road Wolf",
+                                                                                           "classId":  null,
+                                                                                           "secondaryClassId":  null,
+                                                                                           "slotIndex":  1,
+                                                                                           "maxHp":  35
+                                                                                       },
+                                                                                       {
+                                                                                           "unitId":  "enemy_road_cutpurse#2",
+                                                                                           "side":  "B",
+                                                                                           "kind":  "enemy",
+                                                                                           "name":  "Road Cutpurse",
+                                                                                           "classId":  null,
+                                                                                           "secondaryClassId":  null,
+                                                                                           "slotIndex":  2,
+                                                                                           "maxHp":  30
+                                                                                       }
+                                                                                   ]
+                                                                     },
+                                            "events":  [
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=2}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}"
+                                                                                                 ],
+                                                                                       "damage":  8,
+                                                                                       "hpBefore":  30,
+                                                                                       "hpLoss":  8
+                                                                                   },
+                                                               "round":  1,
+                                                               "type":  "aimed_shot",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                               "targetId":  "enemy_road_cutpurse#2",
+                                                               "amount":  -8,
+                                                               "hpAfter":  22,
+                                                               "skillId":  "aimed_shot",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=11}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=3}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=10}"
+                                                                                                 ],
+                                                                                       "damage":  10,
+                                                                                       "hpBefore":  28,
+                                                                                       "hpLoss":  10
+                                                                                   },
+                                                               "round":  1,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_wolf#1",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0003",
+                                                               "amount":  -10,
+                                                               "hpAfter":  18,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=1}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=8}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=6}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=5}",
+                                                                                                     "@{kind=critical; inputs=System.Object[]; value=7}"
+                                                                                                 ],
+                                                                                       "damage":  7,
+                                                                                       "hpBefore":  40,
+                                                                                       "hpLoss":  7
+                                                                                   },
+                                                               "round":  1,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_cutpurse#2",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "amount":  -7,
+                                                               "hpAfter":  33,
+                                                               "skillId":  null,
+                                                               "crit":  true,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=2}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=overload; inputs=System.Object[]; value=9}"
+                                                                                                 ],
+                                                                                       "damage":  9,
+                                                                                       "hpBefore":  22,
+                                                                                       "hpLoss":  9
+                                                                                   },
+                                                               "round":  1,
+                                                               "type":  "firebolt",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                               "targetId":  "enemy_road_cutpurse#2",
+                                                               "amount":  -9,
+                                                               "hpAfter":  13,
+                                                               "skillId":  "firebolt",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  {
+                                                                                     "statusId":  "status_burn",
+                                                                                     "duration":  2,
+                                                                                     "stacks":  1
+                                                                                 },
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "round":  1,
+                                                               "type":  "bulwark_call",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "amount":  0,
+                                                               "hpAfter":  33,
+                                                               "skillId":  "bulwark_call",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  {
+                                                                                     "statusId":  "status_taunt",
+                                                                                     "duration":  2,
+                                                                                     "stacks":  1
+                                                                                 },
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "round":  1,
+                                                               "type":  "bulwark_call",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "amount":  0,
+                                                               "hpAfter":  33,
+                                                               "skillId":  "bulwark_call",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  {
+                                                                                     "statusId":  "status_fortify",
+                                                                                     "duration":  2,
+                                                                                     "stacks":  1
+                                                                                 },
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=6}",
+                                                                                                     "@{kind=fortify; inputs=System.Object[]; value=7}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=6}"
+                                                                                                 ],
+                                                                                       "damage":  6,
+                                                                                       "hpBefore":  33,
+                                                                                       "hpLoss":  6
+                                                                                   },
+                                                               "round":  1,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_brigand#0",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "amount":  -6,
+                                                               "hpAfter":  27,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=burn; inputs=System.Object[]; value=3}"
+                                                                                                 ],
+                                                                                       "damage":  3,
+                                                                                       "hpBefore":  13,
+                                                                                       "hpLoss":  3
+                                                                                   },
+                                                               "round":  1,
+                                                               "type":  "burn_tick",
+                                                               "sourceId":  null,
+                                                               "targetId":  "enemy_road_cutpurse#2",
+                                                               "amount":  -3,
+                                                               "hpAfter":  10,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=2}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}"
+                                                                                                 ],
+                                                                                       "damage":  8,
+                                                                                       "hpBefore":  10,
+                                                                                       "hpLoss":  8
+                                                                                   },
+                                                               "round":  2,
+                                                               "type":  "quick_shot",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                               "targetId":  "enemy_road_cutpurse#2",
+                                                               "amount":  -8,
+                                                               "hpAfter":  2,
+                                                               "skillId":  "quick_shot",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=1}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=11}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=6}",
+                                                                                                     "@{kind=fortify; inputs=System.Object[]; value=7}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}",
+                                                                                                     "@{kind=critical; inputs=System.Object[]; value=12}"
+                                                                                                 ],
+                                                                                       "damage":  12,
+                                                                                       "hpBefore":  27,
+                                                                                       "hpLoss":  12
+                                                                                   },
+                                                               "round":  2,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_wolf#1",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "amount":  -12,
+                                                               "hpAfter":  15,
+                                                               "skillId":  null,
+                                                               "crit":  true,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=8}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=6}",
+                                                                                                     "@{kind=fortify; inputs=System.Object[]; value=7}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=5}"
+                                                                                                 ],
+                                                                                       "damage":  5,
+                                                                                       "hpBefore":  15,
+                                                                                       "hpLoss":  5
+                                                                                   },
+                                                               "round":  2,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_cutpurse#2",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "amount":  -5,
+                                                               "hpAfter":  10,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=2}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=overload; inputs=System.Object[]; value=9}"
+                                                                                                 ],
+                                                                                       "damage":  9,
+                                                                                       "hpBefore":  2,
+                                                                                       "hpLoss":  2
+                                                                                   },
+                                                               "round":  2,
+                                                               "type":  "firebolt",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                               "targetId":  "enemy_road_cutpurse#2",
+                                                               "amount":  -2,
+                                                               "hpAfter":  0,
+                                                               "skillId":  "firebolt",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  {
+                                                                                     "statusId":  "status_burn",
+                                                                                     "duration":  2,
+                                                                                     "stacks":  2
+                                                                                 },
+                                                               "statusExpired":  null,
+                                                               "death":  true
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=7}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=2}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=6}"
+                                                                                                 ],
+                                                                                       "damage":  6,
+                                                                                       "hpBefore":  35,
+                                                                                       "hpLoss":  6
+                                                                                   },
+                                                               "round":  2,
+                                                               "type":  "strike",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "targetId":  "enemy_road_wolf#1",
+                                                               "amount":  -6,
+                                                               "hpAfter":  29,
+                                                               "skillId":  "strike",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=6}",
+                                                                                                     "@{kind=fortify; inputs=System.Object[]; value=7}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=6}"
+                                                                                                 ],
+                                                                                       "damage":  6,
+                                                                                       "hpBefore":  10,
+                                                                                       "hpLoss":  6
+                                                                                   },
+                                                               "round":  2,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_brigand#0",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "amount":  -6,
+                                                               "hpAfter":  4,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "round":  2,
+                                                               "type":  "status_expire",
+                                                               "sourceId":  null,
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "amount":  0,
+                                                               "hpAfter":  4,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  "status_fortify",
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "round":  2,
+                                                               "type":  "status_expire",
+                                                               "sourceId":  null,
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "amount":  0,
+                                                               "hpAfter":  4,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  "status_taunt",
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=2}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}"
+                                                                                                 ],
+                                                                                       "damage":  8,
+                                                                                       "hpBefore":  29,
+                                                                                       "hpLoss":  8
+                                                                                   },
+                                                               "round":  3,
+                                                               "type":  "aimed_shot",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                               "targetId":  "enemy_road_wolf#1",
+                                                               "amount":  -8,
+                                                               "hpAfter":  21,
+                                                               "skillId":  "aimed_shot",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=11}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=6}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}"
+                                                                                                 ],
+                                                                                       "damage":  8,
+                                                                                       "hpBefore":  4,
+                                                                                       "hpLoss":  4
+                                                                                   },
+                                                               "round":  3,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_wolf#1",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                               "amount":  -4,
+                                                               "hpAfter":  0,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  true
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=2}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=overload; inputs=System.Object[]; value=9}"
+                                                                                                 ],
+                                                                                       "damage":  9,
+                                                                                       "hpBefore":  21,
+                                                                                       "hpLoss":  9
+                                                                                   },
+                                                               "round":  3,
+                                                               "type":  "firebolt",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                               "targetId":  "enemy_road_wolf#1",
+                                                               "amount":  -9,
+                                                               "hpAfter":  12,
+                                                               "skillId":  "firebolt",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  {
+                                                                                     "statusId":  "status_burn",
+                                                                                     "duration":  2,
+                                                                                     "stacks":  1
+                                                                                 },
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=7}"
+                                                                                                 ],
+                                                                                       "damage":  7,
+                                                                                       "hpBefore":  32,
+                                                                                       "hpLoss":  7
+                                                                                   },
+                                                               "round":  3,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_brigand#0",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                               "amount":  -7,
+                                                               "hpAfter":  25,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=burn; inputs=System.Object[]; value=3}"
+                                                                                                 ],
+                                                                                       "damage":  3,
+                                                                                       "hpBefore":  12,
+                                                                                       "hpLoss":  3
+                                                                                   },
+                                                               "round":  3,
+                                                               "type":  "burn_tick",
+                                                               "sourceId":  null,
+                                                               "targetId":  "enemy_road_wolf#1",
+                                                               "amount":  -3,
+                                                               "hpAfter":  9,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "round":  3,
+                                                               "type":  "status_expire",
+                                                               "sourceId":  null,
+                                                               "targetId":  "enemy_road_cutpurse#2",
+                                                               "amount":  0,
+                                                               "hpAfter":  0,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  "status_burn",
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=2}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}"
+                                                                                                 ],
+                                                                                       "damage":  8,
+                                                                                       "hpBefore":  9,
+                                                                                       "hpLoss":  8
+                                                                                   },
+                                                               "round":  4,
+                                                               "type":  "quick_shot",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                               "targetId":  "enemy_road_wolf#1",
+                                                               "amount":  -8,
+                                                               "hpAfter":  1,
+                                                               "skillId":  "quick_shot",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=11}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=9}"
+                                                                                                 ],
+                                                                                       "damage":  9,
+                                                                                       "hpBefore":  25,
+                                                                                       "hpLoss":  9
+                                                                                   },
+                                                               "round":  4,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_wolf#1",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                               "amount":  -9,
+                                                               "hpAfter":  16,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=2}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=overload; inputs=System.Object[]; value=9}"
+                                                                                                 ],
+                                                                                       "damage":  9,
+                                                                                       "hpBefore":  1,
+                                                                                       "hpLoss":  1
+                                                                                   },
+                                                               "round":  4,
+                                                               "type":  "firebolt",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                               "targetId":  "enemy_road_wolf#1",
+                                                               "amount":  -1,
+                                                               "hpAfter":  0,
+                                                               "skillId":  "firebolt",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  {
+                                                                                     "statusId":  "status_burn",
+                                                                                     "duration":  2,
+                                                                                     "stacks":  2
+                                                                                 },
+                                                               "statusExpired":  null,
+                                                               "death":  true
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=7}",
+                                                                                                     "@{kind=heavy_strike; inputs=System.Object[]; value=10}"
+                                                                                                 ],
+                                                                                       "damage":  10,
+                                                                                       "hpBefore":  16,
+                                                                                       "hpLoss":  10
+                                                                                   },
+                                                               "round":  4,
+                                                               "type":  "crushing_blow",
+                                                               "sourceId":  "enemy_road_brigand#0",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                               "amount":  -10,
+                                                               "hpAfter":  6,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  {
+                                                                                     "statusId":  "status_weaken",
+                                                                                     "duration":  2,
+                                                                                     "stacks":  1
+                                                                                 },
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=weaken; inputs=System.Object[]; value=6}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=4}"
+                                                                                                 ],
+                                                                                       "damage":  4,
+                                                                                       "hpBefore":  50,
+                                                                                       "hpLoss":  4
+                                                                                   },
+                                                               "round":  5,
+                                                               "type":  "aimed_shot",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                               "targetId":  "enemy_road_brigand#0",
+                                                               "amount":  -4,
+                                                               "hpAfter":  46,
+                                                               "skillId":  "aimed_shot",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}",
+                                                                                                     "@{kind=overload; inputs=System.Object[]; value=8}"
+                                                                                                 ],
+                                                                                       "damage":  8,
+                                                                                       "hpBefore":  46,
+                                                                                       "hpLoss":  8
+                                                                                   },
+                                                               "round":  5,
+                                                               "type":  "firebolt",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                               "targetId":  "enemy_road_brigand#0",
+                                                               "amount":  -8,
+                                                               "hpAfter":  38,
+                                                               "skillId":  "firebolt",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  {
+                                                                                     "statusId":  "status_burn",
+                                                                                     "duration":  2,
+                                                                                     "stacks":  1
+                                                                                 },
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=7}"
+                                                                                                 ],
+                                                                                       "damage":  7,
+                                                                                       "hpBefore":  6,
+                                                                                       "hpLoss":  6
+                                                                                   },
+                                                               "round":  5,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_brigand#0",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                               "amount":  -6,
+                                                               "hpAfter":  0,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  true
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=burn; inputs=System.Object[]; value=3}"
+                                                                                                 ],
+                                                                                       "damage":  3,
+                                                                                       "hpBefore":  38,
+                                                                                       "hpLoss":  3
+                                                                                   },
+                                                               "round":  5,
+                                                               "type":  "burn_tick",
+                                                               "sourceId":  null,
+                                                               "targetId":  "enemy_road_brigand#0",
+                                                               "amount":  -3,
+                                                               "hpAfter":  35,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "round":  5,
+                                                               "type":  "status_expire",
+                                                               "sourceId":  null,
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                               "amount":  0,
+                                                               "hpAfter":  0,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  "status_weaken",
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "round":  5,
+                                                               "type":  "status_expire",
+                                                               "sourceId":  null,
+                                                               "targetId":  "enemy_road_wolf#1",
+                                                               "amount":  0,
+                                                               "hpAfter":  0,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  "status_burn",
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}",
+                                                                                                     "@{kind=overload; inputs=System.Object[]; value=8}"
+                                                                                                 ],
+                                                                                       "damage":  8,
+                                                                                       "hpBefore":  35,
+                                                                                       "hpLoss":  8
+                                                                                   },
+                                                               "round":  6,
+                                                               "type":  "firebolt",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                               "targetId":  "enemy_road_brigand#0",
+                                                               "amount":  -8,
+                                                               "hpAfter":  27,
+                                                               "skillId":  "firebolt",
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  {
+                                                                                     "statusId":  "status_burn",
+                                                                                     "duration":  2,
+                                                                                     "stacks":  2
+                                                                                 },
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=3}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}"
+                                                                                                 ],
+                                                                                       "damage":  8,
+                                                                                       "hpBefore":  18,
+                                                                                       "hpLoss":  8
+                                                                                   },
+                                                               "round":  6,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_brigand#0",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0003",
+                                                               "amount":  -8,
+                                                               "hpAfter":  10,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=burn; inputs=System.Object[]; value=6}"
+                                                                                                 ],
+                                                                                       "damage":  6,
+                                                                                       "hpBefore":  27,
+                                                                                       "hpLoss":  6
+                                                                                   },
+                                                               "round":  6,
+                                                               "type":  "burn_tick",
+                                                               "sourceId":  null,
+                                                               "targetId":  "enemy_road_brigand#0",
+                                                               "amount":  -6,
+                                                               "hpAfter":  21,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=1}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=10}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=4}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}",
+                                                                                                     "@{kind=overload; inputs=System.Object[]; value=8}",
+                                                                                                     "@{kind=critical; inputs=System.Object[]; value=12}"
+                                                                                                 ],
+                                                                                       "damage":  12,
+                                                                                       "hpBefore":  21,
+                                                                                       "hpLoss":  12
+                                                                                   },
+                                                               "round":  7,
+                                                               "type":  "firebolt",
+                                                               "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                               "targetId":  "enemy_road_brigand#0",
+                                                               "amount":  -12,
+                                                               "hpAfter":  9,
+                                                               "skillId":  "firebolt",
+                                                               "crit":  true,
+                                                               "dodged":  false,
+                                                               "statusApplied":  {
+                                                                                     "statusId":  "status_burn",
+                                                                                     "duration":  2,
+                                                                                     "stacks":  3
+                                                                                 },
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=dodge_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=crit_roll; inputs=System.Object[]; value=0}",
+                                                                                                     "@{kind=attack; inputs=System.Object[]; value=9}",
+                                                                                                     "@{kind=defense; inputs=System.Object[]; value=3}",
+                                                                                                     "@{kind=base_damage; inputs=System.Object[]; value=8}"
+                                                                                                 ],
+                                                                                       "damage":  8,
+                                                                                       "hpBefore":  10,
+                                                                                       "hpLoss":  8
+                                                                                   },
+                                                               "round":  7,
+                                                               "type":  "enemy_strike",
+                                                               "sourceId":  "enemy_road_brigand#0",
+                                                               "targetId":  "00000000-0000-4000-8000-0000000a0003",
+                                                               "amount":  -8,
+                                                               "hpAfter":  2,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  false
+                                                           },
+                                                           {
+                                                               "damageBreakdown":  {
+                                                                                       "steps":  [
+                                                                                                     "@{kind=burn; inputs=System.Object[]; value=9}"
+                                                                                                 ],
+                                                                                       "damage":  9,
+                                                                                       "hpBefore":  9,
+                                                                                       "hpLoss":  9
+                                                                                   },
+                                                               "round":  7,
+                                                               "type":  "burn_tick",
+                                                               "sourceId":  null,
+                                                               "targetId":  "enemy_road_brigand#0",
+                                                               "amount":  -9,
+                                                               "hpAfter":  0,
+                                                               "skillId":  null,
+                                                               "crit":  false,
+                                                               "dodged":  false,
+                                                               "statusApplied":  null,
+                                                               "statusExpired":  null,
+                                                               "death":  true
+                                                           }
+                                                       ],
+                                            "result":  {
+                                                           "outcome":  "win",
+                                                           "rounds":  7,
+                                                           "finalHp":  {
+                                                                           "00000000-0000-4000-8000-0000000a0001":  0,
+                                                                           "00000000-0000-4000-8000-0000000a0002":  0,
+                                                                           "00000000-0000-4000-8000-0000000a0003":  2,
+                                                                           "enemy_road_brigand#0":  0,
+                                                                           "enemy_road_wolf#1":  0,
+                                                                           "enemy_road_cutpurse#2":  0
+                                                                       }
+                                                       }
+                                        }
+             },
+    "revision":  7
+}

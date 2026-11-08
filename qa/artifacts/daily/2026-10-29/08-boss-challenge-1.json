@@ -1,0 +1,2111 @@
+﻿{
+    "ok":  true,
+    "data":  {
+                 "report":  {
+                                "reportId":  "8a51ed1e-bb89-411b-b2b0-7dece647a58d",
+                                "kind":  "boss",
+                                "seed":  "109da485",
+                                "rulesVersion":  1,
+                                "createdAt":  "2026-10-29T13:32:04.810Z",
+                                "participantsSnapshot":  {
+                                                             "units":  [
+                                                                           {
+                                                                               "unitId":  "00000000-0000-4000-8000-0000000a0002",
+                                                                               "side":  "A",
+                                                                               "kind":  "hero",
+                                                                               "name":  "Ranger",
+                                                                               "classId":  "class_ranger",
+                                                                               "secondaryClassId":  null,
+                                                                               "slotIndex":  0,
+                                                                               "maxHp":  32
+                                                                           },
+                                                                           {
+                                                                               "unitId":  "00000000-0000-4000-8000-0000000a0001",
+                                                                               "side":  "A",
+                                                                               "kind":  "hero",
+                                                                               "name":  "Vanguard",
+                                                                               "classId":  "class_vanguard",
+                                                                               "secondaryClassId":  null,
+                                                                               "slotIndex":  1,
+                                                                               "maxHp":  40
+                                                                           },
+                                                                           {
+                                                                               "unitId":  "00000000-0000-4000-8000-0000000a0003",
+                                                                               "side":  "A",
+                                                                               "kind":  "hero",
+                                                                               "name":  "Arcanist",
+                                                                               "classId":  "class_arcanist",
+                                                                               "secondaryClassId":  null,
+                                                                               "slotIndex":  2,
+                                                                               "maxHp":  28
+                                                                           },
+                                                                           {
+                                                                               "unitId":  "boss_tollkeeper#0",
+                                                                               "side":  "B",
+                                                                               "kind":  "enemy",
+                                                                               "name":  "The Tollkeeper",
+                                                                               "classId":  null,
+                                                                               "secondaryClassId":  null,
+                                                                               "slotIndex":  0,
+                                                                               "maxHp":  220
+                                                                           }
+                                                                       ]
+                                                         },
+                                "events":  [
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            35,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            62,
+                                                                                                            25
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  9
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            9,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  5
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  5,
+                                                                           "hpBefore":  220,
+                                                                           "hpLoss":  5
+                                                                       },
+                                                   "round":  1,
+                                                   "type":  "aimed_shot",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -5,
+                                                   "hpAfter":  215,
+                                                   "skillId":  "aimed_shot",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            66,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            89,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  10
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            10,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "overload",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            11,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  215,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  1,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  209,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            7,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            14,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  14
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  4
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            14,
+                                                                                                            4
+                                                                                                        ],
+                                                                                             "value":  12
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  12,
+                                                                           "hpBefore":  32,
+                                                                           "hpLoss":  12
+                                                                       },
+                                                   "round":  1,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "amount":  -12,
+                                                   "hpAfter":  20,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  1,
+                                                   "type":  "bulwark_call",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  40,
+                                                   "skillId":  "bulwark_call",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_taunt",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  1,
+                                                   "type":  "bulwark_call",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  40,
+                                                   "skillId":  "bulwark_call",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_fortify",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "burn",
+                                                                                             "inputs":  [
+                                                                                                            1,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  3
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  209,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  1,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  206,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            2,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  1
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  0,
+                                                                           "hpBefore":  206,
+                                                                           "hpLoss":  0
+                                                                       },
+                                                   "round":  2,
+                                                   "type":  "quick_shot",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  0,
+                                                   "hpAfter":  206,
+                                                   "skillId":  "quick_shot",
+                                                   "crit":  false,
+                                                   "dodged":  true,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            46,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            7,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  1
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  10
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            10,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "overload",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            11,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "critical",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            3,
+                                                                                                            2
+                                                                                                        ],
+                                                                                             "value":  9
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  206,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  2,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  197,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  true,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  2
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            49,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            83,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  14
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "fortify",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            130,
+                                                                                                            100
+                                                                                                        ],
+                                                                                             "value":  7
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            14,
+                                                                                                            7
+                                                                                                        ],
+                                                                                             "value":  11
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  11,
+                                                                           "hpBefore":  40,
+                                                                           "hpLoss":  11
+                                                                       },
+                                                   "round":  2,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  -11,
+                                                   "hpAfter":  29,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            22,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            79,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  7
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            7,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  3
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  197,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  2,
+                                                   "type":  "strike",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  194,
+                                                   "skillId":  "strike",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "burn",
+                                                                                             "inputs":  [
+                                                                                                            2,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  194,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  2,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  188,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  2,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  29,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_fortify",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  2,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  29,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_taunt",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            95,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            37,
+                                                                                                            25
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  9
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            9,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  5
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  5,
+                                                                           "hpBefore":  188,
+                                                                           "hpLoss":  5
+                                                                       },
+                                                   "round":  3,
+                                                   "type":  "aimed_shot",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -5,
+                                                   "hpAfter":  183,
+                                                   "skillId":  "aimed_shot",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            2,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  1
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  0,
+                                                                           "hpBefore":  183,
+                                                                           "hpLoss":  0
+                                                                       },
+                                                   "round":  3,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  0,
+                                                   "hpAfter":  183,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  true,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            52,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            92,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  14
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  4
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            14,
+                                                                                                            4
+                                                                                                        ],
+                                                                                             "value":  12
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "heavy_strike",
+                                                                                             "inputs":  [
+                                                                                                            12,
+                                                                                                            3,
+                                                                                                            2
+                                                                                                        ],
+                                                                                             "value":  18
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  18,
+                                                                           "hpBefore":  20,
+                                                                           "hpLoss":  18
+                                                                       },
+                                                   "round":  3,
+                                                   "type":  "toll_smash",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "amount":  -18,
+                                                   "hpAfter":  2,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_weaken",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            64,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            80,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  7
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            7,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  3
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  183,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  3,
+                                                   "type":  "strike",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  180,
+                                                   "skillId":  "strike",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "burn",
+                                                                                             "inputs":  [
+                                                                                                            2,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  180,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  3,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  174,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  3,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  0,
+                                                   "hpAfter":  174,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_burn",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            57,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            25,
+                                                                                                            25
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  9
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "weaken",
+                                                                                             "inputs":  [
+                                                                                                            9,
+                                                                                                            70,
+                                                                                                            100
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  2
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  2,
+                                                                           "hpBefore":  174,
+                                                                           "hpLoss":  2
+                                                                       },
+                                                   "round":  4,
+                                                   "type":  "quick_shot",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -2,
+                                                   "hpAfter":  172,
+                                                   "skillId":  "quick_shot",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            12,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            7,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  1
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  10
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            10,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "overload",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            11,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "critical",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            3,
+                                                                                                            2
+                                                                                                        ],
+                                                                                             "value":  9
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  172,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  4,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  163,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  true,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            48,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            26,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  14
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  4
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            14,
+                                                                                                            4
+                                                                                                        ],
+                                                                                             "value":  12
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  12,
+                                                                           "hpBefore":  2,
+                                                                           "hpLoss":  2
+                                                                       },
+                                                   "round":  4,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "amount":  -2,
+                                                   "hpAfter":  0,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  true
+                                               },
+                                               {
+                                                   "round":  4,
+                                                   "type":  "bulwark_call",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  29,
+                                                   "skillId":  "bulwark_call",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_taunt",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  4,
+                                                   "type":  "bulwark_call",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  29,
+                                                   "skillId":  "bulwark_call",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_fortify",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "burn",
+                                                                                             "inputs":  [
+                                                                                                            1,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  3
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  163,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  4,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  160,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  4,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0002",
+                                                   "amount":  0,
+                                                   "hpAfter":  0,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_weaken",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            54,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            61,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  10
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            10,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "overload",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            11,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  160,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  5,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  154,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  2
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            62,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            83,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  14
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "fortify",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            130,
+                                                                                                            100
+                                                                                                        ],
+                                                                                             "value":  7
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            14,
+                                                                                                            7
+                                                                                                        ],
+                                                                                             "value":  11
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  11,
+                                                                           "hpBefore":  29,
+                                                                           "hpLoss":  11
+                                                                       },
+                                                   "round":  5,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  -11,
+                                                   "hpAfter":  18,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            90,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            55,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  7
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            7,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  3
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  154,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  5,
+                                                   "type":  "strike",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  151,
+                                                   "skillId":  "strike",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "burn",
+                                                                                             "inputs":  [
+                                                                                                            2,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  151,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  5,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  145,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  5,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  18,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_fortify",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  5,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  18,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_taunt",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            27,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            73,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  10
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            10,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "overload",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            11,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  145,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  6,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  139,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  3
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            64,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            68,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  14
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            14,
+                                                                                                            6
+                                                                                                        ],
+                                                                                             "value":  11
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "heavy_strike",
+                                                                                             "inputs":  [
+                                                                                                            11,
+                                                                                                            3,
+                                                                                                            2
+                                                                                                        ],
+                                                                                             "value":  16
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  16,
+                                                                           "hpBefore":  18,
+                                                                           "hpLoss":  16
+                                                                       },
+                                                   "round":  6,
+                                                   "type":  "toll_smash",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  -16,
+                                                   "hpAfter":  2,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_weaken",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            47,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            19,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  7
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "weaken",
+                                                                                             "inputs":  [
+                                                                                                            7,
+                                                                                                            70,
+                                                                                                            100
+                                                                                                        ],
+                                                                                             "value":  4
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            4,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  1
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  1,
+                                                                           "hpBefore":  139,
+                                                                           "hpLoss":  1
+                                                                       },
+                                                   "round":  6,
+                                                   "type":  "strike",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -1,
+                                                   "hpAfter":  138,
+                                                   "skillId":  "strike",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "burn",
+                                                                                             "inputs":  [
+                                                                                                            3,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  9
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  138,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  6,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  129,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            13,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            15,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  10
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            10,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "overload",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            11,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  129,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  7,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  123,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            5,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            76,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  14
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            14,
+                                                                                                            6
+                                                                                                        ],
+                                                                                             "value":  11
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  11,
+                                                                           "hpBefore":  2,
+                                                                           "hpLoss":  2
+                                                                       },
+                                                   "round":  7,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  -2,
+                                                   "hpAfter":  0,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  true
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "burn",
+                                                                                             "inputs":  [
+                                                                                                            3,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  9
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  9,
+                                                                           "hpBefore":  123,
+                                                                           "hpLoss":  9
+                                                                       },
+                                                   "round":  7,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -9,
+                                                   "hpAfter":  114,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  7,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0001",
+                                                   "amount":  0,
+                                                   "hpAfter":  0,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_weaken",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "round":  7,
+                                                   "type":  "status_expire",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  0,
+                                                   "hpAfter":  114,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  "status_burn",
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            0,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  1
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  0,
+                                                                           "hpBefore":  114,
+                                                                           "hpLoss":  0
+                                                                       },
+                                                   "round":  8,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  0,
+                                                   "hpAfter":  114,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  true,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            28,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            33,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  14
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  3
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            14,
+                                                                                                            3
+                                                                                                        ],
+                                                                                             "value":  13
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  13,
+                                                                           "hpBefore":  28,
+                                                                           "hpLoss":  13
+                                                                       },
+                                                   "round":  8,
+                                                   "type":  "toll_strike",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "amount":  -13,
+                                                   "hpAfter":  15,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            35,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            23,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  10
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  8
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            10,
+                                                                                                            8
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "overload",
+                                                                                             "inputs":  [
+                                                                                                            6,
+                                                                                                            11,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  6
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  6,
+                                                                           "hpBefore":  114,
+                                                                           "hpLoss":  6
+                                                                       },
+                                                   "round":  9,
+                                                   "type":  "firebolt",
+                                                   "sourceId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -6,
+                                                   "hpAfter":  108,
+                                                   "skillId":  "firebolt",
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_burn",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "dodge_roll",
+                                                                                             "inputs":  [
+                                                                                                            67,
+                                                                                                            5
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "crit_roll",
+                                                                                             "inputs":  [
+                                                                                                            78,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  0
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "attack",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  14
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "defense",
+                                                                                             "inputs":  [
+
+                                                                                                        ],
+                                                                                             "value":  3
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "base_damage",
+                                                                                             "inputs":  [
+                                                                                                            14,
+                                                                                                            3
+                                                                                                        ],
+                                                                                             "value":  13
+                                                                                         },
+                                                                                         {
+                                                                                             "kind":  "heavy_strike",
+                                                                                             "inputs":  [
+                                                                                                            13,
+                                                                                                            3,
+                                                                                                            2
+                                                                                                        ],
+                                                                                             "value":  19
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  19,
+                                                                           "hpBefore":  15,
+                                                                           "hpLoss":  15
+                                                                       },
+                                                   "round":  9,
+                                                   "type":  "toll_smash",
+                                                   "sourceId":  "boss_tollkeeper#0",
+                                                   "targetId":  "00000000-0000-4000-8000-0000000a0003",
+                                                   "amount":  -15,
+                                                   "hpAfter":  0,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  {
+                                                                         "statusId":  "status_weaken",
+                                                                         "duration":  2,
+                                                                         "stacks":  1
+                                                                     },
+                                                   "statusExpired":  null,
+                                                   "death":  true
+                                               },
+                                               {
+                                                   "damageBreakdown":  {
+                                                                           "steps":  [
+                                                                                         {
+                                                                                             "kind":  "burn",
+                                                                                             "inputs":  [
+                                                                                                            1,
+                                                                                                            10
+                                                                                                        ],
+                                                                                             "value":  3
+                                                                                         }
+                                                                                     ],
+                                                                           "damage":  3,
+                                                                           "hpBefore":  108,
+                                                                           "hpLoss":  3
+                                                                       },
+                                                   "round":  9,
+                                                   "type":  "burn_tick",
+                                                   "sourceId":  null,
+                                                   "targetId":  "boss_tollkeeper#0",
+                                                   "amount":  -3,
+                                                   "hpAfter":  105,
+                                                   "skillId":  null,
+                                                   "crit":  false,
+                                                   "dodged":  false,
+                                                   "statusApplied":  null,
+                                                   "statusExpired":  null,
+                                                   "death":  false
+                                               }
+                                           ],
+                                "result":  {
+                                               "outcome":  "loss",
+                                               "rounds":  9,
+                                               "finalHp":  {
+                                                               "00000000-0000-4000-8000-0000000a0002":  0,
+                                                               "00000000-0000-4000-8000-0000000a0001":  0,
+                                                               "00000000-0000-4000-8000-0000000a0003":  0,
+                                                               "boss_tollkeeper#0":  105
+                                                           }
+                                           }
+                            },
+                 "rewardGranted":  false,
+                 "reward":  null
+             },
+    "revision":  4
+}

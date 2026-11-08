@@ -1,0 +1,151 @@
+﻿{
+    "ok":  true,
+    "data":  {
+                 "heroes":  [
+                                {
+                                    "heroId":  "00000000-0000-4000-8000-0000000b0001",
+                                    "accountId":  "00000000-0000-4000-8000-00000000000b",
+                                    "primaryClassId":  "class_vanguard",
+                                    "secondaryClassId":  null,
+                                    "level":  1,
+                                    "xp":  0,
+                                    "skillLoadout":  {
+                                                         "active":  [
+                                                                        "bulwark_call",
+                                                                        ""
+                                                                    ],
+                                                         "passive":  [
+                                                                         "thick_hide",
+                                                                         ""
+                                                                     ]
+                                                     },
+                                    "equipment":  {
+                                                      "weapon":  null,
+                                                      "armor":  null,
+                                                      "trinket":  null
+                                                  },
+                                    "effectiveStats":  {
+                                                           "maxHp":  40,
+                                                           "atk":  7,
+                                                           "def":  6,
+                                                           "spd":  8
+                                                       }
+                                },
+                                {
+                                    "heroId":  "00000000-0000-4000-8000-0000000b0002",
+                                    "accountId":  "00000000-0000-4000-8000-00000000000b",
+                                    "primaryClassId":  "class_ranger",
+                                    "secondaryClassId":  null,
+                                    "level":  1,
+                                    "xp":  0,
+                                    "skillLoadout":  {
+                                                         "active":  [
+                                                                        "aimed_shot",
+                                                                        ""
+                                                                    ],
+                                                         "passive":  [
+                                                                         "hunters_focus",
+                                                                         ""
+                                                                     ]
+                                                     },
+                                    "equipment":  {
+                                                      "weapon":  null,
+                                                      "armor":  null,
+                                                      "trinket":  null
+                                                  },
+                                    "effectiveStats":  {
+                                                           "maxHp":  32,
+                                                           "atk":  9,
+                                                           "def":  4,
+                                                           "spd":  12
+                                                       }
+                                },
+                                {
+                                    "heroId":  "00000000-0000-4000-8000-0000000b0003",
+                                    "accountId":  "00000000-0000-4000-8000-00000000000b",
+                                    "primaryClassId":  "class_arcanist",
+                                    "secondaryClassId":  null,
+                                    "level":  1,
+                                    "xp":  0,
+                                    "skillLoadout":  {
+                                                         "active":  [
+                                                                        "firebolt",
+                                                                        ""
+                                                                    ],
+                                                         "passive":  [
+                                                                         "overload",
+                                                                         ""
+                                                                     ]
+                                                     },
+                                    "equipment":  {
+                                                      "weapon":  null,
+                                                      "armor":  null,
+                                                      "trinket":  null
+                                                  },
+                                    "effectiveStats":  {
+                                                           "maxHp":  28,
+                                                           "atk":  10,
+                                                           "def":  3,
+                                                           "spd":  9
+                                                       }
+                                }
+                            ],
+                 "inventory":  [
+
+                               ],
+                 "formation":  {
+                                   "accountId":  "00000000-0000-4000-8000-00000000000b",
+                                   "slots":  [
+                                                 "00000000-0000-4000-8000-0000000b0001",
+                                                 "00000000-0000-4000-8000-0000000b0002",
+                                                 "00000000-0000-4000-8000-0000000b0003",
+                                                 null,
+                                                 null
+                                             ]
+                               },
+                 "areas":  [
+                               {
+                                   "areaId":  "area_old_road",
+                                   "unlocked":  true,
+                                   "isSelected":  true
+                               },
+                               {
+                                   "areaId":  "area_sunken_aqueduct",
+                                   "unlocked":  false,
+                                   "isSelected":  false
+                               }
+                           ],
+                 "selectedAreaId":  "area_old_road",
+                 "expedition":  {
+                                    "status":  "none",
+                                    "areaId":  null,
+                                    "checkpointAt":  null,
+                                    "cyclesCompletedSinceStart":  0
+                                },
+                 "dungeon":  {
+                                 "status":  "none",
+                                 "dungeonId":  null,
+                                 "startedAt":  null,
+                                 "checkpointAt":  null,
+                                 "currentFloor":  1,
+                                 "floorsCleared":  0,
+                                 "rulesVersion":  null,
+                                 "outcome":  "none"
+                             },
+                 "gold":  0,
+                 "materials":  {
+                                   "scrap":  0,
+                                   "sigil":  0,
+                                   "core":  0
+                               },
+                 "bossClaims":  [
+                                    {
+                                        "accountId":  "00000000-0000-4000-8000-00000000000b",
+                                        "bossId":  "boss_tollkeeper",
+                                        "claimedAt":  null
+                                    }
+                                ],
+                 "revision":  0
+             },
+    "revision":  0
+}
