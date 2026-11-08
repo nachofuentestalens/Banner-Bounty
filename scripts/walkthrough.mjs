@@ -141,12 +141,26 @@ try {
     // (state.expedition.cyclesCompletedSinceStart) instead of a per-collect
     // "Credited cycles: N" message, so credited counts are read from account
     // state (the delta across each settle call) rather than DOM text.
+    //
+    // Every fresh `/expedition/start` now freezes EXPEDITION_RULES_VERSION
+    // (variable-duration combat v3, contracts.md "M3-05 addition" section 4),
+    // not the legacy fixed-60,000ms walk this script originally assumed when
+    // it hardcoded "5 then 3" for a 5-then-3-minute advance. Under v3,
+    // `msPerRound=2000` (packages/content/src/v3/index.ts) makes a typical
+    // Old Road battle's nominal duration ~6-10x shorter than the old fixed
+    // 60s cycle (design/game/economy/m3.md section on provisional pacing) --
+    // an explicitly documented, open economy-balance question, not a
+    // crediting-logic bug: `runSettlementWalkV3` (packages/game/src/settlement3.ts)
+    // correctly implements contracts.md's loop, and these counts are the
+    // deterministic result of that seeded simulation for this script's fixed
+    // starter party/clock. 23-then-13 (not 5-then-3) is therefore the correct
+    // expectation here, not a regression to paper over.
     advance(5);
     await nav(pageA, "Expedition");
     let before = (await accountState(ctxA)).expedition.cyclesCompletedSinceStart;
     await clickAndWaitForResponse(pageA.getByRole("button", { name: "Collect Rewards" }), "/expedition/settle");
     let after = await accountState(ctxA);
-    assert.equal(after.expedition.cyclesCompletedSinceStart - before, 5, `expected 5 cycles credited, got ${after.expedition.cyclesCompletedSinceStart - before}`);
+    assert.equal(after.expedition.cyclesCompletedSinceStart - before, 23, `expected 23 cycles credited, got ${after.expedition.cyclesCompletedSinceStart - before}`);
     await pageA.close();
     advance(3);
     pageA = await ctxA.newPage();
@@ -157,8 +171,8 @@ try {
     before = after.expedition.cyclesCompletedSinceStart;
     await clickAndWaitForResponse(pageA.getByRole("button", { name: "Collect Rewards" }), "/expedition/settle");
     const s = await accountState(ctxA);
-    assert.equal(s.expedition.cyclesCompletedSinceStart - before, 3, `expected 3 more cycles credited, got ${s.expedition.cyclesCompletedSinceStart - before}`);
-    return `5 then 3 cycles credited; gold=${s.gold}, inventory=${s.inventory.length}`;
+    assert.equal(s.expedition.cyclesCompletedSinceStart - before, 13, `expected 13 more cycles credited, got ${s.expedition.cyclesCompletedSinceStart - before}`);
+    return `23 then 13 cycles credited; gold=${s.gold}, inventory=${s.inventory.length}`;
   });
 
   await step("5 stop; equip a drop; reach level 3; assign a secondary class and loadout", async () => {
